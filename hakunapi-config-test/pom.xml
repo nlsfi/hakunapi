@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>fi.nls.hakunapi</groupId>
+        <artifactId>hakunapi</artifactId>
+        <version>0.1.10-SNAPSHOT</version>
+    </parent>
+    <artifactId>hakunapi-config-test</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-source-postgis</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>cfg-test</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>fi.nls.hakunapi.config.test.ConfigTest</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

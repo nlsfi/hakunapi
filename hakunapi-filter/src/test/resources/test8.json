@@ -1,0 +1,30 @@
+[
+  "and",
+  [
+    "eq",
+    [
+      "property",
+      "swimming_pool"
+    ],
+    true
+  ],
+  [
+    "or",
+    [
+      "gt",
+      [
+        "property",
+        "floor"
+      ],
+      5
+    ],
+    [
+      "like",
+      [
+        "property",
+        "material"
+      ],
+      "%brick"
+    ]
+  ]
+]

@@ -1,0 +1,11 @@
+[
+  "not",
+  [
+    "like",
+    [
+      "property",
+      "owner_name"
+    ],
+    "% Mike %"
+  ]
+]

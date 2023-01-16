@@ -1,0 +1,21 @@
+[
+  "all",
+  [
+    "==",
+    ["get", "swimming_pool"],
+    true
+  ],
+  [
+    "any",
+    [
+      ">",
+      ["get", "floors"],
+      5
+    ],
+    [
+      "like",
+      ["get", "material"],
+      "%brick"
+    ]
+  ]
+]

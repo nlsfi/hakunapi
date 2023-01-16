@@ -1,0 +1,9 @@
+{
+    "A": "foo",
+    "B": "bar",
+    "C": "baz",
+    "D": null,
+    "E": null,
+    "F": "qux",
+    "$null": "qux"
+}

@@ -1,0 +1,1 @@
+{"type":"Feature","id":1,"geometry":{"type":"Point","coordinates":[100,200]},"properties":{"foo":"bar","prop0":0,"prop1":null,"another_geom":{"type":"Point","coordinates":[100,200]}},"meta":{"foo":1,"bar":"hello, world","baz":[{"qux":[]}]}}
