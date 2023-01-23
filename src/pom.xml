@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+        <parent>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi</artifactId>
+            <version>0.1.10-SNAPSHOT</version>
+        </parent>
+	<groupId>fi.nls.hakunapi</groupId>
+	<artifactId>src</artifactId>
+	<packaging>pom</packaging>
+	<modules>
+		<module>hakunapi-core</module>
+		<module>hakunapi-config-test</module>
+		<module>hakunapi-simple-servlet</module>
+		<module>hakunapi-simple-webapp</module>
+		<module>hakunapi-source-postgis</module>
+		<module>hakunapi-geojson</module>
+		<module>hakunapi-mvt</module>
+		<module>hakunapi-gpkg</module>
+		<module>hakunapi-html</module>
+		<module>hakunapi-gml</module>
+		<module>hakunapi-proj-gt</module>
+		<module>hakunapi-proj-jhe</module>
+		<module>hakunapi-tiles</module>
+		<module>hakunapi-smile</module>
+		<module>hakunapi-esbulk</module>
+		<module>hakunapi-csv</module>
+		<module>hakunapi-cql2</module>
+		<module>hakunapi-cql2-functions</module>
+		<module>hakunapi-simple-webapp-test</module>
+	</modules>
+</project>

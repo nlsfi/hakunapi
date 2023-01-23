@@ -7,25 +7,7 @@
 	<version>0.1.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>hakunapi-core</module>
-		<module>hakunapi-config-test</module>
-		<module>hakunapi-simple-servlet</module>
-		<module>hakunapi-simple-webapp</module>
-		<module>hakunapi-source-postgis</module>
-		<module>hakunapi-geojson</module>
-		<module>hakunapi-mvt</module>
-		<module>hakunapi-gpkg</module>
-		<module>hakunapi-html</module>
-		<module>hakunapi-gml</module>
-		<module>hakunapi-proj-gt</module>
-		<module>hakunapi-proj-jhe</module>
-		<module>hakunapi-tiles</module>
-		<module>hakunapi-smile</module>
-		<module>hakunapi-esbulk</module>
-		<module>hakunapi-csv</module>
-		<module>hakunapi-cql2</module>
-		<module>hakunapi-cql2-functions</module>
-		<module>hakunapi-simple-webapp-test</module>
+		<module>src</module>
 	</modules>
 	<properties>
 		<servlet.version>3.0.1</servlet.version>
