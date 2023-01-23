@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>fi.nls.hakunapi</groupId>
-		<artifactId>hakunapi</artifactId>
+		<artifactId>src</artifactId>
 		<version>0.1.10-SNAPSHOT</version>
 	</parent>
 	<artifactId>hakunapi-mvt</artifactId>
