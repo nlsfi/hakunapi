@@ -1,10 +1,5 @@
 package fi.nls.hakunapi.core.util;
 
-/**
- * Why not Pair<L,R>?
- * Currently we don't need one
- * keeping it as simple and stupid as possible
- */
 public class StringPair {
 
     private final String left;

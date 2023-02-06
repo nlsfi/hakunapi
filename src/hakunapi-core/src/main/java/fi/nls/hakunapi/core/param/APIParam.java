@@ -17,6 +17,8 @@ public interface APIParam {
      * 
      * Technically this means that common parameters appear in the
      * components section of the API document
+     * 
+     * @return true if parameter is common, false if not
      */
     public default boolean isCommon() {
         return true;

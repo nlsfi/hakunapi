@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Modified version of Jackson NumberFormat
- * @see https://github.com/FasterXML/jackson-core/blob/master/src/main/java/com/fasterxml/jackson/core/io/NumberInput.java
+ * see https://github.com/FasterXML/jackson-core/blob/master/src/main/java/com/fasterxml/jackson/core/io/NumberInput.java
  */
 public class IToA {
 

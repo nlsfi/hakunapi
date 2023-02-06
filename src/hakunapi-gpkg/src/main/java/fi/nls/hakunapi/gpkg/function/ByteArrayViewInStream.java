@@ -1,6 +1,5 @@
 package fi.nls.hakunapi.gpkg.function;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.locationtech.jts.io.InStream;
@@ -30,10 +29,8 @@ public class ByteArrayViewInStream implements InStream {
      * Reads up to <tt>buf.length</tt> bytes from the stream into the given byte
      * buffer.
      * 
-     * @param buf the buffer to receive the bytes
+     * @param out the buffer to receive the bytes
      * @return the number of bytes read, or -1 if at end-of-file
-     *
-     * @throws IOException if an I/O error occurs
      */
     public int read(final byte[] out) {
         int n = out.length;

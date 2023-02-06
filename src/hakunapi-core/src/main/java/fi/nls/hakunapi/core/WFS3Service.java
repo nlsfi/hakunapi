@@ -73,6 +73,7 @@ public abstract class WFS3Service {
     }
 
     /**
+     * @return ConformanceClasses implemented by this service 
      * @deprecated for removal, if you need ConformanceClasses create one yourself
      */
     @Deprecated
@@ -81,6 +82,7 @@ public abstract class WFS3Service {
     }
 
     /**
+     * @param conformance conformance classes implements by this service
      * @deprecated for removal, use setConformanceClasses() instead!
      */
     @Deprecated
