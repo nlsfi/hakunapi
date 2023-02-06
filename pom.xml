@@ -6,9 +6,18 @@
 	<artifactId>hakunapi</artifactId>
 	<version>0.1.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<modules>
 		<module>src</module>
 	</modules>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
 	<properties>
 		<servlet.version>3.0.1</servlet.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
