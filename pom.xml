@@ -7,6 +7,10 @@
 	<version>0.1.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<name>Hakunapi</name>
+	<description>Hakunapi is a server implementation of OGC API - Features</description>
+	<url>https://github.com/nlsfi/hakunapi</url>
+
 	<modules>
 		<module>src</module>
 	</modules>
@@ -17,6 +21,21 @@
 			<url>http://www.opensource.org/licenses/mit-license.php</url>
 		</license>
 	</licenses>
+
+	<developers>
+		<developer>
+			<name>Janne Heikkilä</name>
+			<email>janne.heikkila@ubigu.fi</email>
+			<organization>Ubigu Oy</organization>
+			<organizationUrl>https://www.ubigu.fi/</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/nlsfi/hakunapi.git</connection>
+		<developerConnection>scm:git:ssh://github.com:nlsfi/hakunapi.git</developerConnection>
+		<url>https://github.com/nlsfi/hakunapi/tree/main</url>
+	</scm>
 
 	<properties>
 		<servlet.version>3.0.1</servlet.version>
