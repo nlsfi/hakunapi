@@ -26,12 +26,13 @@ public class ByteArrayViewInStream implements InStream {
     }
 
     /**
-     * Reads up to <tt>buf.length</tt> bytes from the stream into the given byte
-     * buffer.
+     * Reads out.length bytes from the input stream
+     * and stores them in the supplied buffer.
      * 
      * @param out the buffer to receive the bytes
      * @return the number of bytes read, or -1 if at end-of-file
      */
+    @Override
     public int read(final byte[] out) {
         int n = out.length;
         if (pos + n > end) {
