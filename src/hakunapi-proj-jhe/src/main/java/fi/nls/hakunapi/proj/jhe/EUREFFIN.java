@@ -3,7 +3,7 @@ package fi.nls.hakunapi.proj.jhe;
 import static java.lang.Math.*;
 
 /**
- * @see https://www.suomidigi.fi/ohjeet-ja-tuki/jhs-suositukset/jhs-197-euref-fin-koordinaattijarjestelmat-niihin-liittyvat-muunnokset-ja-karttalehtijako
+ * https://www.suomidigi.fi/ohjeet-ja-tuki/jhs-suositukset/jhs-197-euref-fin-koordinaattijarjestelmat-niihin-liittyvat-muunnokset-ja-karttalehtijako
  */
 public class EUREFFIN {
 

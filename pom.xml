@@ -6,9 +6,37 @@
 	<artifactId>hakunapi</artifactId>
 	<version>0.1.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<name>Hakunapi</name>
+	<description>Hakunapi is a server implementation of OGC API - Features</description>
+	<url>https://github.com/nlsfi/hakunapi</url>
+
 	<modules>
 		<module>src</module>
 	</modules>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Janne Heikkilä</name>
+			<email>janne.heikkila@ubigu.fi</email>
+			<organization>Ubigu Oy</organization>
+			<organizationUrl>https://www.ubigu.fi/</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/nlsfi/hakunapi.git</connection>
+		<developerConnection>scm:git:ssh://github.com:nlsfi/hakunapi.git</developerConnection>
+		<url>https://github.com/nlsfi/hakunapi/tree/main</url>
+	</scm>
+
 	<properties>
 		<servlet.version>3.0.1</servlet.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
@@ -262,9 +290,44 @@
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.3.0</version>
 				</plugin>
-
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 	<profiles>
@@ -307,9 +370,8 @@
 						<artifactId>cyclonedx-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
-
-
 			</build>
 		</profile>
 	</profiles>
+
 </project>
