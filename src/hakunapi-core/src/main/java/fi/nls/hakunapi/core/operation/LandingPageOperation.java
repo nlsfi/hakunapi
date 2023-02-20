@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public class LandingPageOperation implements WFS3Operation {
+public class LandingPageOperation implements ApiOperation {
 
     @Override
     public String getSummary() {
@@ -24,8 +24,8 @@ public class LandingPageOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Capabilities;
+    public ApiTag getTag() {
+        return ApiTag.Capabilities;
     }
 
 }

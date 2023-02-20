@@ -31,7 +31,7 @@ import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.NextCursor;
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.operation.ParametrizedOperation;
 import fi.nls.hakunapi.core.param.CollectionsParam;
@@ -55,7 +55,7 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
     protected static final Logger LOG = LoggerFactory.getLogger(GetItemsOperation.class);
 
     @Inject
-    protected WFS3Service service;
+    protected FeatureServiceConfig service;
 
     @Override
     public List<GetFeatureParam> getParameters() {
@@ -63,7 +63,7 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
     }
 
     @Override
-    public Map<String, Class<?>> getResponsesByContentType(WFS3Service service) {
+    public Map<String, Class<?>> getResponsesByContentType(FeatureServiceConfig service) {
         Map<String, Class<?>> map = new HashMap<>();
         for (OutputFormat f : service.getOutputFormats()) {
             map.put(f.getMimeType(), FeatureCollectionGeoJSON.class);

@@ -2,7 +2,7 @@ package fi.nls.hakunapi.core.param;
 
 import java.math.BigDecimal;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.GetTileFeaturesRequest;
 import io.swagger.v3.oas.models.media.IntegerSchema;
@@ -22,7 +22,7 @@ public class BufferParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)
@@ -36,7 +36,7 @@ public class BufferParam implements GetFeatureParam {
     }
     
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         if (!(request instanceof GetTileFeaturesRequest)) {
             return;
         }

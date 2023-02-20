@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.simple.webapp.HakunaContextListener;
 import fi.nls.hakunapi.simple.webapp.HakunaTestServletContext;
-import fi.nls.hakunapi.simple.webapp.SimpleWFS3Application;
+import fi.nls.hakunapi.simple.webapp.SimpleFeaturesApplication;
 
 public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 	private static final Logger LOG = LoggerFactory.getLogger(OgcApiFeaturesPart1CoreTest.class);
@@ -39,7 +39,7 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 		final ServletContextEvent sce = new ServletContextEvent(sc);
 		new HakunaContextListener().contextInitialized(sce);
 
-		final Application app = new SimpleWFS3Application(sc);
+		final Application app = new SimpleFeaturesApplication(sc);
 
 		return app;
 

@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public class ConformanceOperation implements WFS3Operation {
+public class ConformanceOperation implements ApiOperation {
 
     @Override
     public String getSummary() {
@@ -9,7 +9,7 @@ public class ConformanceOperation implements WFS3Operation {
 
     @Override
     public String getDescription() {
-        return "List all requirements classes specified in a standard (e.g., WFS 3.0 " +
+        return "List all requirements classes specified in a standard (e.g., OGC API - Features " +
                 "Part 1: Core) that the server conforms to";
     }
 
@@ -24,8 +24,8 @@ public class ConformanceOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Capabilities;
+    public ApiTag getTag() {
+        return ApiTag.Capabilities;
     }
 
 }

@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.schemas.Queryables;
 import fi.nls.hakunapi.html.model.HTMLContext;
@@ -20,7 +20,7 @@ import fi.nls.hakunapi.html.model.HTMLContext;
 public class GetCollectionQueryablesImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Produces("application/schema+json")

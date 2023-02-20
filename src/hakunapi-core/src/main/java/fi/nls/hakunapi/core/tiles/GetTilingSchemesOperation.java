@@ -1,9 +1,9 @@
 package fi.nls.hakunapi.core.tiles;
 
-import fi.nls.hakunapi.core.operation.WFS3Operation;
-import fi.nls.hakunapi.core.operation.WFS3Tag;
+import fi.nls.hakunapi.core.operation.ApiOperation;
+import fi.nls.hakunapi.core.operation.ApiTag;
 
-public class GetTilingSchemesOperation implements WFS3Operation {
+public class GetTilingSchemesOperation implements ApiOperation {
 
     @Override
     public String getSummary() {
@@ -26,8 +26,8 @@ public class GetTilingSchemesOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Tiles;
+    public ApiTag getTag() {
+        return ApiTag.Tiles;
     }
 
 }

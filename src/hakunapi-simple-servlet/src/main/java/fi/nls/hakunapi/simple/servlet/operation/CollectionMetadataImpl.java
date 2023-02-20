@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.schemas.CollectionInfo;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
@@ -21,7 +21,7 @@ import fi.nls.hakunapi.html.model.HTMLContext;
 public class CollectionMetadataImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Path("/{collectionId}")

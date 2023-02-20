@@ -132,7 +132,7 @@ public class HakunaContextListener implements ServletContextListener {
             CQL2Functions.INSTANCE.register();
             FunctionsContent functionsMetadata = CQL2Functions.INSTANCE.toFunctionsMetadata();
 
-            SimpleWFS3Service service = new SimpleWFS3Service(collections, tilingSchemes, outputFormats, filterParsers);
+            SimpleFeatureServiceConfig service = new SimpleFeatureServiceConfig(collections, tilingSchemes, outputFormats, filterParsers);
             service.setInfo(info);
             service.setServers(servers);
             service.setLimitDefault(PropertyUtil.getInt(config, "getfeatures.limit.default", 1000));

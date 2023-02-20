@@ -11,7 +11,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyType;
@@ -27,7 +27,7 @@ import io.swagger.v3.oas.models.media.StringSchema;
 public class GetCollectionSchemaImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Path("/{collectionId}/schema")

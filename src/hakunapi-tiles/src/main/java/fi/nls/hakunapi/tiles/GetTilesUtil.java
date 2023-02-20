@@ -10,7 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.locationtech.jts.geom.Envelope;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.request.GetTileFeaturesRequest;
 import fi.nls.hakunapi.core.tiles.TileMatrix;
@@ -18,7 +18,7 @@ import fi.nls.hakunapi.core.tiles.TilingScheme;
 
 public class GetTilesUtil {
 
-	static TilingScheme getTilingScheme(WFS3Service service, String tilingSchemeId) {
+	static TilingScheme getTilingScheme(FeatureServiceConfig service, String tilingSchemeId) {
 		TilingScheme tilingScheme = service.getTilingScheme(tilingSchemeId);
 		if (tilingScheme == null) {
 			throw new NotFoundException("Unknown tilingSchemeId");
@@ -52,7 +52,7 @@ public class GetTilesUtil {
 		return new Envelope(x1, x2, y1, y2);
 	}
 
-	public static void modifyWithCollectionSpecificParams(WFS3Service service, GetTileFeaturesRequest request,
+	public static void modifyWithCollectionSpecificParams(FeatureServiceConfig service, GetTileFeaturesRequest request,
 			MultivaluedMap<String, String> queryParams) {
 
 		for (final Entry<String, List<String>> param : queryParams.entrySet()) {

@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.OperationImpl;
 import fi.nls.hakunapi.html.model.HTMLContext;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -17,10 +17,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 @Path("/")
 public class OpenAPI30ApiOperation {
 
-    private final WFS3Service service;
+    private final FeatureServiceConfig service;
     private final OpenAPI30Generator api;
 
-    public OpenAPI30ApiOperation(WFS3Service service, List<OperationImpl> opToImpl) {
+    public OpenAPI30ApiOperation(FeatureServiceConfig service, List<OperationImpl> opToImpl) {
         this.service = service;
         this.api = new OpenAPI30Generator(service, opToImpl);
     }

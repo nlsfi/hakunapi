@@ -13,13 +13,13 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SimpleFeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 
 public class ParamUtilTest {
 
-    WFS3Service service() {
-        return new WFS3Service() {
+    FeatureServiceConfig service() {
+        return new FeatureServiceConfig() {
 
             @Override
             public Collection<FeatureType> getCollections() {
@@ -47,7 +47,7 @@ public class ParamUtilTest {
     @Test
     public void testEmptyConformanceParams() {
 
-        final WFS3Service service = service();
+        final FeatureServiceConfig service = service();
         final SimpleFeatureType sft = new SimpleFeatureType() {
             @Override
             public FeatureProducer getFeatureProducer() {
@@ -67,7 +67,7 @@ public class ParamUtilTest {
         conformsTo.add(ConformanceClass.GeoJSON);
         conformsTo.add(ConformanceClass.HTML);
 
-        final WFS3Service service = service();
+        final FeatureServiceConfig service = service();
         service.setConformanceClasses(conformsTo);
 
         final SimpleFeatureType sft = new SimpleFeatureType() {
@@ -95,7 +95,7 @@ public class ParamUtilTest {
         conformsTo.add(ConformanceClass.HTML);
         conformsTo.add(ConformanceClass.CRS);
 
-        final WFS3Service service = service();
+        final FeatureServiceConfig service = service();
         service.setConformanceClasses(conformsTo);
 
         final SimpleFeatureType sft = new SimpleFeatureType() {
@@ -127,7 +127,7 @@ public class ParamUtilTest {
         conformsTo.add(ConformanceClass.FILTER);
         conformsTo.add(ConformanceClass.FEATURES_FILTER);
 
-        final WFS3Service service = service();
+        final FeatureServiceConfig service = service();
         service.setConformanceClasses(conformsTo);
 
         final SimpleFeatureType sft = new SimpleFeatureType() {

@@ -15,7 +15,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import freemarker.template.Configuration;
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.operation.CollectionMetadataOperation;
 import fi.nls.hakunapi.core.operation.CollectionsMetadataOperation;
@@ -60,10 +60,10 @@ import fi.nls.hakunapi.tiles.GetTilingSchemesImpl;
 import io.swagger.v3.oas.models.OpenAPI;
 
 @ApplicationPath("/")
-public class SimpleWFS3Application extends ResourceConfig {
+public class SimpleFeaturesApplication extends ResourceConfig {
 
-    public SimpleWFS3Application(@Context ServletContext servletContext) {
-        final SimpleWFS3Service service = (SimpleWFS3Service) servletContext.getAttribute("hakunaService");
+    public SimpleFeaturesApplication(@Context ServletContext servletContext) {
+        final SimpleFeatureServiceConfig service = (SimpleFeatureServiceConfig) servletContext.getAttribute("hakunaService");
         final HakunaConfigParser parser = (HakunaConfigParser) servletContext.getAttribute("hakunaConfig");
 
         List<OperationImpl> opToImpl = new ArrayList<>();
@@ -116,8 +116,8 @@ public class SimpleWFS3Application extends ResourceConfig {
         register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(service).to(WFS3Service.class);
-                bind(service).to(SimpleWFS3Service.class);
+                bind(service).to(FeatureServiceConfig.class);
+                bind(service).to(SimpleFeatureServiceConfig.class);
                 bind(api).to(OpenAPI30ApiOperation.class);
                 bind(cacheManager).to(CacheManager.class);
             }

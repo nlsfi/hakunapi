@@ -30,7 +30,7 @@ import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
@@ -59,10 +59,10 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     );
 
     @Inject
-    protected WFS3Service service;
+    protected FeatureServiceConfig service;
 
     @Override
-    public List<String> getValidPaths(WFS3Service service) {
+    public List<String> getValidPaths(FeatureServiceConfig service) {
         Collection<FeatureType> collections = service.getCollections();
         List<String> paths = new ArrayList<>(collections.size());
         for (FeatureType collection : collections) {
@@ -72,7 +72,7 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     }
 
     @Override
-    public List<APIParam> getParameters(String path, WFS3Service service) {
+    public List<APIParam> getParameters(String path, FeatureServiceConfig service) {
         List<APIParam> parameters = new ArrayList<>();
         parameters.add(new SimplePathParam("featureId"));
         parameters.addAll(NON_DYNAMIC);
@@ -80,7 +80,7 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     }
 
     @Override
-    public Map<String, Class<?>> getResponsesByContentType(WFS3Service service) {
+    public Map<String, Class<?>> getResponsesByContentType(FeatureServiceConfig service) {
         Map<String, Class<?>> map = new HashMap<>();
         for (OutputFormat f : service.getOutputFormats()) {
             map.put(f.getMimeType(), FeatureGeoJSON.class);

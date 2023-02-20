@@ -7,7 +7,7 @@ import java.util.Map;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.schemas.CollectionInfo;
 import fi.nls.hakunapi.core.schemas.Crs;
 import fi.nls.hakunapi.core.schemas.Extent;
@@ -22,7 +22,7 @@ public class CollectionMetadataUtil {
     
     private static final String ITEMS_REL = "items";
 
-    public static CollectionInfo toCollectionInfo(WFS3Service service, FeatureType ft, Map<String, String> queryParams) {
+    public static CollectionInfo toCollectionInfo(FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams) {
         String id = ft.getName();
         String title = ft.getTitle();
         String description = ft.getDescription();
@@ -59,7 +59,7 @@ public class CollectionMetadataUtil {
         return ci;
     }
 
-    public static Link getItemsLink(WFS3Service service, FeatureType ft, String mimeType) {
+    public static Link getItemsLink(FeatureServiceConfig service, FeatureType ft, String mimeType) {
         String path = "/collections/" + ft.getName() + "/items";
         String href = service.getCurrentServerURL() + path;
         String rel = ITEMS_REL;
@@ -67,7 +67,7 @@ public class CollectionMetadataUtil {
         return new Link(href, rel, type);
     }
 
-    public static Link getItemsLinkWithF(WFS3Service service, FeatureType ft, Map<String, String> queryParams, OutputFormat format) {
+    public static Link getItemsLinkWithF(FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams, OutputFormat format) {
         queryParams.put("f", format.getId());
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/items" + query;
@@ -78,7 +78,7 @@ public class CollectionMetadataUtil {
         return new Link(href, rel, type);
     }
     
-    private static Link getDescribedByLink(WFS3Service service, Map<String, String> queryParams, FeatureType ft) {
+    private static Link getDescribedByLink(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/schema" + query;
         String href = service.getCurrentServerURL() + path;
@@ -87,7 +87,7 @@ public class CollectionMetadataUtil {
         return new Link(href, rel, type);
     }
 
-    private static Link getQueryablesLinks(WFS3Service service, Map<String, String> queryParams, FeatureType ft) {
+    private static Link getQueryablesLinks(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/queryables" + query;
         String href = service.getCurrentServerURL() + path;

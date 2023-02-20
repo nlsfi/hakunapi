@@ -2,7 +2,7 @@ package fi.nls.hakunapi.core.param;
 
 import java.util.List;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -25,7 +25,7 @@ public class LayernamesParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)
@@ -36,7 +36,7 @@ public class LayernamesParam implements GetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         if (value == null || value.isEmpty()) {
             return;
         }

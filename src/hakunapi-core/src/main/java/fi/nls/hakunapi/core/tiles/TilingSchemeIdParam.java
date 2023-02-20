@@ -3,7 +3,7 @@ package fi.nls.hakunapi.core.tiles;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.param.APIParam;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -19,7 +19,7 @@ public class TilingSchemeIdParam implements APIParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         List<String> tilingSchemeIdentifiers = service.getTilingSchemes()
                 .stream()
                 .map(scheme -> scheme.getIdentifier())

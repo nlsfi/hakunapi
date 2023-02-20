@@ -33,7 +33,7 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.ValueProvider;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryFactory;
 import fi.nls.hakunapi.core.operation.ParametrizedOperation;
@@ -71,7 +71,7 @@ public class GetTilesImpl implements ParametrizedOperation {
     private static final Logger LOG = LoggerFactory.getLogger(GetTilesImpl.class);
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @Override
     public List<GetFeatureParam> getParameters() {

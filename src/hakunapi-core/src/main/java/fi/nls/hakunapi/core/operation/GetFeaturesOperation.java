@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public class GetFeaturesOperation implements WFS3Operation {
+public class GetFeaturesOperation implements ApiOperation {
 
     @Override
     public String getSummary() {
@@ -13,8 +13,8 @@ public class GetFeaturesOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Features;
+    public ApiTag getTag() {
+        return ApiTag.Features;
     }
 
     @Override

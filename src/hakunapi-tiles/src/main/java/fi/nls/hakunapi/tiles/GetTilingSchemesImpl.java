@@ -12,7 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.tiles.TilingScheme;
 import fi.nls.hakunapi.core.tiles.TilingSchemeInfo;
 import fi.nls.hakunapi.core.tiles.TilingSchemes;
@@ -22,7 +22,7 @@ import fi.nls.hakunapi.simple.servlet.operation.OperationUtil;
 public class GetTilingSchemesImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
