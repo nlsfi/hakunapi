@@ -17,7 +17,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import io.swagger.v3.oas.models.servers.Server;
 
-public abstract class WFS3Service {
+public abstract class FeatureServiceConfig {
 
     protected int limitDefault;
     protected int limitMaximum;

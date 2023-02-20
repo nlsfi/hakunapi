@@ -1,18 +1,18 @@
 package fi.nls.hakunapi.html.model;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 
 public class HTMLContext<T> {
 
-    private final WFS3Service service;
+    private final FeatureServiceConfig service;
     private final T model;
 
-    public HTMLContext(WFS3Service service, T model) {
+    public HTMLContext(FeatureServiceConfig service, T model) {
         this.service = service;
         this.model = model;
     }
 
-    public WFS3Service getService() {
+    public FeatureServiceConfig getService() {
         return service;
     }
 

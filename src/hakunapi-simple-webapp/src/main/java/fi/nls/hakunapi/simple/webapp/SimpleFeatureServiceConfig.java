@@ -11,17 +11,17 @@ import java.util.stream.Collectors;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.tiles.TilingScheme;
 
-public class SimpleWFS3Service extends WFS3Service {
+public class SimpleFeatureServiceConfig extends FeatureServiceConfig {
 
     private final Map<String, FeatureType> collections;
     private final Map<String, TilingScheme> tilingSchemes;
     private final Map<String, OutputFormat> outputFormats;
     private final Map<String, FilterParser> filterParsers;
 
-    public SimpleWFS3Service(Map<String, FeatureType> collections,
+    public SimpleFeatureServiceConfig(Map<String, FeatureType> collections,
             List<TilingScheme> tilingSchemes,
             List<OutputFormat> outputFormats,
             List<FilterParser> filterParsers) {

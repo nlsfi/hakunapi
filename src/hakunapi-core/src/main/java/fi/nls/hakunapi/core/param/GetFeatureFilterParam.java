@@ -1,14 +1,14 @@
 package fi.nls.hakunapi.core.param;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 
 public abstract class GetFeatureFilterParam implements GetFeatureParam {
 
-    public void modify(WFS3Service service, GetFeatureRequest request, String value)
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value)
             throws IllegalArgumentException {
         boolean atLeastOne = false;
         for (GetFeatureCollection c : request.getCollections()) {
@@ -23,6 +23,6 @@ public abstract class GetFeatureFilterParam implements GetFeatureParam {
         }
     }
 
-    public abstract Filter toFilter(WFS3Service service, FeatureType ft, String value) throws IllegalArgumentException;
+    public abstract Filter toFilter(FeatureServiceConfig service, FeatureType ft, String value) throws IllegalArgumentException;
 
 }

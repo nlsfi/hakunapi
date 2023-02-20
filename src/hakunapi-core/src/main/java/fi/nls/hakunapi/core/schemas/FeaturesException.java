@@ -7,17 +7,17 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 
-public class WFS3Exception implements Component {
+public class FeaturesException implements Component {
 
     private final String code;
     private final String description;
 
-    public WFS3Exception() {
+    public FeaturesException() {
         code = null;
         description = null;
     }
 
-    public WFS3Exception(int code, String description) {
+    public FeaturesException(int code, String description) {
         this.code = Integer.toString(code);
         this.description = description;
     }

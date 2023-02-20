@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.param.BboxCrsParam;
 import fi.nls.hakunapi.core.param.BboxParam;
 import fi.nls.hakunapi.core.param.CollectionsParam;
@@ -58,7 +58,7 @@ public class ParamUtil {
                 Arrays.asList(new FilterParam(), new FilterLangParam(), new FilterCrsParam()));
     }
 
-    protected static List<GetFeatureParam> getParameters(FeatureType ft, WFS3Service service) {
+    protected static List<GetFeatureParam> getParameters(FeatureType ft, FeatureServiceConfig service) {
         List<GetFeatureParam> collectionSpecific = ft.getParameters();
         List<GetFeatureParam> params = new ArrayList<>();
         List<ConformanceClass> conformanceClasses = service.getConformanceClasses();

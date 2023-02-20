@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public enum WFS3Tag {
+public enum ApiTag {
 
     Capabilities("Essential characteristics of this API including information about the data."),
     Features("Access to data (features)."),
@@ -9,7 +9,7 @@ public enum WFS3Tag {
 
     public final String description;
 
-    private WFS3Tag(String description) {
+    private ApiTag(String description) {
         this.description = description;
     }
 

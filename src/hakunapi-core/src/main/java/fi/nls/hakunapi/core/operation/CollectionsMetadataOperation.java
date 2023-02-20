@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public class CollectionsMetadataOperation implements WFS3Operation {
+public class CollectionsMetadataOperation implements ApiOperation {
 
     @Override
     public String getSummary() {
@@ -23,8 +23,8 @@ public class CollectionsMetadataOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Capabilities;
+    public ApiTag getTag() {
+        return ApiTag.Capabilities;
     }
 
 }

@@ -3,7 +3,7 @@ package fi.nls.hakunapi.core.param;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.geom.Bbox;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
@@ -45,7 +45,7 @@ public class BboxParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)
@@ -59,7 +59,7 @@ public class BboxParam implements GetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         if (value == null || value.isEmpty()) {
             return;
         }

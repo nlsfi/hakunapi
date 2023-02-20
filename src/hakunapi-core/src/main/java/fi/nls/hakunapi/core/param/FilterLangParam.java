@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.FilterParser;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -23,7 +23,7 @@ public class FilterLangParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         List<String> valid = service.getFilterParsers().stream()
                 .map(FilterParser::getCode)
                 .collect(Collectors.toList());
@@ -38,7 +38,7 @@ public class FilterLangParam implements GetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         if (value == null || value.isEmpty()) {
             return;
         }

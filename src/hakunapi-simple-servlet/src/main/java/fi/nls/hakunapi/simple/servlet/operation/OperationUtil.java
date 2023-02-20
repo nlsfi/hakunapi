@@ -12,16 +12,16 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.util.U;
 
 public class OperationUtil {
 
-    public static String getQuery(WFS3Service service, UriInfo uriInfo) {
+    public static String getQuery(FeatureServiceConfig service, UriInfo uriInfo) {
         return U.toQuery(getQueryParams(service, uriInfo));
     }
 
-    public static Map<String, String> getQueryParams(WFS3Service service, UriInfo uriInfo) {
+    public static Map<String, String> getQueryParams(FeatureServiceConfig service, UriInfo uriInfo) {
         Map<String, String> queryParams = new LinkedHashMap<>();
         if (service.getApiKeyQueryParam() != null) {
             String v = uriInfo.getQueryParameters().getFirst(service.getApiKeyQueryParam());

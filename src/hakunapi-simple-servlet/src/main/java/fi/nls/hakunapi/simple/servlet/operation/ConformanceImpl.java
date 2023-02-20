@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
@@ -14,7 +14,7 @@ import fi.nls.hakunapi.html.model.HTMLContext;
 public class ConformanceImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

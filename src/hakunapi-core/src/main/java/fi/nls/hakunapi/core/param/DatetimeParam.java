@@ -7,7 +7,7 @@ import java.util.List;
 
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import io.swagger.v3.oas.models.media.DateTimeSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -37,7 +37,7 @@ public class DatetimeParam extends GetFeatureFilterParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)
@@ -48,7 +48,7 @@ public class DatetimeParam extends GetFeatureFilterParam {
     }
 
     @Override
-    public Filter toFilter(WFS3Service service, FeatureType ft, String value) throws IllegalArgumentException {
+    public Filter toFilter(FeatureServiceConfig service, FeatureType ft, String value) throws IllegalArgumentException {
         if (value == null || value.isEmpty()) {
             return null;
         }

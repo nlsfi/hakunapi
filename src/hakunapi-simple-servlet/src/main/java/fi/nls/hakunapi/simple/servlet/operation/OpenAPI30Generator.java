@@ -16,16 +16,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.operation.ApiOperation;
+import fi.nls.hakunapi.core.operation.ApiTag;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.operation.OperationImpl;
 import fi.nls.hakunapi.core.operation.ParametrizedOperation;
-import fi.nls.hakunapi.core.operation.WFS3Operation;
-import fi.nls.hakunapi.core.operation.WFS3Tag;
 import fi.nls.hakunapi.core.param.APIParam;
 import fi.nls.hakunapi.core.schemas.Component;
-import fi.nls.hakunapi.core.schemas.WFS3Exception;
+import fi.nls.hakunapi.core.schemas.FeaturesException;
 import fi.nls.hakunapi.html.model.HTMLContext;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -50,12 +50,12 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 public class OpenAPI30Generator {
 
-    private final WFS3Service service;
+    private final FeatureServiceConfig service;
     private final List<OperationImpl> opToImpl;
     private final Map<String, Parameter> _parameters;
     private final Map<String, Schema> _components;
 
-    public OpenAPI30Generator(WFS3Service service, List<OperationImpl> opToImpl) {
+    public OpenAPI30Generator(FeatureServiceConfig service, List<OperationImpl> opToImpl) {
         this.service = service;
         this.opToImpl = opToImpl;
         this._parameters = new HashMap<>();
@@ -78,14 +78,14 @@ public class OpenAPI30Generator {
 
     private List<Tag> getTags() {
         List<Tag> tags = new ArrayList<>();
-        List<WFS3Tag> wfs3tags = new ArrayList<>();
+        List<ApiTag> apiTags = new ArrayList<>();
         for (OperationImpl p : opToImpl) {
-            WFS3Tag wfs3tag = p.operation.getTag();
-            if (!wfs3tags.contains(wfs3tag)) {
+            ApiTag apiTag = p.operation.getTag();
+            if (!apiTags.contains(apiTag)) {
                 tags.add(new Tag()
-                        .name(wfs3tag.name())
-                        .description(wfs3tag.description));
-                wfs3tags.add(wfs3tag);
+                        .name(apiTag.name())
+                        .description(apiTag.description));
+                apiTags.add(apiTag);
             }
         }
         return tags;
@@ -128,7 +128,7 @@ public class OpenAPI30Generator {
         return paths;
     }
 
-    private PathItem getDynamicPath(WFS3Operation op, DynamicPathOperation impl, String path, Map<String, Class<?>> responseClassByContentType) {
+    private PathItem getDynamicPath(ApiOperation op, DynamicPathOperation impl, String path, Map<String, Class<?>> responseClassByContentType) {
         PathItem pi = getPathItem(op, responseClassByContentType, null);
         for (APIParam param : impl.getParameters(path, service)) {
             Parameter parameter = param.toParameter(service);
@@ -189,7 +189,7 @@ public class OpenAPI30Generator {
         return responsesByContentType;
     }
 
-    private PathItem getPathItem(WFS3Operation op, Map<String, Class<?>> responsesByContentType, List<Parameter> parameters) {
+    private PathItem getPathItem(ApiOperation op, Map<String, Class<?>> responsesByContentType, List<Parameter> parameters) {
         Content content = new Content();
 
         for (Map.Entry<String, Class<?>> kvp : responsesByContentType.entrySet()) {
@@ -207,7 +207,7 @@ public class OpenAPI30Generator {
         responses._default(new ApiResponse()
                 .description("An error occured")
                 .content(new Content().addMediaType("application/json",
-                        new MediaType().schema(getSchema(WFS3Exception.class)))));
+                        new MediaType().schema(getSchema(FeaturesException.class)))));
 
         Operation operation = new Operation()
                 .summary(op.getSummary())

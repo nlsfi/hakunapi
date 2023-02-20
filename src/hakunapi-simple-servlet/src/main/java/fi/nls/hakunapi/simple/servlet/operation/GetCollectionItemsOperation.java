@@ -39,7 +39,7 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.FParam;
@@ -63,13 +63,13 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
 
     @Inject
-    protected WFS3Service service;
+    protected FeatureServiceConfig service;
 
     @Inject
     protected CacheManager cacheManager;
 
     @Override
-    public List<String> getValidPaths(WFS3Service service) {
+    public List<String> getValidPaths(FeatureServiceConfig service) {
         Collection<FeatureType> collections = service.getCollections();
         List<String> paths = new ArrayList<>(collections.size());
         for (FeatureType collection : collections) {
@@ -79,7 +79,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
     }
 
     @Override
-    public List<GetFeatureParam> getParameters(String path, WFS3Service service) {
+    public List<GetFeatureParam> getParameters(String path, FeatureServiceConfig service) {
         String id = path.split("/")[2];
         FeatureType collection = service.getCollection(id);
         return ParamUtil.getParameters(collection, service);
@@ -87,7 +87,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
     
     @Override
-    public Map<String, Class<?>> getResponsesByContentType(WFS3Service service) {
+    public Map<String, Class<?>> getResponsesByContentType(FeatureServiceConfig service) {
         Map<String, Class<?>> map = new HashMap<>();
         for (OutputFormat f : service.getOutputFormats()) {
             map.put(f.getMimeType(), FeatureCollectionGeoJSON.class);
@@ -182,7 +182,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 });
     }
     
-    public static GetFeatureRequest parseRequest(WFS3Service service, String collectionId, UriInfo uriInfo, Request wsRequest) {
+    public static GetFeatureRequest parseRequest(FeatureServiceConfig service, String collectionId, UriInfo uriInfo, Request wsRequest) {
         FeatureType ft = service.getCollection(collectionId);
         if (ft == null) {
             return null;
@@ -204,7 +204,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         return request;
     }
     
-    public static void writeResponseBody(GetFeatureRequest request, WFS3Service service, OutputStream out) throws Exception {
+    public static void writeResponseBody(GetFeatureRequest request, FeatureServiceConfig service, OutputStream out) throws Exception {
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
         FeatureProducer producer = c.getFt().getFeatureProducer();
@@ -221,7 +221,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         }
     }
 
-    public static void checkUnknownParameters(WFS3Service service, List<GetFeatureParam> parameters,
+    public static void checkUnknownParameters(FeatureServiceConfig service, List<GetFeatureParam> parameters,
             MultivaluedMap<String, String> queryParameters) {
         Set<String> knownParameters = parameters.stream()
                 .map(it -> it.getParamName())
@@ -242,7 +242,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         }
     }
 
-    public static List<Link> getLinks(WFS3Service service, GetFeatureRequest request, WriteReport report) {
+    public static List<Link> getLinks(FeatureServiceConfig service, GetFeatureRequest request, WriteReport report) {
         GetFeatureCollection c = request.getCollections().get(0);
         String path = Links.getItemsPath(service.getCurrentServerURL(), c.getFt().getName());
         Map<String, String> queryParams = request.getQueryParams();

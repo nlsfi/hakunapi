@@ -8,7 +8,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.schemas.Root;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
@@ -16,7 +16,7 @@ import fi.nls.hakunapi.html.model.HTMLContext;
 public class LandingPageImpl {
 
     @Inject
-    private WFS3Service service;
+    private FeatureServiceConfig service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

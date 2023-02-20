@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.GetTileFeaturesRequest;
 import fi.nls.hakunapi.core.util.SimplifyAlgorithm;
@@ -23,7 +23,7 @@ public class SimplifyParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         List<String> e = Arrays.stream(SimplifyAlgorithm.values())
                 .map(SimplifyAlgorithm::name)
                 .collect(Collectors.toList());
@@ -39,7 +39,7 @@ public class SimplifyParam implements GetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         if (!(request instanceof GetTileFeaturesRequest)) {
             return;
         }

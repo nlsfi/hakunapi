@@ -5,7 +5,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.geom.EWKTReader;
 import fi.nls.hakunapi.core.geom.HakunaGeometryFactory;
@@ -53,7 +53,7 @@ public class WKTGeometryOperationParam implements CustomizableGetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)
@@ -64,7 +64,7 @@ public class WKTGeometryOperationParam implements CustomizableGetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) {
         if (value == null || value.isEmpty()) {
             return;
         }

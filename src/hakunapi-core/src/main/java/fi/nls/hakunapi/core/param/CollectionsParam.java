@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -28,7 +28,7 @@ public class CollectionsParam implements GetFeatureParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         List<String> collections = service.getCollections().stream()
                 .map(c -> c.getName())
                 .collect(Collectors.toList());
@@ -41,7 +41,7 @@ public class CollectionsParam implements GetFeatureParam {
                 .schema(new StringSchema()._enum(collections));
     }
 
-    public Collection<FeatureType> parse(WFS3Service service, String value) {
+    public Collection<FeatureType> parse(FeatureServiceConfig service, String value) {
         if (value == null || value.isEmpty()) {
             return service.getCollections();
         }
@@ -58,7 +58,7 @@ public class CollectionsParam implements GetFeatureParam {
     }
 
     @Override
-    public void modify(WFS3Service service, GetFeatureRequest request, String value) throws IllegalArgumentException {
+    public void modify(FeatureServiceConfig service, GetFeatureRequest request, String value) throws IllegalArgumentException {
         Collection<FeatureType> fts;
         if (value == null || value.isEmpty()) {
             fts = service.getCollections();

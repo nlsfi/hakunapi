@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.operation;
 
-public class GetFeatureByIdOperation implements WFS3Operation {
+public class GetFeatureByIdOperation implements ApiOperation {
 
     final String operationId;
     final boolean isRepeating;
@@ -28,8 +28,8 @@ public class GetFeatureByIdOperation implements WFS3Operation {
     }
 
     @Override
-    public WFS3Tag getTag() {
-        return WFS3Tag.Features;
+    public ApiTag getTag() {
+        return ApiTag.Features;
     }
 
     @Override

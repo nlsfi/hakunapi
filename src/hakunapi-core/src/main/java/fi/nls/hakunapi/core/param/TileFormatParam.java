@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.param;
 
-import fi.nls.hakunapi.core.WFS3Service;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import io.swagger.v3.oas.models.parameters.Parameter;
 
 public class TileFormatParam implements APIParam {
@@ -11,7 +11,7 @@ public class TileFormatParam implements APIParam {
     }
 
     @Override
-    public Parameter toParameter(WFS3Service service) {
+    public Parameter toParameter(FeatureServiceConfig service) {
         return null;
     }
 
