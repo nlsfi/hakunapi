@@ -19,7 +19,7 @@ jobs:
           distribution: 'adopt'
           architecture: x64
       - name: Build with Maven
-        run: mvn --batch-mode verify -P deploy
+        run: mvn --batch-mode verify -P release
         env:
           SIGN_KEY: ${{ secrets.TEST_CODE_SIGNING_SECRET_KEY }}
           SIGN_KEY_PASS: ${{ secrets.TEST_CODE_SIGNING_SECRET_KEY_PASS }}
