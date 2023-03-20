@@ -13,11 +13,6 @@
 		<!-- wdtinc-mvt.version>3.1.1+nls1</wdtinc-mvt.version -->
 		<wdtinc-mvt.version>3.1.0</wdtinc-mvt.version>
 		<jts2geojson.version>0.14.0</jts2geojson.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 	</properties>
 
 	<dependencies>

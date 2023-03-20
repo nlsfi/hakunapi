@@ -33,7 +33,7 @@ public class GzipOutputStream extends DeflaterOutputStream {
                 0, // MTIME3
                 0, // MTIME4
                 0, // XFL
-                0  // OS
+                (byte) 255 // OS, changed from 0 to 255 in Java 11, see https://bugs.openjdk.org/browse/JDK-8244706
         };
         out.write(header, 0, header.length);
     }

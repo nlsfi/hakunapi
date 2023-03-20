@@ -7,7 +7,6 @@
             <artifactId>hakunapi</artifactId>
             <version>0.1.10-SNAPSHOT</version>
         </parent>
-	<groupId>fi.nls.hakunapi</groupId>
 	<artifactId>src</artifactId>
 	<packaging>pom</packaging>
 	<modules>

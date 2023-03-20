@@ -12,8 +12,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.junit.Test;
 
-import fi.nls.hakunapi.core.util.GzipOutputStream;
-
 public class GzipOutputStreamTest {
 
     @Test
