@@ -8,7 +8,7 @@
         <artifactId>src</artifactId>
         <version>0.1.10-SNAPSHOT</version>
     </parent>
-    <artifactId>hakunapi-simple-servlet</artifactId>
+    <artifactId>hakunapi-simple-servlet-javax</artifactId>
     <packaging>jar</packaging>
 
     <properties>

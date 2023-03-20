@@ -75,17 +75,17 @@
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-servlet</artifactId>
+				<artifactId>hakunapi-simple-servlet-javax</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-webapp</artifactId>
+				<artifactId>hakunapi-simple-webapp-javax</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-webapp-test</artifactId>
+				<artifactId>hakunapi-simple-webapp-test-javax</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

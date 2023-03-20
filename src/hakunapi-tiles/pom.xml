@@ -6,7 +6,7 @@
         <artifactId>src</artifactId>
         <version>0.1.10-SNAPSHOT</version>
     </parent>
-    <artifactId>hakunapi-tiles</artifactId>
+    <artifactId>hakunapi-tiles-javax</artifactId>
 
     <properties>
         <wdtinc-mvt.version>3.1.1+nls1</wdtinc-mvt.version>
@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-simple-servlet</artifactId>
+            <artifactId>hakunapi-simple-servlet-javax</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
