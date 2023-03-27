@@ -12,10 +12,9 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
-import freemarker.template.Configuration;
 import fi.nls.hakunapi.core.ConformanceClass;
-import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.operation.CollectionMetadataOperation;
 import fi.nls.hakunapi.core.operation.CollectionsMetadataOperation;
@@ -54,8 +53,9 @@ import fi.nls.hakunapi.simple.servlet.javax.operation.GetCollectionSchemaImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.GetItemsOperation;
 import fi.nls.hakunapi.simple.servlet.javax.operation.LandingPageImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.OpenAPI30ApiOperation;
-import fi.nls.hakunapi.tiles.GetTilesImpl;
-import fi.nls.hakunapi.tiles.GetTilingSchemesImpl;
+import fi.nls.hakunapi.tiles.javax.GetTilesImpl;
+import fi.nls.hakunapi.tiles.javax.GetTilingSchemesImpl;
+import freemarker.template.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
 
 @ApplicationPath("/")
