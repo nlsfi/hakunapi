@@ -90,3 +90,34 @@ Now hakunapi can find the configration file and the database connection configur
 
 Restart your tomcat instance and navigate to http://localhost:8080/features
 
+## Preparing for production
+
+### Configure endpoint servers
+
+In order for hakunapi to work properly it needs to know the URL the user is using to access it. Currently hakunapi only supports setting this manually in the configuration (meaning there's no support for extracting the information from http headers for example), see `addresses.properties` lines 12-17:
+
+```
+servers=dev
+servers.dev.url=http://localhost:8080/features
+servers.dev.description=Development server
+```
+
+expected configuration for a production installation accessible via `https://www.company.com/gis-services/features`
+
+```
+servers=production
+servers.production.url=https://www.company.com/gis-services/features
+servers.production.description=Production
+```
+
+### Configure DB pool size
+
+By default, one hakunapi installation only handles 10 concurrent requests (that require information from database) at a time (or more specifically, 10 per database). This is the default configuration for a HikariCP connection pool which can be configured in `db.properties` by setting `dataSource.maximumPoolSize=20`.
+
+If you have large servers consider feel free to increase the pool size to core_count * 2-3, please read the excellent documentation on the topic at   https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing
+
+### Tuning hakunapi
+
+In general, hakunapi isn't that resource hungry and adding more resources to hakunapi usually isn't too beneficial if the database (or the connection to the database) can't keep up. This is due to the way hakunapi works: Instead of the usual way of mapping the db result set to a list of model objects and then serializing them hakunapi relies more on "fully streaming" the response from the db result set. This creates very shortly lived objects which the current GC algorithms seem to handle with little trouble. hakunapi is able to generate up to 200MB/s of GeoJSON per thread from a local PostGIS server so the outbound network connection is usually the first true limiting factor.
+
+Heap size of 256M-1GB is usually plenty for an installation. Feel free to play with other GC options, currently there isn't any suggestions which would be preferable.
