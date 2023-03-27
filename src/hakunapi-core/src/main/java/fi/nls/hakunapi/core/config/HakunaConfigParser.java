@@ -94,7 +94,7 @@ public class HakunaConfigParser {
         License license = new License();
         license.setName(cfg.getProperty("api.license.name"));
         license.setUrl(cfg.getProperty("api.license.url"));
-        if (license.getName() != null && !license.getName().isEmpty()) {
+        if (license.getName() != null && !license.getName().isBlank()) {
             info.setLicense(license);
         }
 
@@ -179,7 +179,7 @@ public class HakunaConfigParser {
 
     public String getRequired(String key) {
         String value = get(key);
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("Missing required config property '" + key + "'");
         }
         return value;
@@ -191,7 +191,7 @@ public class HakunaConfigParser {
 
     public String get(String key, String fallback) {
         String value = cfg.getProperty(key);
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.isBlank()) {
             return fallback;
         }
         return value.trim();
@@ -203,7 +203,7 @@ public class HakunaConfigParser {
 
     public String[] getMultiple(String key, String[] fallback) {
         String value = cfg.getProperty(key);
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.isBlank()) {
             return fallback;
         }
         String[] split = value.split(",");
@@ -228,7 +228,7 @@ public class HakunaConfigParser {
     }
 
     protected static int[] getSRIDs(String srid) {
-        if (srid == null || srid.isEmpty()) {
+        if (srid == null || srid.isBlank()) {
             return new int[0];
         }
         return Arrays.stream(srid.split(","))
@@ -569,7 +569,7 @@ public class HakunaConfigParser {
 
     public Map<String, Object> parseMetadata(String p, Path configPath) {
         String metadataProp = get(p + "metadata");
-        if (metadataProp == null || metadataProp.isEmpty()) {
+        if (metadataProp == null || metadataProp.isBlank()) {
             return null;
         }
 

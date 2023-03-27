@@ -52,8 +52,10 @@
 		<junit.version>4.13.2</junit.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>11</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 	</properties>
@@ -278,7 +280,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.3.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>

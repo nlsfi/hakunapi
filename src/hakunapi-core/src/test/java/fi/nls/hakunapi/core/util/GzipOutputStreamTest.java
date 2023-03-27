@@ -12,26 +12,29 @@ import java.util.zip.GZIPOutputStream;
 
 import org.junit.Test;
 
-import fi.nls.hakunapi.core.util.GzipOutputStream;
-
 public class GzipOutputStreamTest {
 
     @Test
     public void testAgainstJDK() throws IOException {
-        byte[] input = generateRandomData(1024 * 1024);
+        byte[] input = generateRandomData(64 * 1024);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream out = new GZIPOutputStream(baos, 8192);
-        out.write(input);
-        out.close();
+        try (OutputStream out = new GZIPOutputStream(baos)) {
+            out.write(input);
+        }
         byte[] expected = baos.toByteArray();
 
-        baos = new ByteArrayOutputStream();
+        baos.reset();
         Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-        out = new GzipOutputStream(baos, deflater, 8192);
-        out.write(input);
-        out.close();
+        try (OutputStream out = new GzipOutputStream(baos, deflater, 8192)) {
+            out.write(input);
+        }
         byte[] actual = baos.toByteArray();
+
+        // GZIP "OS" header flag
+        // Changed from 0 to 255 in Java 16, see https://bugs.openjdk.org/browse/JDK-8244706
+        // GzipOutputStream outputs 255, JDK 11 outputs 0 -- ignore checking the OS header flag
+        actual[9] = expected[9];
 
         assertArrayEquals(expected, actual);
     }
