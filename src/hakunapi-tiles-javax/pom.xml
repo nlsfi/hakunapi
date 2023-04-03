@@ -6,7 +6,11 @@
         <artifactId>src</artifactId>
         <version>0.1.10-SNAPSHOT</version>
     </parent>
-    <artifactId>hakunapi-html</artifactId>
+    <artifactId>hakunapi-tiles-javax</artifactId>
+
+    <properties>
+        <wdtinc-mvt.version>3.1.1+nls1</wdtinc-mvt.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -15,16 +19,16 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-geojson</artifactId>
+            <artifactId>hakunapi-mvt</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-simple-servlet-javax</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
