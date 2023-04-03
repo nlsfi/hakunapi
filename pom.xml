@@ -48,7 +48,7 @@
 		<hikari.version>4.0.3</hikari.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
-		<pgjdbc.version>42.5.0</pgjdbc.version>
+		<pgjdbc.version>42.5.1</pgjdbc.version>
 		<junit.version>4.13.2</junit.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
