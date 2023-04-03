@@ -19,23 +19,21 @@ iconv -f ISO-8859-1 -t UTF-8 Suomi_osoitteet_2023-02-13.OPT > suomi_osoitteet.cs
 
 For the following we will assume you to have a PostgreSQL/PostGIS instance running on localhost port 5432. Any modern (9.6+) version of PostgreSQL/PostGIS should work.
 
-First let's setup a database and a user for our (or you can use pre-existing db and user if you want and skip this section).
+First let's setup a database (or you can use pre-existing db and user if you want and skip this section).
 
 ```
 CREATE DATABASE address_fin ENCODING = 'UTF8';
 \c address_fin
 CREATE EXTENSION postgis;
-CREATE USER address_reader PASSWORD 'test';
-GRANT ALL ON DATABASE address_fin TO address_reader;
 ```
 
 ### Load the data into the database
 
 Create the tables to represent the raw data and load the data in
 ```
-psql -h localhost -d address_fin -U address_reader -f create_tables.sql
+psql -d address_fin -f create_tables.sql
 
-psql -h localhost -d address_fin -U address_reader -c "\copy suomi_osoitteet (
+psql -d address_fin -c "\copy suomi_osoitteet (
 rakennustunnus,
 sijaintikunta,
 maakunta,
@@ -54,7 +52,7 @@ sijaintikiinteisto,
 tietojen_poimintapaiva
 ) FROM 'suomi_osoitteet.csv' WITH (FORMAT CSV, DELIMITER ';')"
 
-psql -h localhost -d address_fin -U address_reader -c "\copy suomi_kunnat (sijaintikunta, nimi_suomi) FROM 'suomi_kunnat.csv' WITH (FORMAT CSV, DELIMITER ';', HEADER)"
+psql -d address_fin -c "\copy suomi_kunnat (sijaintikunta, nimi_suomi) FROM 'suomi_kunnat.csv' WITH (FORMAT CSV, DELIMITER ';', HEADER)"
 ```
 
 ### Transform raw data
@@ -65,8 +63,13 @@ psql -h localhost -d address_fin -U address_reader -c "\copy suomi_kunnat (sijai
 * Filter out rows with no finnish or swedish thoroughfarenames
 
 ```
-psql -h localhost -d address_fin -U address_reader -f simple_addresses.sql
+psql -d address_fin -f simple_addresses.sql
 ```
+
+### Add read-only user for publishing application
+
+psql -d address_fin -c "CREATE USER address_reader PASSWORD 'test'"
+psql -d address_fin -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO address_reader"
 
 ## Configuring and running hakunapi
 
