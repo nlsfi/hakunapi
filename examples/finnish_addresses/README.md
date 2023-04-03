@@ -54,7 +54,7 @@ sijaintikiinteisto,
 tietojen_poimintapaiva
 ) FROM 'suomi_osoitteet.csv' WITH (FORMAT CSV, DELIMITER ';')"
 
-psql -h localhost -d address_fin -U address_reader -c "\copy suomi_kunnat (sijaintikunta, nimi_suomi) FROM 'suomi_kunnat.csv' WITH (FORMAT CSV, DELIMITER ';')"
+psql -h localhost -d address_fin -U address_reader -c "\copy suomi_kunnat (sijaintikunta, nimi_suomi) FROM 'suomi_kunnat.csv' WITH (FORMAT CSV, DELIMITER ';', HEADER)"
 ```
 
 ### Transform raw data
@@ -65,7 +65,7 @@ psql -h localhost -d address_fin -U address_reader -c "\copy suomi_kunnat (sijai
 * Filter out rows with no finnish or swedish thoroughfarenames
 
 ```
-psql -h localhost -d address_fin -U address_reader -f insert_simple_address.sql
+psql -h localhost -d address_fin -U address_reader -f simple_addresses.sql
 ```
 
 ## Configuring and running hakunapi
