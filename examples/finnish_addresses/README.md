@@ -68,14 +68,16 @@ psql -d address_fin -f simple_addresses.sql
 
 ### Add read-only user for publishing application
 
+```
 psql -d address_fin -c "CREATE USER address_reader PASSWORD 'test'"
 psql -d address_fin -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO address_reader"
+```
 
 ## Configuring and running hakunapi
 
 hakunapi by default builds into a war package called `features.war`. For the following we'll assume you have a tomcat instance running on localhost on port 8080.
 
-First build the project with `mvn clean package` and extract the built war from `hakunapi-simple-webapp/target/features.war` and give that to your tomcat instance to load.
+First build the project with `mvn clean package` and extract the built war from `hakunapi-simple-webapp-javax/target/features.war` and give that to your tomcat instance to load.
 
 Now we need to tell hakunapi where to look for the configuration file. First, create a directory to contain the configuration files. We will create ours in `/app/features_addresses/`.
 ```
