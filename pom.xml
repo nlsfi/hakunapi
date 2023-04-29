@@ -43,6 +43,7 @@
 		<jersey.version>2.31</jersey.version>
 		<freemarker.version>2.3.31</freemarker.version>
 		<jackson.version>2.12.7</jackson.version>
+		<jackson-databind.version>2.12.7.1</jackson-databind.version>
 		<swagger.version>2.1.13</swagger.version>
 		<jts.version>1.18.2</jts.version>
 		<hikari.version>4.0.3</hikari.version>
@@ -212,7 +213,7 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jackson-databind.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
