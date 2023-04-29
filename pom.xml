@@ -101,16 +101,6 @@
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-mvt</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-tiles-javax</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-gpkg</artifactId>
 				<version>${project.version}</version>
 			</dependency>

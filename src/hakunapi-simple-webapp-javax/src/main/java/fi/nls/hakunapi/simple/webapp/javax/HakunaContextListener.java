@@ -37,7 +37,6 @@ import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaApplicationJson;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
-import fi.nls.hakunapi.core.tiles.TilingScheme;
 import fi.nls.hakunapi.core.util.PropertyUtil;
 import fi.nls.hakunapi.cql2.function.CQL2Functions;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
@@ -99,12 +98,6 @@ public class HakunaContextListener implements ServletContextListener {
                 collections.put(collectionId, ft);
             }
 
-            Path parent = configPath.getParent();
-            List<TilingScheme> tilingSchemes = new ArrayList<>();
-            for (String id : parser.readTilingSchemes()) {
-                tilingSchemes.add(parser.readTilingScheme(parent, id));
-            }
-
             List<ConformanceClass> conformsTo = new ArrayList<>();
             conformsTo.add(ConformanceClass.Core);
             conformsTo.add(ConformanceClass.OpenAPI30);
@@ -122,17 +115,13 @@ public class HakunaContextListener implements ServletContextListener {
             conformsTo.add(ConformanceClass.CQL2_TEXT_ENCODING);
             // conformsTo.add(ConformanceClass.CQL2_JSON_ENCODING);
 
-            if (!tilingSchemes.isEmpty()) {
-                conformsTo.add(ConformanceClass.DIRECT_TILE);
-            }
-
             List<OutputFormat> outputFormats = getOutputFormats(parser);
 
             List<FilterParser> filterParsers = Arrays.asList(CQL2Text.INSTANCE);
             CQL2Functions.INSTANCE.register();
             FunctionsContent functionsMetadata = CQL2Functions.INSTANCE.toFunctionsMetadata();
 
-            SimpleFeatureServiceConfig service = new SimpleFeatureServiceConfig(collections, tilingSchemes, outputFormats, filterParsers);
+            SimpleFeatureServiceConfig service = new SimpleFeatureServiceConfig(collections, outputFormats, filterParsers);
             service.setInfo(info);
             service.setServers(servers);
             service.setLimitDefault(PropertyUtil.getInt(config, "getfeatures.limit.default", 1000));

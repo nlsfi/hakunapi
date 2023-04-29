@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
-import fi.nls.hakunapi.core.tiles.TilingScheme;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -141,14 +140,6 @@ public abstract class FeatureServiceConfig {
 
     public void setFunctions(FunctionsContent functionsContent) {
         this.functionsContent = functionsContent;
-    }
-
-    public Collection<TilingScheme> getTilingSchemes() {
-        return Collections.emptyList();
-    }
-
-    public TilingScheme getTilingScheme(String tilingSchemeId) {
-        return null;
     }
 
     public String getTitle() {

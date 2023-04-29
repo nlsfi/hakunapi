@@ -51,7 +51,6 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyTimestamp;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyTimestamptz;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyUUID;
-import fi.nls.hakunapi.core.tiles.TilingScheme;
 import fi.nls.hakunapi.core.transformer.ValueTransformer;
 import fi.nls.hakunapi.simple.servlet.operation.param.ConfigurableSimpleGetFeatureParam;
 import fi.nls.hakunapi.simple.servlet.operation.param.CustomizableGetFeatureParam;
@@ -146,22 +145,6 @@ public class HakunaConfigParser {
             securitySchemes.put(name, ss);
         }
         return Optional.of(securitySchemes);
-    }
-
-    public String[] readTilingSchemes() {
-        return getMultiple("tiling");
-    }
-
-    public TilingScheme readTilingScheme(Path parent, String tilingScheme) {
-        ObjectMapper om = new ObjectMapper();
-        String path = parent.toString() + "/tiling/" + tilingScheme + ".json";
-        File f = new File(path);
-        try {
-            return om.readValue(f, TilingScheme.class);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse file " + path, e);
-        }
-
     }
 
     public List<HakunaProperty> parseTimeProperties(List<HakunaProperty> properties, String[] timePropertyNames)
