@@ -31,9 +31,6 @@ import fi.nls.hakunapi.core.schemas.CollectionsContent;
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.Queryables;
 import fi.nls.hakunapi.core.schemas.Root;
-import fi.nls.hakunapi.core.tiles.GetTileOperation;
-import fi.nls.hakunapi.core.tiles.GetTilingSchemeOperation;
-import fi.nls.hakunapi.core.tiles.GetTilingSchemesOperation;
 import fi.nls.hakunapi.html.OutputFormatHTML;
 import fi.nls.hakunapi.simple.servlet.javax.CacheManager;
 import fi.nls.hakunapi.simple.servlet.javax.CatchAllExceptionMapper;
@@ -53,8 +50,6 @@ import fi.nls.hakunapi.simple.servlet.javax.operation.GetCollectionSchemaImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.GetItemsOperation;
 import fi.nls.hakunapi.simple.servlet.javax.operation.LandingPageImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.OpenAPI30ApiOperation;
-import fi.nls.hakunapi.tiles.javax.GetTilesImpl;
-import fi.nls.hakunapi.tiles.javax.GetTilingSchemesImpl;
 import freemarker.template.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -81,12 +76,6 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         
         if(service.getFunctions()!=null) {
             opToImpl.add(new OperationImpl(new FunctionsMetadataOperation(), FunctionsMetadataImpl.class));            
-        }
-
-        if (service.conformsTo(ConformanceClass.DIRECT_TILE)) {
-            opToImpl.add(new OperationImpl(new GetTilingSchemesOperation(), GetTilingSchemesImpl.class));
-            opToImpl.add(new OperationImpl(new GetTilingSchemeOperation(), GetTilingSchemesImpl.class));
-            opToImpl.add(new OperationImpl(new GetTileOperation(), GetTilesImpl.class));
         }
 
         // Experimental

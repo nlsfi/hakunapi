@@ -16,13 +16,11 @@
 		<module>hakunapi-simple-webapp-javax</module>
 		<module>hakunapi-source-postgis</module>
 		<module>hakunapi-geojson</module>
-		<module>hakunapi-mvt</module>
 		<module>hakunapi-gpkg</module>
 		<module>hakunapi-html</module>
 		<module>hakunapi-gml</module>
 		<module>hakunapi-proj-gt</module>
 		<module>hakunapi-proj-jhe</module>
-		<module>hakunapi-tiles-javax</module>
 		<module>hakunapi-smile</module>
 		<module>hakunapi-esbulk</module>
 		<module>hakunapi-csv</module>

@@ -20,10 +20,6 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-tiles-javax</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-source-postgis</artifactId>
         </dependency>
         <dependency>

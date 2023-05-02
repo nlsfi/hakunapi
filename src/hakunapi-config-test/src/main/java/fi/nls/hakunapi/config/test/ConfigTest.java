@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
-import fi.nls.hakunapi.core.tiles.TilingScheme;
 import fi.nls.hakunapi.simple.postgis.PostGISSimpleSource;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -115,20 +114,6 @@ public class ConfigTest {
                 parser.readCollection(path, sourcesByType, id);
             } catch (Exception e) {
                 System.err.println("ERROR: " + e.getMessage());
-            }
-        }
-
-        String[] tilingSchemeIds = parser.readTilingSchemes();
-        if (verbose) {
-            System.out.println("tiling schemes: " + Arrays.toString(tilingSchemeIds));
-        }
-        for (String id : tilingSchemeIds) {
-            if (verbose) {
-                System.out.println("Handling tiling scheme " + id);
-            }
-            TilingScheme tilingScheme = parser.readTilingScheme(parent, id);
-            if (verbose) {
-                print(om, tilingScheme);
             }
         }
 

@@ -12,21 +12,17 @@ import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
-import fi.nls.hakunapi.core.tiles.TilingScheme;
 
 public class SimpleFeatureServiceConfig extends FeatureServiceConfig {
 
     private final Map<String, FeatureType> collections;
-    private final Map<String, TilingScheme> tilingSchemes;
     private final Map<String, OutputFormat> outputFormats;
     private final Map<String, FilterParser> filterParsers;
 
     public SimpleFeatureServiceConfig(Map<String, FeatureType> collections,
-            List<TilingScheme> tilingSchemes,
             List<OutputFormat> outputFormats,
             List<FilterParser> filterParsers) {
         this.collections = collections;
-        this.tilingSchemes = toMap(tilingSchemes, TilingScheme::getIdentifier);
         this.outputFormats = toMap(outputFormats, OutputFormat::getId);
         this.filterParsers = toMap(filterParsers, FilterParser::getCode);
     }
@@ -52,16 +48,6 @@ public class SimpleFeatureServiceConfig extends FeatureServiceConfig {
     @Override
     public FeatureType getCollection(String name) {
         return collections.get(name);
-    }
-
-    @Override
-    public Collection<TilingScheme> getTilingSchemes() {
-        return tilingSchemes.values();
-    }
-
-    @Override
-    public TilingScheme getTilingScheme(String tilingSchemeId) {
-        return tilingSchemes.get(tilingSchemeId);
     }
 
     @Override
