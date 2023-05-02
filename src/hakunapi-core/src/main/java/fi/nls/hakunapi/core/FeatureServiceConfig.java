@@ -27,6 +27,7 @@ public abstract class FeatureServiceConfig {
     protected List<SecurityRequirement> securityRequirements;
     protected Map<String, Map<String, Object>> schemaExtensions;
     protected FunctionsContent functionsContent;
+    protected List<MetadataFormat> metadataFormats;
 
     public int getLimitDefault() {
         return limitDefault;
@@ -140,6 +141,17 @@ public abstract class FeatureServiceConfig {
 
     public void setFunctions(FunctionsContent functionsContent) {
         this.functionsContent = functionsContent;
+    }
+
+    public List<MetadataFormat> getMetadataFormats() {
+        if (metadataFormats == null) {
+            return List.of(MetadataFormat.JSON);
+        }
+        return metadataFormats;
+    }
+
+    public void setMetadataFormats(List<MetadataFormat> metadataFormats) {
+        this.metadataFormats = metadataFormats;
     }
 
     public String getTitle() {
