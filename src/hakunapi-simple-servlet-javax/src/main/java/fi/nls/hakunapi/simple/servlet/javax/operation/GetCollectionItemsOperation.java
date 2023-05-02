@@ -253,15 +253,16 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         Link self = Links.getSelfLink(path, queryParams, mimeType);
         links.add(self);
 
-        String fParamValue = queryParams.get(FParam.QUERY_PARAM_NAME);
+        String fParamOriginalValue = queryParams.get(FParam.QUERY_PARAM_NAME);
         for (OutputFormat f : service.getOutputFormats()) {
             if (!f.getId().equals(request.getFormat().getId())) {
+                queryParams.remove(FParam.QUERY_PARAM_NAME);
+                links.add(Links.getAlternateLink(path, queryParams, f.getMimeType(), f.getId()));
                 queryParams.put(FParam.QUERY_PARAM_NAME, f.getId());
-                Link alt = Links.getAlternateLink(path, queryParams, f.getMimeType(), f.getId());
-                links.add(alt);
+                links.add(Links.getAlternateLink(path, queryParams, f.getMimeType(), f.getId()));
             }
         }
-        queryParams.put(FParam.QUERY_PARAM_NAME, fParamValue);
+        queryParams.put(FParam.QUERY_PARAM_NAME, fParamOriginalValue);
 
         if (report.next != null) {
             queryParams.put(NextParam.PARAM_NAME, report.next.toWireFormat());
