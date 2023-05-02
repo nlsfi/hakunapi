@@ -3,6 +3,7 @@ package fi.nls.hakunapi.simple.servlet.javax.operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -60,7 +61,7 @@ public class CollectionsMetadataImpl {
         return service.getMetadataFormats().stream()
                 .filter(it -> !it.contentTypes.contains(contentType))
                 .map(it -> toAlternateLink(path, queryParams, it))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private Link toAlternateLink(String path, Map<String, String> queryParams, MetadataFormat format) {
