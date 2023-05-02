@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
+import fi.nls.hakunapi.core.MetadataFormat;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.OutputFormatProvider;
 import fi.nls.hakunapi.core.SimpleSource;
@@ -130,6 +131,7 @@ public class HakunaContextListener implements ServletContextListener {
             service.setSecuritySchemes(securitySchemes);
             service.setSecurityRequirements(securityRequirements);
             service.setFunctions(functionsMetadata);
+            service.setMetadataFormats(List.of(MetadataFormat.JSON, MetadataFormat.HTML));
 
             LOG.info("Starting OGC API Features service with collections: {}", collections);
             sce.getServletContext().setAttribute("hakunaService", service);
