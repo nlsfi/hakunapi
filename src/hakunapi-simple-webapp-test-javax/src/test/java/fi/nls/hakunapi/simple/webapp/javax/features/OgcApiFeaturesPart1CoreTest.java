@@ -6,6 +6,7 @@ import static com.jayway.jsonassert.JsonAssert.with;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.either;
 
 import java.io.File;
 
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +110,32 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 						hasItems("https://localhost/hakuna/collections/aallonmurtaja/items",
 								"https://localhost/hakuna/collections/aallonmurtaja/items?f=json"));
 	}
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCollectionsAallonmurtajaWithApiKey() {
+        final String response = target("/collections/aallonmurtaja").queryParam("api-key", "12345").request().get(String.class);
+        LOG.info(response);
+
+        with(response)
+                //
+                .assertThat("$.id", equalTo("aallonmurtaja"))
+                //
+                .assertThat("$.title", equalTo("Aallonmurtaja"))
+
+                //
+                .assertThat("$.links[?(@.rel == 'items')]", is(collectionWithSize(equalTo(2))))
+
+                //
+                .assertThat("$.links[?(@.rel == 'items')].href",
+                        either(
+                                hasItems("https://localhost/hakuna/collections/aallonmurtaja/items?api-key=12345",
+                                        "https://localhost/hakuna/collections/aallonmurtaja/items?api-key=12345&f=json")
+                        ).or(
+                                hasItems("https://localhost/hakuna/collections/aallonmurtaja/items?api-key=12345",
+                                        "https://localhost/hakuna/collections/aallonmurtaja/items?f=json&api-key=12345")
+                        ));
+    }
 
 	@Test
 	public void testCollectionsAallonmurtajaQueryables() {

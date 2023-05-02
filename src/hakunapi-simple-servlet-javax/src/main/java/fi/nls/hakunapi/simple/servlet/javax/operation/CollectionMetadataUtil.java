@@ -28,12 +28,18 @@ public class CollectionMetadataUtil {
         String description = ft.getDescription();
 
         List<Link> links = new ArrayList<>();
+        // /collections/{collectionId}/items
         for (OutputFormat f : service.getOutputFormats()) {
-            links.add(getItemsLink(service, ft, f.getMimeType()));
+            links.add(getItemsLink(service, queryParams, ft, f));
         }
+
+        // /collections/{collectionId}/items?f={format}
         for (OutputFormat f : service.getOutputFormats()) {
-            links.add(getItemsLinkWithF(service, ft, queryParams, f));
+            queryParams.put("f", f.getId());
+            links.add(getItemsLink(service, queryParams, ft, f));
+            queryParams.remove("f");
         }
+
         links.add(getDescribedByLink(service, queryParams, ft));
         links.add(getQueryablesLinks(service, queryParams, ft));
 
@@ -59,6 +65,7 @@ public class CollectionMetadataUtil {
         return ci;
     }
 
+    @Deprecated
     public static Link getItemsLink(FeatureServiceConfig service, FeatureType ft, String mimeType) {
         String path = "/collections/" + ft.getName() + "/items";
         String href = service.getCurrentServerURL() + path;
@@ -67,6 +74,7 @@ public class CollectionMetadataUtil {
         return new Link(href, rel, type);
     }
 
+    @Deprecated
     public static Link getItemsLinkWithF(FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams, OutputFormat format) {
         queryParams.put("f", format.getId());
         String query = U.toQuery(queryParams);
@@ -75,6 +83,15 @@ public class CollectionMetadataUtil {
         String rel = ITEMS_REL;
         String type = format.getMimeType();
         queryParams.remove("f");
+        return new Link(href, rel, type);
+    }
+
+    private static Link getItemsLink(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft, OutputFormat format) {
+        String query = U.toQuery(queryParams);
+        String path = "/collections/" + ft.getName() + "/items" + query;
+        String href = service.getCurrentServerURL() + path;
+        String rel = ITEMS_REL;
+        String type = format.getMimeType();
         return new Link(href, rel, type);
     }
     
