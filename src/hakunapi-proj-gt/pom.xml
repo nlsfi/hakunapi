@@ -9,7 +9,7 @@
     <artifactId>hakunapi-proj-gt</artifactId>
 
     <properties>
-        <geotools.version>27.2</geotools.version>
+        <geotools.version>29.0</geotools.version>
     </properties>
 
     <repositories>
