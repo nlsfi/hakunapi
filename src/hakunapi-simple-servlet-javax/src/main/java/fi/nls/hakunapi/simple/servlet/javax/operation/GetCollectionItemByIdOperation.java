@@ -169,6 +169,8 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     }
 
     public List<Link> getLinks(GetFeatureRequest request, FeatureWriter writer) {
+        Map<String, String> queryParams = request.getQueryParams();
+
         String collectionId = request.getPathParam("collectionId");
         String featureId = request.getPathParam("featureId");
         String mimeType = writer.getMimeType();
@@ -176,10 +178,24 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
         String itemsPath = Links.getItemsPath(service.getCurrentServerURL(), collectionId);
         String featurePath = itemsPath + "/" + featureId;
 
-        return Arrays.asList(
-                Links.getSelfLink(featurePath, null, mimeType),
-                Links.getCollectionLink(itemsPath, null, mimeType)
-        );
+        List<Link> links = new ArrayList<>();
+
+        links.add(Links.getSelfLink(featurePath, null, mimeType));
+
+        String fParamOriginalValue = queryParams.get(FParam.QUERY_PARAM_NAME);
+        for (OutputFormat f : service.getOutputFormats()) {
+            if (!f.getId().equals(request.getFormat().getId())) {
+                queryParams.remove(FParam.QUERY_PARAM_NAME);
+                links.add(Links.getAlternateLink(featurePath, queryParams, f.getMimeType(), f.getId()));
+                links.add(Links.getCollectionLink(itemsPath, queryParams, f.getMimeType()));
+                // Add rel: alternate link with ?f={formatId}
+                queryParams.put(FParam.QUERY_PARAM_NAME, f.getId());
+                links.add(Links.getAlternateLink(featurePath, queryParams, f.getMimeType(), f.getId()));
+            }
+        }
+        queryParams.put(FParam.QUERY_PARAM_NAME, fParamOriginalValue);
+
+        return links;
     }
 
 }
