@@ -86,8 +86,9 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 
 		with(response)
 				//
-				.assertThat("$.collections[?(@.id == 'aallonmurtaja')]", is(collectionWithSize(equalTo(1))));
-
+				.assertThat("$.collections[?(@.id == 'aallonmurtaja')]", is(collectionWithSize(equalTo(1))))
+				.assertThat("$.collections[?(@.id == 'test_collection')]", is(collectionWithSize(equalTo(1))))
+				.assertThat("$.collections[?(@.id == 'should_not_exist')]", is(collectionWithSize(equalTo(0))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -225,4 +226,33 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 				.assertThat("$.geometry", mapContainingKey(equalTo("type")));
 
 	}
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testTestCollection() {
+        final String response = target("/collections/test_collection").request().get(String.class);
+        LOG.info(response);
+
+        with(response)
+                //
+                .assertThat("$.id", equalTo("test_collection"))
+                //
+                .assertThat("$.title", equalTo("Test Collection"))
+
+                .assertThat("$.extent.spatial.bbox", collectionWithSize(equalTo(1)))
+                .assertThat("$.extent.spatial.bbox[0]", collectionWithSize(equalTo(4)))
+                .assertThat("$.extent.spatial.bbox[0][0]", equalTo(-110.0))
+                .assertThat("$.extent.spatial.bbox[0][1]", equalTo(-60.0))
+                .assertThat("$.extent.spatial.bbox[0][2]", equalTo(140.0))
+                .assertThat("$.extent.spatial.bbox[0][3]", equalTo(30.0))
+
+                //
+                .assertThat("$.links[?(@.rel == 'items')]", is(collectionWithSize(equalTo(2))))
+
+                //
+                .assertThat("$.links[?(@.rel == 'items')].href",
+                        hasItems("https://localhost/hakuna/collections/test_collection/items",
+                                "https://localhost/hakuna/collections/test_collection/items?f=json"));
+    }
+
 }

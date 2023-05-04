@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -338,12 +339,21 @@ public class HakunaConfigParser {
             int expectedExtentSize = 4;
             if (spatialExtent.length != expectedExtentSize) {
                 throw new IllegalArgumentException("Collection " + collectionId + " failed:"
-                        + " extent.spatial contained " + spatialExtent.length + " elements, expected value was "
-                        + expectedExtentSize + " (geometry dimension times two)");
+                        + " extent.spatial.crs84 contained " + spatialExtent.length + " elements, expected value was "
+                        + expectedExtentSize);
             }
             ft.setSpatialExtent(Arrays.stream(spatialExtent).mapToDouble(Double::parseDouble).toArray());
         }
-        
+
+        if (ft.getGeom() != null) {
+            if (ft.getSpatialExtent() == null) {
+                String msg = "Collection " + collectionId + " warning:"
+                        + " spatial extent not configured even though geometry property is configured!";
+                LOG.warn(msg);
+            } else {
+                validateSpatialExtent(ft.getSpatialExtent());
+            }
+        }
 
         String[] temporalExtent = getMultiple(p + "extent.temporal");
         if (temporalExtent.length != 0) {
@@ -358,6 +368,38 @@ public class HakunaConfigParser {
         }
 
         return ft;
+    }
+
+    private void validateSpatialExtent(double[] spatialExtent) {
+        // Part 1 (or Part 2) only support CRS84 (or CRS84h) for spatial extent
+        // Hakunapi only supports single spatial extent bounding box
+        double x1, y1, x2, y2;
+        if (spatialExtent.length == 4) {
+            x1 = spatialExtent[0];
+            y1 = spatialExtent[1];
+            x2 = spatialExtent[2];
+            y2 = spatialExtent[3];
+        } else if (spatialExtent.length == 6) {
+            x1 = spatialExtent[0];
+            y1 = spatialExtent[1];
+            x2 = spatialExtent[3];
+            y2 = spatialExtent[4];
+        } else {
+            throw new IllegalArgumentException("Spatial extent length must be 4 or 6");
+        }
+
+        validateValueWithin(x1, -180.0, 180.0, "Spatial extent minimum longitude");
+        validateValueWithin(x2, -180.0, 180.0, "Spatial extent maximum longitude");
+        validateValueWithin(y1, -90.0, 90.0, "Spatial extent minimum latitude");
+        validateValueWithin(y2, -90.0, 90.0, "Spatial extent maximum latitude");
+    }
+
+    private void validateValueWithin(double value, double min, double max, String field) {
+        if (value < min || value > max) {
+            String err = String.format(Locale.US, "%s value %f not within range [%f,%f]",
+                    field, value, min, max);
+            throw new IllegalArgumentException(err);
+        }
     }
 
     @SuppressWarnings("unchecked")
