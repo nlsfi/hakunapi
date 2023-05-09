@@ -15,7 +15,8 @@ for different ways to help and details about how this project handles them.
 ## Level of Support
 
 This project is distributed in the hope that it will be useful, but without any warranty.
-However, the project is under active development and NLS provides limited support for it.
+However, the project is under active development at the National Land Survey of Finlad (NLS) and we 
+provide limited support for it.
 - We will read the bug reports and enhancement suggestions which are filed as
 [Issues](/issues) and post comments on them.
 - We will review and comment the Pull Requests. Accepted Pull Requests will be merged.
