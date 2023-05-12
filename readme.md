@@ -16,3 +16,10 @@ hakunapi-simple-servlet module builds into a "off-the-shelf" OGC API Features se
 
 hakunapi can also be used as a "framework" for building your own customized implementation (for example if you want to support Complex Features). The framework is modular and the modules should fit together well, you are free to mix-and-match.  
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Example
+
+Check out [Finnish addresses](examples/finnish_addresses)
