@@ -18,17 +18,17 @@ This project is distributed in the hope that it will be useful, but without any 
 However, the project is under active development at the National Land Survey of Finlad (NLS) and we 
 provide limited support for it.
 - We will read the bug reports and enhancement suggestions which are filed as
-[Issues](/issues) and post comments on them.
+[Issues](https://github.com/nlsfi/hakunapi/issues) and post comments on them.
 - We will review and comment the Pull Requests. Accepted Pull Requests will be merged.
 - We can be contacted privately by sending email to <os@nls.fi>
 
 ## I Have a Question
 
-Before you ask a question, it is best to search for existing [Issues](/issues) that
+Before you ask a question, it is best to search for existing [Issues](https://github.com/nlsfi/hakunapi/issues) that
 might help you. In case you have found a suitable issue and still need clarification,
 you can write your question in this issue.
 
-If you then still feel the need to ask a question you can open an [Issue](/issues/new).
+If you then still feel the need to ask a question you can open an [Issue](https://github.com/nlsfi/hakunapi/issues/new).
 Please provide as much context as you can about what you're running into.
 
 If you have a question that you don't want to become public, you can send it by email
@@ -36,18 +36,18 @@ to <os@nls.fi>.
 
 ## Reporting Bugs
 
-Before you report a bug, search for existing [Issues](/issues) and check if your problem
+Before you report a bug, search for existing [Issues](https://github.com/nlsfi/hakunapi/issues) and check if your problem
 is already reported. If the bug is new:
-- Open an [Issue](/issues/new).
+- Open an [Issue](https://github.com/nlsfi/hakunapi/issues/new).
 - Explain the behavior you would expect and the actual behavior.
 - Please provide as much context as possible and describe the reproduction steps 
 that someone else can follow to recreate the issue on their own.
 
 ## Suggesting Enhancements
 
-Enhancement suggestions are tracked as [GitHub issues](/issues). Check the existing
+Enhancement suggestions are tracked as [GitHub issues](https://github.com/nlsfi/hakunapi/issues). Check the existing
 feature requests and if your idea appears to be new:
-- Open an [Issue](/issues/new).
+- Open an [Issue](https://github.com/nlsfi/hakunapi/issues/new).
 - Provide a detailed description of the suggested enhancement.
 - Explain why this enhancement would be useful to most users.
 
