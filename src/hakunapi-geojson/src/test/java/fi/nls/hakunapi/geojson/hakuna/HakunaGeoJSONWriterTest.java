@@ -33,16 +33,37 @@ public class HakunaGeoJSONWriterTest {
         try (SingleFeatureWriter fw = new HakunaGeoJSONSingleFeatureWriter()) {
             fw.init(baos, new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 5),84);
             fw.startFeature(null, null, 1L);
-            fw.writeGeometry("ignored", getPointGeom(100.0, 200.0));
+            fw.writeGeometry("ignored", getPointGeom(130, 50));
             fw.writeProperty("foo", "bar");
             fw.writeProperty("prop0", 0);
             fw.writeProperty("nimi", "\"SOLSIDA\"");
             fw.writeNullProperty("prop1");
-            fw.writeProperty("another_geom", getPointGeom(100.0, 200.0));
+            fw.writeProperty("another_geom", getPointGeom(130, 50));
             fw.endFeature();
             fw.end(false, Collections.emptyList(), 1);
         }
         byte[] expecteds = loadResource("expect.json");
+        byte[] actuals = baos.toByteArray();
+        assertArrayEquals(expecteds, actuals);
+    }
+
+    @Test
+    public void testWriteFeatureLatLon() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (SingleFeatureWriter fw = new HakunaGeoJSONSingleFeatureWriter()) {
+            boolean crsIsLatLon = true;
+            fw.init(baos, new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 5), 4326, crsIsLatLon);
+            fw.startFeature(null, null, 1L);
+            fw.writeGeometry("ignored", getPointGeom(130, 50));
+            fw.writeProperty("foo", "bar");
+            fw.writeProperty("prop0", 0);
+            fw.writeProperty("nimi", "\"SOLSIDA\"");
+            fw.writeNullProperty("prop1");
+            fw.writeProperty("another_geom", getPointGeom(130, 50));
+            fw.endFeature();
+            fw.end(false, Collections.emptyList(), 1);
+        }
+        byte[] expecteds = loadResource("expect_latlon.json");
         byte[] actuals = baos.toByteArray();
         assertArrayEquals(expecteds, actuals);
     }

@@ -208,10 +208,15 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
         FeatureProducer producer = c.getFt().getFeatureProducer();
+
+        int srid = request.getSRID();
+
+        int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+        boolean crsIsLatLon = service.isCrsLatLon(srid);
+
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter()) {
-            int srid = request.getSRID();
-            writer.init(out, CrsUtil.getMaxDecimalCoordinates(srid), srid);
+            writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
             writer.initGeometryWriter(
                     CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
             writer.startFeatureCollection(ft, c.getName());

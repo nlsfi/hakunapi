@@ -14,7 +14,10 @@ public class OutputFormatFactoryGeoJSON implements OutputFormatFactorySpi {
 
     @Override
     public OutputFormat create(Map<String, String> params) {
-        return OutputFormatGeoJSON.INSTANCE;
+        boolean forceLonLat = "true".equalsIgnoreCase(params.get("forceLonLat"));
+        return forceLonLat
+                ? OutputFormatGeoJSON.INSTANCE_LON_LAT
+                : OutputFormatGeoJSON.INSTANCE;
     }
 
 }

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.nls.hakunapi.core.CacheSettings;
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -81,9 +82,9 @@ public class HakunaConfigParser {
     
     public Info readInfo() {
         Info info = new Info();
-        info.setTitle(cfg.getProperty("api.title", "Hakuna OGC API Features Server"));
+        info.setTitle(cfg.getProperty("api.title", "hakunapi OGC API Features Server"));
         info.setVersion(cfg.getProperty("api.version", "0.0.1"));
-        info.setDescription(cfg.getProperty("api.description", "Hakuna OGC API Features Server 0.0.7"));
+        info.setDescription(cfg.getProperty("api.description", "hakunapi OGC API Features Server"));
 
         Contact contact = new Contact();
         contact.setName(cfg.getProperty("api.contact.name", "N/A"));
@@ -146,6 +147,17 @@ public class HakunaConfigParser {
             securitySchemes.put(name, ss);
         }
         return Optional.of(securitySchemes);
+    }
+
+    public List<SRIDCode> getKnownSrids() {
+        List<SRIDCode> knownSrids = new ArrayList<>();
+        for (String sridCode : getMultiple("srid")) {
+            int srid = Integer.parseInt(sridCode);
+            String latLonAttr = get("srid." + sridCode + ".latLon", "false");
+            boolean latLon = "true".equalsIgnoreCase(latLonAttr);
+            knownSrids.add(new SRIDCode(srid, latLon));
+        }
+        return knownSrids;
     }
 
     public List<HakunaProperty> parseTimeProperties(List<HakunaProperty> properties, String[] timePropertyNames)

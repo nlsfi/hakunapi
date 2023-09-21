@@ -1,0 +1,1 @@
+{"type":"Feature","id":1,"geometry":{"type":"Point","coordinates":[50,130]},"properties":{"foo":"bar","prop0":0,"nimi":"\"SOLSIDA\"","prop1":null,"another_geom":{"type":"Point","coordinates":[50,130]}}}
