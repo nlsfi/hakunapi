@@ -41,6 +41,9 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
 
     protected HakunaJsonWriter json;
 
+    protected boolean forceLonLat;
+    protected boolean crsIsLatLon;
+
     protected HakunaGeometryDimension dims;
     protected GeometryWriter geometryJson;
     protected Map<String, byte[]> propertyNameUTF8Cache = new HashMap<>();
@@ -57,39 +60,46 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
         return MIME_TYPE;
     }
 
-    
+    protected void setForceLonLat(boolean forceLonLat) {
+        this.forceLonLat = forceLonLat;
+    }
+
     @Override
     public int getSrid() {  
         return srid;
     }
 
-
     @Override
     public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws IOException {
-        this.srid = srid;
-        this.json = new HakunaJsonWriter(out, formatter);
-        this.dims = HakunaGeometryDimension.DEFAULT;
-        initGeometryWriter(dims);
+        init(out, formatter, srid, false);
     }
 
-    @Deprecated
+    @Override
+    public void init(OutputStream out, FloatingPointFormatter formatter, int srid, boolean crsIsLatLon) throws IOException {
+        this.srid = srid;
+        this.json = new HakunaJsonWriter(out, formatter);
+        this.crsIsLatLon = crsIsLatLon;
+        initGeometryWriter(HakunaGeometryDimension.DEFAULT);
+    }
+
+    @Override
     public void initGeometryWriter(HakunaGeometryDimension dims) {
         this.dims = dims;
-        geometryJson = geometryWriter(HakunaGeoJSON.GEOMETRY);
+        geometryJson = geometryWriter(HakunaGeoJSON.GEOMETRY, forceLonLat || !crsIsLatLon);
         propertyGeometryJson.clear();
     }
 
-    public GeometryWriter geometryWriter(byte[] name) {
+    public GeometryWriter geometryWriter(byte[] name, boolean lonLat) {
         switch (dims) {
         case GEOMETRY:
-            return new HakunaGeoJSONGeometryWriter(json, name);
+            return new HakunaGeoJSONGeometryWriter(json, name, lonLat);
         case EPSG:
         case XY:
         case XYZ:
         case XYZM:
         case DEFAULT:
         default:
-            return new HakunaGeoJSONGeometryXYZMWriter(json, name, dims);
+            return new HakunaGeoJSONGeometryXYZMWriter(json, name, lonLat, dims);
         }
     }
 
@@ -209,7 +219,9 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
     @Override
     public void writeProperty(String name, HakunaGeometry geometry) throws Exception {
         openProperties();
-        final GeometryWriter geomWriter = propertyGeometryJson.computeIfAbsent(name, k->geometryWriter(k.getBytes(StandardCharsets.UTF_8)));
+        final GeometryWriter geomWriter = propertyGeometryJson.computeIfAbsent(
+                name, k -> geometryWriter(k.getBytes(StandardCharsets.UTF_8), forceLonLat || !crsIsLatLon)
+        );
         geometry.write(geomWriter);
     }
 

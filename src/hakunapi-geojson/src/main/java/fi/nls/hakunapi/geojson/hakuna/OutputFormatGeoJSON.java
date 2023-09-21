@@ -6,10 +6,15 @@ import fi.nls.hakunapi.core.SingleFeatureWriter;
 
 public class OutputFormatGeoJSON implements OutputFormat {
 
-    public static final OutputFormat INSTANCE = new OutputFormatGeoJSON();
+    public static final OutputFormat INSTANCE = new OutputFormatGeoJSON(false);
+    public static final OutputFormat INSTANCE_LON_LAT = new OutputFormatGeoJSON(true);
     public static final String TYPE = "json";
 
-    private OutputFormatGeoJSON() {}
+    private final boolean forceLonLat;
+
+    OutputFormatGeoJSON(boolean forceLonLat) {
+        this.forceLonLat = forceLonLat;
+    }
 
     @Override
     public String getId() {
@@ -23,12 +28,16 @@ public class OutputFormatGeoJSON implements OutputFormat {
 
     @Override
     public FeatureCollectionWriter getFeatureCollectionWriter() {
-        return new HakunaGeoJSONFeatureCollectionWriter();
+        HakunaGeoJSONFeatureCollectionWriter w = new HakunaGeoJSONFeatureCollectionWriter();
+        w.setForceLonLat(forceLonLat);
+        return w;
     }
 
     @Override
     public SingleFeatureWriter getSingleFeatureWriter() {
-        return new HakunaGeoJSONSingleFeatureWriter();
+        HakunaGeoJSONSingleFeatureWriter w = new HakunaGeoJSONSingleFeatureWriter();
+        w.setForceLonLat(forceLonLat);
+        return w;
     }
 
     @Override

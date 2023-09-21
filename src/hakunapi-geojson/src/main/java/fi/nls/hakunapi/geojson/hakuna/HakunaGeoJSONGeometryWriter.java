@@ -9,15 +9,19 @@ public class HakunaGeoJSONGeometryWriter implements GeometryWriter {
 
     protected final HakunaJsonWriter json;
     protected final byte[] fieldName;
+    protected final boolean lonLat;
 
-    public HakunaGeoJSONGeometryWriter(HakunaJsonWriter json, byte[] fieldName) {
+    public HakunaGeoJSONGeometryWriter(HakunaJsonWriter json, byte[] fieldName, boolean lonLat) {
         this.json = json;
         this.fieldName = fieldName;
+        this.lonLat = lonLat;
     }
 
     @Override
     public void init(HakunaGeometryType type, int srid, int dimension) throws IOException {
-        json.writeFieldName(fieldName);
+        if (fieldName != null) {
+            json.writeFieldName(fieldName);
+        }
         json.writeStartObject();
         json.writeFieldName(HakunaGeoJSON.TYPE);
         json.writeStringUnsafe(getTypeUTF8(type));
@@ -41,15 +45,27 @@ public class HakunaGeoJSONGeometryWriter implements GeometryWriter {
     }
 
     public void writeCoordinate(double x, double y) throws IOException {
-        json.writeCoordinate(x, y);
+        if (lonLat) {
+            json.writeCoordinate(x, y);
+        } else {
+            json.writeCoordinate(y, x);
+        }
     }
 
     public void writeCoordinate(double x, double y, double z) throws IOException {
-        json.writeCoordinate(x, y, z);
+        if (lonLat) {
+            json.writeCoordinate(x, y, z);
+        } else {
+            json.writeCoordinate(y, x, z);
+        }
     }
 
     public void writeCoordinate(double x, double y, double z, double m) throws IOException {
-        json.writeCoordinate(x, y, z, m);
+        if (lonLat) {
+            json.writeCoordinate(x, y, z, m);
+        } else {
+            json.writeCoordinate(y, x, z, m);
+        }
     }
 
     public void startRing() throws IOException {

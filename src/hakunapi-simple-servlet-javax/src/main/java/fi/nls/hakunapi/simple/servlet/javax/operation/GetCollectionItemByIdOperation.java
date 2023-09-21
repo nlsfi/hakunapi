@@ -144,10 +144,13 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
 
         int srid = request.getSRID();
 
+        int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+        boolean crsIsLatLon = service.isCrsLatLon(srid);
+
         // Feature response rarely needs 8kb of memory
         // Let's allocate a little less
         ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-        writer.init(baos, CrsUtil.getMaxDecimalCoordinates(srid), srid);
+        writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
         if (c.getFt().getGeom() != null) {
             writer.initGeometryWriter(CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
         }

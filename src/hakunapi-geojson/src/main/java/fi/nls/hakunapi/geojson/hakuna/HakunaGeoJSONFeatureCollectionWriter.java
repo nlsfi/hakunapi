@@ -12,8 +12,8 @@ import fi.nls.hakunapi.core.schemas.Link;
 public class HakunaGeoJSONFeatureCollectionWriter extends HakunaGeoJSONWriter implements FeatureCollectionWriter {
 
     @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter,int srid) throws IOException {
-        super.init(out, formatter, srid);
+    public void init(OutputStream out, FloatingPointFormatter formatter, int srid, boolean crsIsLatLon) throws IOException {
+        super.init(out, formatter, srid, crsIsLatLon);
         writeFeatureCollection();
     }
     
