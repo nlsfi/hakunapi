@@ -15,6 +15,7 @@ public class HakunaGeoJSONGeometryWriter implements GeometryWriter {
         this.fieldName = fieldName;
     }
 
+    @Override
     public void init(HakunaGeometryType type, int srid, int dimension) throws IOException {
         json.writeFieldName(fieldName);
         json.writeStartObject();

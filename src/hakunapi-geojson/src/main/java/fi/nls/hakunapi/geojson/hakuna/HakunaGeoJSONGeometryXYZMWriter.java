@@ -20,6 +20,7 @@ public class HakunaGeoJSONGeometryXYZMWriter implements GeometryWriter {
         this.mode = mode;
     }
 
+    @Override
     public void init(HakunaGeometryType type, int srid, int dimension) throws IOException {
         json.writeFieldName(fieldName);
         json.writeStartObject();
