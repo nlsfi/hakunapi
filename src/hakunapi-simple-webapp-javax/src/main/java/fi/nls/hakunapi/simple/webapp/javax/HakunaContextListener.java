@@ -34,6 +34,7 @@ import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.MetadataFormat;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.OutputFormatProvider;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaApplicationJson;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
@@ -42,7 +43,6 @@ import fi.nls.hakunapi.core.util.PropertyUtil;
 import fi.nls.hakunapi.cql2.function.CQL2Functions;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
 import fi.nls.hakunapi.geojson.hakuna.OutputFormatGeoJSON;
-import fi.nls.hakunapi.simple.postgis.PostGISSimpleSource;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -92,6 +92,7 @@ public class HakunaContextListener implements ServletContextListener {
                 securityRequirements = securitySchemes.keySet().stream()
                         .map(name -> new SecurityRequirement().addList(name)).collect(Collectors.toList());
             }
+            List<SRIDCode> knownSrids = parser.getKnownSrids();
 
             Map<String, FeatureType> collections = new HashMap<>();
             for (String collectionId : parser.readCollectionIds()) {
@@ -132,6 +133,7 @@ public class HakunaContextListener implements ServletContextListener {
             service.setSecurityRequirements(securityRequirements);
             service.setFunctions(functionsMetadata);
             service.setMetadataFormats(List.of(MetadataFormat.JSON, MetadataFormat.HTML));
+            service.setKnownSrids(knownSrids);
 
             LOG.info("Starting OGC API Features service with collections: {}", collections);
             sce.getServletContext().setAttribute("hakunaService", service);

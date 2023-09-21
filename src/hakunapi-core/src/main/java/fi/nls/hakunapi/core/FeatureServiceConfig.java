@@ -28,6 +28,7 @@ public abstract class FeatureServiceConfig {
     protected Map<String, Map<String, Object>> schemaExtensions;
     protected FunctionsContent functionsContent;
     protected List<MetadataFormat> metadataFormats;
+    protected List<SRIDCode> knownSrids;
 
     public int getLimitDefault() {
         return limitDefault;
@@ -152,6 +153,26 @@ public abstract class FeatureServiceConfig {
 
     public void setMetadataFormats(List<MetadataFormat> metadataFormats) {
         this.metadataFormats = metadataFormats;
+    }
+
+    public void setKnownSrids(List<SRIDCode> knownSrids) {
+        this.knownSrids = knownSrids;
+    }
+
+    public boolean isCrsLatLon(int srid) {
+        if (srid == 4326) {
+            // 4326 is well known at hakunapi level
+            return true;
+        }
+        if (knownSrids == null || knownSrids.isEmpty()) {
+            // Known srids aren't configured
+            return false;
+        }
+        return knownSrids.stream()
+                .filter(it -> it.getSrid() == srid)
+                .findAny()
+                .map(it -> it.isLatLon())
+                .orElse(false);
     }
 
     public String getTitle() {

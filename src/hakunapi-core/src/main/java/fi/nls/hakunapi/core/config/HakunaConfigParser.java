@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.nls.hakunapi.core.CacheSettings;
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -146,6 +147,17 @@ public class HakunaConfigParser {
             securitySchemes.put(name, ss);
         }
         return Optional.of(securitySchemes);
+    }
+
+    public List<SRIDCode> getKnownSrids() {
+        List<SRIDCode> knownSrids = new ArrayList<>();
+        for (String sridCode : getMultiple("srid")) {
+            int srid = Integer.parseInt(sridCode);
+            String latLonAttr = get("srid." + sridCode + ".latLon", "false");
+            boolean latLon = "true".equalsIgnoreCase(latLonAttr);
+            knownSrids.add(new SRIDCode(srid, latLon));
+        }
+        return knownSrids;
     }
 
     public List<HakunaProperty> parseTimeProperties(List<HakunaProperty> properties, String[] timePropertyNames)
