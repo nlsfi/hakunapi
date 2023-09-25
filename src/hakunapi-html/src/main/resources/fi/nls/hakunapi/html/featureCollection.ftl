@@ -78,7 +78,7 @@
         <tbody>
           <#list features as feature>
           <tr>
-            <td><a href="./items/${feature.id}" class="text-decoration-none">${feature.id}</a></td>
+            <td><a id="feature-link-${feature.id}" class="text-decoration-none">${feature.id}</a></td>
             <#list feature.properties?values as value>
             <td>${value!""}</td>
             </#list>
@@ -129,9 +129,17 @@ var data = [
 </#list>
 ];
 
+const singleFeatureLinkParams = new URLSearchParams(window.location.search);
+singleFeatureLinkParams.delete("bbox");
+singleFeatureLinkParams.delete("bbox-crs");
+singleFeatureLinkParams.delete("filter");
+const singleFeatureLinkQuery = singleFeatureLinkParams.size === 0 ? "" : "?" + singleFeatureLinkParams.toString();
+
+data.forEach(f => document.getElementById("feature-link-" + f.id).href = "items/" + f.id + singleFeatureLinkQuery);
+
 var layer = L.geoJSON(data, {
   onEachFeature: function (feature, layer) {
-    layer.bindPopup('<a href="./items/' + feature.id + '">' + feature.id + '</a>');
+    layer.bindPopup('<a href="./items/' + feature.id + singleFeatureLinkQuery + '">' + feature.id + '</a>');
   }
 }).addTo(map);
 

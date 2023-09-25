@@ -7,6 +7,7 @@ import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
+import fi.nls.hakunapi.core.util.AxisOrderSwapFilter;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.FilterUtil;
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -53,6 +54,10 @@ public class BboxCrsParam implements GetFeatureParam {
             }
             Geometry bbox = (Geometry) bboxFilter.getValue();
             bbox.setSRID(srid);
+
+            if (service.isCrsLatLon(srid)) {
+                bbox.apply(new AxisOrderSwapFilter());
+            }
         }
         
         request.addQueryParam(getParamName(), value);
