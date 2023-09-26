@@ -52,7 +52,6 @@ import io.swagger.v3.oas.models.servers.Server;
 public class HakunaContextListener implements ServletContextListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HakunaContextListener.class);
-    private static final String ENV_PREFIX = "HAKUNAPI_";
 
     private List<Closeable> toClose;
 
@@ -269,7 +268,7 @@ public class HakunaContextListener implements ServletContextListener {
     }
 
     private String getEnvVariableName(String property) {
-        return ENV_PREFIX + property.toUpperCase().replace('.', '_');
+        return property.toUpperCase().replace('.', '_');
     }
 
     private Properties load(Path path, Charset cs) {

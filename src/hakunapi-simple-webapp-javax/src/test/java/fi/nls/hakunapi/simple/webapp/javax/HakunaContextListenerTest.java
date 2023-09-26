@@ -31,12 +31,12 @@ public class HakunaContextListenerTest {
         assertEquals("Expect $key.hakuna.config.path to get preferred", barPath,
                 listener.getConfigPath("foo").get().toString());
 
-        Mockito.when(listener.getEnv("HAKUNAPI_HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
+        Mockito.when(listener.getEnv("HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
 
         assertEquals("Expect more specific system property to get preferred", barPath,
                 listener.getConfigPath("foo").get().toString());
 
-        Mockito.when(listener.getEnv("HAKUNAPI_FOO_HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
+        Mockito.when(listener.getEnv("FOO_HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
 
         assertEquals("Expect environment variable to get preferred", fooPath,
                 listener.getConfigPath("foo").get().toString());
