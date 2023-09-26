@@ -9,25 +9,37 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import fi.nls.hakunapi.core.config.HakunaApplicationJson;
-import fi.nls.hakunapi.simple.webapp.javax.HakunaContextListener;
 
 public class HakunaContextListenerTest {
 
     @Test
     public void testGetConfigPath() throws URISyntaxException {
+        HakunaContextListener listener = Mockito.spy(HakunaContextListener.class);
+
         String barPath = Paths.get(getClass().getClassLoader().getResource("bar.properties").toURI()).toString();
         String fooPath = Paths.get(getClass().getClassLoader().getResource("foo.properties").toURI()).toString();
         String dirPath = barPath.substring(0, barPath.lastIndexOf(FileSystems.getDefault().getSeparator()));
 
         System.setProperty("hakuna.config.path", dirPath);
         assertEquals("With only directory expect /path/$key.properties", fooPath,
-                HakunaContextListener.getConfigPath("foo").get().toString());
+                listener.getConfigPath("foo").get().toString());
 
         System.setProperty("foo.hakuna.config.path", barPath);
         assertEquals("Expect $key.hakuna.config.path to get preferred", barPath,
-                HakunaContextListener.getConfigPath("foo").get().toString());
+                listener.getConfigPath("foo").get().toString());
+
+        Mockito.when(listener.getEnv("HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
+
+        assertEquals("Expect more specific system property to get preferred", barPath,
+                listener.getConfigPath("foo").get().toString());
+
+        Mockito.when(listener.getEnv("FOO_HAKUNA_CONFIG_PATH")).thenReturn(fooPath);
+
+        assertEquals("Expect environment variable to get preferred", fooPath,
+                listener.getConfigPath("foo").get().toString());
     }
 
     @Test

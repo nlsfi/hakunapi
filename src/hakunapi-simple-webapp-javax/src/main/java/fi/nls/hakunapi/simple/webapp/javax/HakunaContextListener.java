@@ -223,9 +223,9 @@ public class HakunaContextListener implements ServletContextListener {
         return contextName;
     }
 
-    protected static Optional<Path> getConfigPath(String contextPath) {
+    protected Optional<Path> getConfigPath(String contextPath) {
         String property = contextPath + ".hakuna.config.path";
-        String hakunaConfigPath = System.getProperty(property);
+        String hakunaConfigPath = getProperty(property);
         if (hakunaConfigPath != null && !hakunaConfigPath.isEmpty()) {
             LOG.info("{} = {}", property, hakunaConfigPath);
             Path path = Paths.get(hakunaConfigPath);
@@ -238,7 +238,7 @@ public class HakunaContextListener implements ServletContextListener {
         }
 
         property = "hakuna.config.path";
-        hakunaConfigPath = System.getProperty(property);
+        hakunaConfigPath = getProperty(property);
         if (hakunaConfigPath != null && !hakunaConfigPath.isEmpty()) {
             LOG.info("{} = {}", property, hakunaConfigPath);
             Path path = Paths.get(hakunaConfigPath, contextPath + ".properties");
@@ -251,6 +251,24 @@ public class HakunaContextListener implements ServletContextListener {
         }
 
         return Optional.empty();
+    }
+
+    private String getProperty(final String property) {
+        // first check environment variables
+        final String envValue = getEnv(getEnvVariableName(property));
+        if (envValue != null && !envValue.isEmpty()) {
+            return envValue;
+        }
+        // fallback to system properties
+        return System.getProperty(property);
+    }
+
+    String getEnv(String envVariable) {
+        return System.getenv(envVariable);
+    }
+
+    private String getEnvVariableName(String property) {
+        return property.toUpperCase().replace('.', '_');
     }
 
     private Properties load(Path path, Charset cs) {
