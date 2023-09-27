@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
@@ -46,6 +47,7 @@ import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 
 public class OpenAPI30Generator {
@@ -62,10 +64,21 @@ public class OpenAPI30Generator {
         this._components = new HashMap<>();
     }
 
-    public OpenAPI create() {
+    public OpenAPI create(HttpHeaders headers) {
+        Server server = service.getServer();
+        String url = service.getCurrentServerURL(headers::getHeaderString);
+        if (!url.equals(server.getUrl())) {
+            Server tmp = new Server();
+            tmp.setUrl(url);
+            tmp.setDescription(server.getDescription());
+            tmp.setExtensions(server.getExtensions());
+            tmp.setVariables(server.getVariables());
+            server = tmp;
+        }
+
         OpenAPI openApi = new OpenAPI();
         openApi.info(service.getInfo());
-        openApi.servers(service.getServers());
+        openApi.servers(Arrays.asList(server));
         openApi.tags(getTags());
         openApi.paths(getPaths());
         openApi.components(new Components()

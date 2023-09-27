@@ -137,9 +137,11 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
     }
 
     public List<Link> getLinks(GetFeatureRequest request, FeatureCollectionWriter writer, NextCursor cursor, List<GetFeatureCollection> remainingCollections) {
-        String path = service.getCurrentServerURL() + "/items";
-        String mimeType = writer.getMimeType();
         Map<String, String> queryParams = request.getQueryParams();
+        Map<String, String> queryHeaders = request.getQueryHeaders();
+
+        String path = service.getCurrentServerURL(queryHeaders::get) + "/items";
+        String mimeType = writer.getMimeType();
 
         List<Link> links = new ArrayList<>();
 

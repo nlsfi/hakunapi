@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
@@ -28,29 +30,29 @@ public class OpenAPI30ApiOperation {
     @GET
     @Path("/api")
     @Produces("application/vnd.oai.openapi+json;version=3.0")
-    public OpenAPI json() {
-        return api.create();
+    public OpenAPI json(@Context HttpHeaders headers) {
+        return api.create(headers);
     }
 
     @GET
     @Path("/api.json")
     @Produces("application/vnd.oai.openapi+json;version=3.0")
-    public OpenAPI jsonExt() {
-        return api.create();
+    public OpenAPI jsonExt(@Context HttpHeaders headers) {
+        return api.create(headers);
     }
     
     @GET
     @Path("/api")
     @Produces(MediaType.TEXT_HTML)
-    public HTMLContext<OpenAPI> html() {
-        return new HTMLContext<>(service, api.create());
+    public HTMLContext<OpenAPI> html(@Context HttpHeaders headers) {
+        return new HTMLContext<>(service, api.create(headers));
     }
     
     @GET
     @Path("/api.html")
     @Produces(MediaType.TEXT_HTML)
-    public HTMLContext<OpenAPI> htmlExt() {
-        return new HTMLContext<>(service, api.create());
+    public HTMLContext<OpenAPI> htmlExt(@Context HttpHeaders headers) {
+        return new HTMLContext<>(service, api.create(headers));
     }
 
 }

@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
@@ -32,13 +33,16 @@ public class GetCollectionSchemaImpl {
     @GET
     @Path("/{collectionId}/schema")
     @Produces("application/schema+json")
-    public SchemaDefinition handle(@PathParam("collectionId") String collectionId, @Context UriInfo uriInfo) {
+    public SchemaDefinition handle(
+            @PathParam("collectionId") String collectionId,
+            @Context UriInfo uriInfo,
+            @Context HttpHeaders headers) {
         FeatureType ft = service.getCollection(collectionId);
         if (ft == null) {
             return null;
         }
 
-        String id = String.format("%s/collections/%s/schema", service.getCurrentServerURL(), collectionId);
+        String id = String.format("%s/collections/%s/schema", service.getCurrentServerURL(headers::getHeaderString), collectionId);
         String title = "Schema for " + (ft.getTitle() != null ? ft.getTitle() : ft.getId());
         String description = "JSON Schema describing the properties for each feature";
 

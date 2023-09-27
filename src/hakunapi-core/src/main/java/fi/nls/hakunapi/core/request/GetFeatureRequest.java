@@ -20,6 +20,7 @@ public class GetFeatureRequest {
     private int filterSrid = Crs.CRS84_SRID;
     private Map<String, String> pathParams;
     private Map<String, String> queryParams;
+    private Map<String, String> queryHeaders;
     private Map<String, String> responseHeaders;
 
     public OutputFormat getFormat() {
@@ -109,6 +110,14 @@ public class GetFeatureRequest {
             queryParams = new HashMap<>();
         }
         queryParams.put(key, value);
+    }
+
+    public Map<String, String> getQueryHeaders() {
+        return queryHeaders;
+    }
+
+    public void setQueryHeaders(Map<String, String> queryHeaders) {
+        this.queryHeaders = queryHeaders;
     }
 
     public Map<String, String> getResponseHeaders() {

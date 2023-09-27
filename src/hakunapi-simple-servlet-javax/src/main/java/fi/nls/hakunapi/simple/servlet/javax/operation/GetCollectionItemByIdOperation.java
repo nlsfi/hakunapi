@@ -24,13 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.FeatureProducer;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
-import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
@@ -111,7 +111,8 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
             request.setFormat(OperationUtil.determineOutputFormat(wsRequest, service.getOutputFormats()));
             request.addCollection(c);
             request.addPathParam("collectionId", collectionId);
-            
+            request.setQueryHeaders(OperationUtil.toSimpleMap(headers.getRequestHeaders()));
+
             c.addFilter(Filter.equalTo(ft.getId(), featureId));
             request.addPathParam("featureId", featureId);
 
@@ -173,12 +174,13 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
 
     public List<Link> getLinks(GetFeatureRequest request, FeatureWriter writer) {
         Map<String, String> queryParams = request.getQueryParams();
+        Map<String, String> queryHeaders = request.getQueryHeaders();
 
         String collectionId = request.getPathParam("collectionId");
         String featureId = request.getPathParam("featureId");
         String mimeType = writer.getMimeType();
 
-        String itemsPath = Links.getItemsPath(service.getCurrentServerURL(), collectionId);
+        String itemsPath = Links.getItemsPath(service.getCurrentServerURL(queryHeaders::get), collectionId);
         String featurePath = itemsPath + "/" + featureId;
 
         List<Link> links = new ArrayList<>();
