@@ -38,7 +38,8 @@ public class CollectionsMetadataImpl {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public HTMLContext<CollectionsContent> handleHTML(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
-        return new HTMLContext<>(service, handle(uriInfo, headers, MediaType.TEXT_HTML));
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(uriInfo, headers, MediaType.TEXT_HTML));
     }
 
     private CollectionsContent handle(UriInfo uriInfo, HttpHeaders headers, String contentType) {

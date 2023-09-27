@@ -45,14 +45,16 @@ public class OpenAPI30ApiOperation {
     @Path("/api")
     @Produces(MediaType.TEXT_HTML)
     public HTMLContext<OpenAPI> html(@Context HttpHeaders headers) {
-        return new HTMLContext<>(service, api.create(headers));
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, api.create(headers));
     }
     
     @GET
     @Path("/api.html")
     @Produces(MediaType.TEXT_HTML)
     public HTMLContext<OpenAPI> htmlExt(@Context HttpHeaders headers) {
-        return new HTMLContext<>(service, api.create(headers));
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, api.create(headers));
     }
 
 }

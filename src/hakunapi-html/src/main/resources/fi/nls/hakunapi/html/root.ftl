@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <title>${model.title!""} - Home</title>
+  <base href="${basePathTrailingSlash}">
 </head>
 <body>
 <main>
@@ -32,18 +33,18 @@
     
     <div class="row">
       <h2>Collections</h2>
-      <p><a href="${service.currentServerURL}/collections">Access the data</a></p>
+      <p><a href="collections">Access the data</a></p>
     </div>
 
     <div class="row">
       <h2>API Information</h2>
-      <p><a href="${service.currentServerURL}/api.json">OpenAPI 3.0 definition</a></p>
-      <p><a href="${service.currentServerURL}/api.html">Documentation</a></p>
+      <p><a href="api.json">OpenAPI 3.0 definition</a></p>
+      <p><a href="api.html">Documentation</a></p>
     </div>
     
     <div class="row">
       <h2>Conformance</h2>
-      <p><a href="${service.currentServerURL}/conformance">OGC API conformance classes implemented by this server</a></p>
+      <p><a href="conformance">OGC API conformance classes implemented by this server</a></p>
     </div>
     
     <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi &copy; 2023</footer>

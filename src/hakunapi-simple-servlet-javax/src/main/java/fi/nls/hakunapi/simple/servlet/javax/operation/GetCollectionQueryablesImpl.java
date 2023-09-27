@@ -47,7 +47,8 @@ public class GetCollectionQueryablesImpl {
             @PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,
             @Context HttpHeaders headers) {
-        return new HTMLContext<>(service, handle(collectionId, uriInfo, headers));
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(collectionId, uriInfo, headers));
     }
 
 }

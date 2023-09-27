@@ -28,7 +28,8 @@ public class LandingPageImpl {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public HTMLContext<Root> handleHTML(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
-        return new HTMLContext<>(service, handle(uriInfo, headers, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(uriInfo, headers, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
     }
     
     private Root handle(UriInfo uriInfo, HttpHeaders headers, String contentType, String alternateContentType) {
