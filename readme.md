@@ -1,3 +1,5 @@
+<img src="hakunapi_logo_v1.png" alt="hakunapi logo" width="350"/>
+
 # Hakunapi OGC API Features Server
 
 A server implementation of OGC API Features 
