@@ -224,32 +224,44 @@ public class HakunaContextListener implements ServletContextListener {
     }
 
     protected Optional<Path> getConfigPath(String contextPath) {
-        String property = contextPath + ".hakuna.config.path";
-        String hakunaConfigPath = getProperty(property);
-        if (hakunaConfigPath != null && !hakunaConfigPath.isEmpty()) {
-            LOG.info("{} = {}", property, hakunaConfigPath);
-            Path path = Paths.get(hakunaConfigPath);
+        return Stream.of(
+                contextPath + ".hakunapi.config.path",
+                contextPath + ".hakuna.config.path",
+                "hakunapi.config.path")
+                .map(this::getConfigPathByProperty)
+                .filter(Optional::isPresent)
+                .findAny()
+                .orElseGet(() -> getLegacyHakunaConfigPath(contextPath));
+    }
+
+    private Optional<Path> getConfigPathByProperty(String property) {
+        String configPath = getProperty(property);
+        if (configPath != null && !configPath.isBlank()) {
+            LOG.info("{} = {}", property, configPath);
+            Path path = Paths.get(configPath);
             if (Files.exists(path)) {
                 return Optional.of(path);
             }
-            LOG.info("{} file doesn't exist!", hakunaConfigPath);
+            LOG.info("{} file doesn't exist!", configPath);
         } else {
-            LOG.info("Property {} not set or set to empty!", property);
+            LOG.debug("Property {} not set or set to empty!", property);
         }
+        return Optional.empty();
+    }
 
-        property = "hakuna.config.path";
-        hakunaConfigPath = getProperty(property);
-        if (hakunaConfigPath != null && !hakunaConfigPath.isEmpty()) {
-            LOG.info("{} = {}", property, hakunaConfigPath);
-            Path path = Paths.get(hakunaConfigPath, contextPath + ".properties");
+    private Optional<Path> getLegacyHakunaConfigPath(String contextPath) {
+        String property = "hakuna.config.path";
+        String configPath = getProperty(property);
+        if (configPath != null && !configPath.isEmpty()) {
+            LOG.info("{} = {}", property, configPath);
+            Path path = Paths.get(configPath, contextPath + ".properties");
             if (Files.exists(path)) {
                 return Optional.of(path);
             }
-            LOG.info("{} file doesn't exist!", hakunaConfigPath);
+            LOG.info("{} file doesn't exist!", path.toString());
         } else {
             LOG.info("Property {} not set or set to empty!", property);
         }
-
         return Optional.empty();
     }
 

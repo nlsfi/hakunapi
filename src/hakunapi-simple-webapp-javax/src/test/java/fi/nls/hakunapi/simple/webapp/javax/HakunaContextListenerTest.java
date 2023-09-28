@@ -1,6 +1,7 @@
 package fi.nls.hakunapi.simple.webapp.javax;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +41,41 @@ public class HakunaContextListenerTest {
 
         assertEquals("Expect environment variable to get preferred", fooPath,
                 listener.getConfigPath("foo").get().toString());
+
+        // Cleanup
+        System.clearProperty("hakuna.config.path");
+        System.clearProperty("foo.hakuna.config.path");
+    }
+
+    @Test
+    public void testGetConfigPathHakunapi() throws URISyntaxException {
+        HakunaContextListener listener = Mockito.spy(HakunaContextListener.class);
+
+        String fooPath = Paths.get(getClass().getClassLoader().getResource("foo.properties").toURI()).toString();
+        String barPath = Paths.get(getClass().getClassLoader().getResource("bar.properties").toURI()).toString();
+
+        assertTrue(listener.getConfigPath("foo").isEmpty());
+        assertTrue(listener.getConfigPath("bar").isEmpty());
+
+        System.setProperty("hakunapi.config.path", barPath);
+        assertEquals(barPath, listener.getConfigPath("foo").get().toString());
+        assertEquals(barPath, listener.getConfigPath("bar").get().toString());
+
+        Mockito.when(listener.getEnv("HAKUNAPI_CONFIG_PATH")).thenReturn(fooPath);
+        assertEquals(fooPath, listener.getConfigPath("foo").get().toString());
+        assertEquals(fooPath, listener.getConfigPath("bar").get().toString());
+
+        System.setProperty("bar.hakunapi.config.path", barPath);
+        assertEquals(fooPath, listener.getConfigPath("foo").get().toString());
+        assertEquals(barPath, listener.getConfigPath("bar").get().toString());
+
+        Mockito.when(listener.getEnv("BAR_HAKUNAPI_CONFIG_PATH")).thenReturn(fooPath);
+        assertEquals(fooPath, listener.getConfigPath("foo").get().toString());
+        assertEquals(fooPath, listener.getConfigPath("bar").get().toString());
+
+        // Cleanup
+        System.clearProperty("hakunapi.config.path");
+        System.clearProperty("bar.hakunapi.config.path");
     }
 
     @Test
