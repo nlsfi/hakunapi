@@ -1,4 +1,4 @@
-![hakunapi logo](hakunapi_logo_v1.png)
+<img src="hakunapi_logo_v1.png" alt="hakunapi logo" width="350"/>
 
 # Hakunapi OGC API Features Server
 
