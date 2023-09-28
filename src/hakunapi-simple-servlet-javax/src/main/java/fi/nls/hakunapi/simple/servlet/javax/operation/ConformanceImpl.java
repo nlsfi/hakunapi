@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
@@ -24,8 +26,9 @@ public class ConformanceImpl {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public HTMLContext<ConformanceClasses> handleHTML() {
-        return new HTMLContext<>(service, new ConformanceClasses(service.getConformanceClasses()));
+    public HTMLContext<ConformanceClasses> handleHTML(@Context HttpHeaders headers) {
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, new ConformanceClasses(service.getConformanceClasses()));
     }
 
 }

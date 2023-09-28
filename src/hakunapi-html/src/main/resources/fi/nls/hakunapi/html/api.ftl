@@ -32,7 +32,7 @@ img[alt="Swagger UI"] { display: none; }
 window.onload = function() {
 window.ui = SwaggerUIBundle({
 dom_id: '#swagger-ui',
-url: "${service.currentServerURL}/api.json",
+url: "${basePathTrailingSlash}api.json",
 deepLinking: true,
 presets: [SwaggerUIBundle.presets.apis],
 plugins: [],

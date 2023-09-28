@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
@@ -22,7 +24,7 @@ public class CollectionMetadataUtil {
     
     private static final String ITEMS_REL = "items";
 
-    public static CollectionInfo toCollectionInfo(FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams) {
+    public static CollectionInfo toCollectionInfo(HttpHeaders headers, FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams) {
         String id = ft.getName();
         String title = ft.getTitle();
         String description = ft.getDescription();
@@ -30,18 +32,18 @@ public class CollectionMetadataUtil {
         List<Link> links = new ArrayList<>();
         // /collections/{collectionId}/items
         for (OutputFormat f : service.getOutputFormats()) {
-            links.add(getItemsLink(service, queryParams, ft, f));
+            links.add(getItemsLink(headers, service, queryParams, ft, f));
         }
 
         // /collections/{collectionId}/items?f={format}
         for (OutputFormat f : service.getOutputFormats()) {
             queryParams.put("f", f.getId());
-            links.add(getItemsLink(service, queryParams, ft, f));
+            links.add(getItemsLink(headers, service, queryParams, ft, f));
             queryParams.remove("f");
         }
 
-        links.add(getDescribedByLink(service, queryParams, ft));
-        links.add(getQueryablesLinks(service, queryParams, ft));
+        links.add(getDescribedByLink(headers, service, queryParams, ft));
+        links.add(getQueryablesLinks(headers, service, queryParams, ft));
 
         String[] crs = null;
         String storageCrs = null;
@@ -66,48 +68,48 @@ public class CollectionMetadataUtil {
     }
 
     @Deprecated
-    public static Link getItemsLink(FeatureServiceConfig service, FeatureType ft, String mimeType) {
+    public static Link getItemsLink(HttpHeaders headers, FeatureServiceConfig service, FeatureType ft, String mimeType) {
         String path = "/collections/" + ft.getName() + "/items";
-        String href = service.getCurrentServerURL() + path;
+        String href = service.getCurrentServerURL(headers::getHeaderString) + path;
         String rel = ITEMS_REL;
         String type = mimeType;
         return new Link(href, rel, type);
     }
 
     @Deprecated
-    public static Link getItemsLinkWithF(FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams, OutputFormat format) {
+    public static Link getItemsLinkWithF(HttpHeaders headers, FeatureServiceConfig service, FeatureType ft, Map<String, String> queryParams, OutputFormat format) {
         queryParams.put("f", format.getId());
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/items" + query;
-        String href = service.getCurrentServerURL() + path;
+        String href = service.getCurrentServerURL(headers::getHeaderString) + path;
         String rel = ITEMS_REL;
         String type = format.getMimeType();
         queryParams.remove("f");
         return new Link(href, rel, type);
     }
 
-    private static Link getItemsLink(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft, OutputFormat format) {
+    private static Link getItemsLink(HttpHeaders headers, FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft, OutputFormat format) {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/items" + query;
-        String href = service.getCurrentServerURL() + path;
+        String href = service.getCurrentServerURL(headers::getHeaderString) + path;
         String rel = ITEMS_REL;
         String type = format.getMimeType();
         return new Link(href, rel, type);
     }
     
-    private static Link getDescribedByLink(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
+    private static Link getDescribedByLink(HttpHeaders headers, FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/schema" + query;
-        String href = service.getCurrentServerURL() + path;
+        String href = service.getCurrentServerURL(headers::getHeaderString) + path;
         String rel = "describedBy";
         String type = "application/schema+json";
         return new Link(href, rel, type);
     }
 
-    private static Link getQueryablesLinks(FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
+    private static Link getQueryablesLinks(HttpHeaders headers, FeatureServiceConfig service, Map<String, String> queryParams, FeatureType ft) {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/queryables" + query;
-        String href = service.getCurrentServerURL() + path;
+        String href = service.getCurrentServerURL(headers::getHeaderString) + path;
         String rel = "http://www.opengis.net/def/rel/ogc/1.0/queryables";
         String type = "application/schema+json";
         return new Link(href, rel, type);

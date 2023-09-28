@@ -5,6 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
@@ -20,20 +21,21 @@ public class LandingPageImpl {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Root handleJSON(@Context UriInfo uriInfo) {
-        return handle(uriInfo, MediaType.APPLICATION_JSON, MediaType.TEXT_HTML);
+    public Root handleJSON(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
+        return handle(uriInfo, headers, MediaType.APPLICATION_JSON, MediaType.TEXT_HTML);
     }
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public HTMLContext<Root> handleHTML(@Context UriInfo uriInfo) {
-        return new HTMLContext<>(service, handle(uriInfo, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+    public HTMLContext<Root> handleHTML(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(uriInfo, headers, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
     }
     
-    private Root handle(UriInfo uriInfo, String contentType, String alternateContentType) {
+    private Root handle(UriInfo uriInfo, HttpHeaders headers, String contentType, String alternateContentType) {
         String title = service.getTitle();
         String description = service.getDescription();
-        String url = service.getCurrentServerURL();
+        String url = service.getCurrentServerURL(headers::getHeaderString);
         String query = OperationUtil.getQuery(service, uriInfo);
         
         return new Root.Builder(title, description, url, query, contentType)

@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
@@ -26,20 +27,27 @@ public class CollectionMetadataImpl {
     @GET
     @Path("/{collectionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CollectionInfo handle(@PathParam("collectionId") String collectionId, @Context UriInfo uriInfo) {
+    public CollectionInfo handle(
+            @PathParam("collectionId") String collectionId,
+            @Context UriInfo uriInfo,
+            @Context HttpHeaders headers) {
         FeatureType ft = service.getCollection(collectionId);
         if (ft == null) {
             throw new NotFoundException("Unknown collection");
         }
         Map<String, String> queryParams = OperationUtil.getQueryParams(service, uriInfo);
-        return CollectionMetadataUtil.toCollectionInfo(service, ft, queryParams);
+        return CollectionMetadataUtil.toCollectionInfo(headers, service, ft, queryParams);
     }
     
     @GET
     @Path("/{collectionId}")
     @Produces(MediaType.TEXT_HTML)
-    public HTMLContext<CollectionInfo> handleHTML(@PathParam("collectionId") String collectionId, @Context UriInfo uriInfo) {
-        return new HTMLContext<>(service, handle(collectionId, uriInfo));
+    public HTMLContext<CollectionInfo> handleHTML(
+            @PathParam("collectionId") String collectionId,
+            @Context UriInfo uriInfo,
+            @Context HttpHeaders headers) {
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(collectionId, uriInfo, headers));
     }
 
 }

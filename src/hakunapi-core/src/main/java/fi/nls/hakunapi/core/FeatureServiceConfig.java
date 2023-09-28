@@ -5,7 +5,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
@@ -18,10 +22,13 @@ import io.swagger.v3.oas.models.servers.Server;
 
 public abstract class FeatureServiceConfig {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FeatureServiceConfig.class);
+
     protected int limitDefault;
     protected int limitMaximum;
     protected Info info;
-    protected List<Server> servers;
+    protected Server server;
+    protected CurrentServerUrlProvider serverUrlProvider;
     protected EnumSet<ConformanceClass> conformanceClasses;
     protected Map<String, SecurityScheme> securitySchemes;
     protected List<SecurityRequirement> securityRequirements;
@@ -65,12 +72,20 @@ public abstract class FeatureServiceConfig {
         this.schemaExtensions = schemaExtensions;
     }
 
-    public List<Server> getServers() {
-        return servers;
+    public void setServers(List<Server> servers) {
+        if (servers.size() > 1) {
+            LOG.warn("Called setServers with more than one server, ignoring everything but the first value...");
+        }
+        setServer(servers.get(0));
     }
 
-    public void setServers(List<Server> servers) {
-        this.servers = servers;
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+        this.serverUrlProvider = CurrentServerUrlProviders.from(server.getUrl());
     }
 
     /**
@@ -124,8 +139,13 @@ public abstract class FeatureServiceConfig {
         this.securityRequirements = securityRequirements;
     }
 
+    @Deprecated
     public String getCurrentServerURL() {
-        return servers.get(0).getUrl();
+        return server.getUrl();
+    }
+
+    public String getCurrentServerURL(Function<String, String> dynamicValues) {
+        return serverUrlProvider.get(dynamicValues);
     }
 
     public abstract Collection<FeatureType> getCollections();

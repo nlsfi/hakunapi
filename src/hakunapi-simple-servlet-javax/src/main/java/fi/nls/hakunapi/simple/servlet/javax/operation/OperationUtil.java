@@ -4,15 +4,17 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
-import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.util.U;
 
 public class OperationUtil {
@@ -48,6 +50,13 @@ public class OperationUtil {
             }
         }
         return null;
+    }
+
+    public static Map<String, String> toSimpleMap(MultivaluedMap<String, String> requestHeaders) {
+        // Create case insensitive map
+        Map<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        requestHeaders.forEach((k, v) -> headers.put(k, v.get(0)));
+        return headers;
     }
 
 }

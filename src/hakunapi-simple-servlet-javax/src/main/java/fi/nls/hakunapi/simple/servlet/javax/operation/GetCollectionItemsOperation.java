@@ -98,9 +98,10 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
     @HEAD
     public Response handleHEAD(@PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,
-            @Context Request wsRequest) {
+            @Context Request wsRequest,
+            @Context HttpHeaders headers) {
         try {
-            GetFeatureRequest request = parseRequest(service, collectionId, uriInfo, wsRequest);
+            GetFeatureRequest request = parseRequest(service, collectionId, uriInfo, wsRequest, headers);
             if (request == null) {
                 return ResponseUtil.exception(Status.BAD_REQUEST, "Unknown collection");
             }
@@ -121,10 +122,11 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
     @GET
     public Response handleGET(@PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,
-            @Context Request wsRequest, @Context HttpHeaders headers) {
+            @Context Request wsRequest,
+            @Context HttpHeaders headers) {
         GetFeatureRequest request;
         try {
-            request = parseRequest(service, collectionId, uriInfo, wsRequest);
+            request = parseRequest(service, collectionId, uriInfo, wsRequest, headers);
             if (request == null) {
                 return ResponseUtil.exception(Status.BAD_REQUEST, "Unknown collection");
             }
@@ -182,7 +184,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 });
     }
     
-    public static GetFeatureRequest parseRequest(FeatureServiceConfig service, String collectionId, UriInfo uriInfo, Request wsRequest) {
+    public static GetFeatureRequest parseRequest(FeatureServiceConfig service, String collectionId, UriInfo uriInfo, Request wsRequest, HttpHeaders headers) {
         FeatureType ft = service.getCollection(collectionId);
         if (ft == null) {
             return null;
@@ -194,6 +196,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         request.setFormat(OperationUtil.determineOutputFormat(wsRequest, service.getOutputFormats()));
         request.addPathParam("collectionId", collectionId);
         request.addCollection(c);
+        request.setQueryHeaders(OperationUtil.toSimpleMap(headers.getRequestHeaders()));
 
         OperationUtil.getQueryParams(service, uriInfo).forEach((k, v) -> request.addQueryParam(k, v));
 
@@ -248,9 +251,11 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
     }
 
     public static List<Link> getLinks(FeatureServiceConfig service, GetFeatureRequest request, WriteReport report) {
-        GetFeatureCollection c = request.getCollections().get(0);
-        String path = Links.getItemsPath(service.getCurrentServerURL(), c.getFt().getName());
         Map<String, String> queryParams = request.getQueryParams();
+        Map<String, String> queryHeaders = request.getQueryHeaders();
+
+        GetFeatureCollection c = request.getCollections().get(0);
+        String path = Links.getItemsPath(service.getCurrentServerURL(queryHeaders::get), c.getFt().getName());
         String mimeType = request.getFormat().getMimeType();
 
         List<Link> links = new ArrayList<>();

@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <title>${service.title!""} - Collections</title>
+  <base href="${basePathTrailingSlash}">
 </head>
 <body>
 <main>
   <div class="container-lg py-4">
     <nav class="nav justify-content-between" aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="${service.currentServerURL}">Home</a></li>
+        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="${basePathTrailingSlash}">Home</a></li>
         <li class="breadcrumb-item active" aria-current="page">Collections</li>
       </ol>
       <ul class="nav">
@@ -33,7 +34,7 @@
     
     <ul>
       <#list model.collections as collection>
-      <li><a href="${service.currentServerURL}/collections/${collection.id}">${(collection.title)!(collection.id)}</a></li>
+      <li><a href="collections/${collection.id}">${(collection.title)!(collection.id)}</a></li>
       </#list>
     </ul>
     
