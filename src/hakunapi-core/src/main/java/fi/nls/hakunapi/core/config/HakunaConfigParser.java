@@ -110,8 +110,8 @@ public class HakunaConfigParser {
         if (prop != null) {
             return prop;
         }
-        // TODO: add fallback values to PlaceholderSegments?
-        throw new IllegalArgumentException("Could not find value for placeholder " + v);
+        // If we can't replace it at this stage leave it as is
+        return String.format("${%s}", v);
     }
 
     public Info readInfo() {
