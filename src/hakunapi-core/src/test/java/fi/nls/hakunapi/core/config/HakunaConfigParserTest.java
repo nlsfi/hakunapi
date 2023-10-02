@@ -2,9 +2,9 @@ package fi.nls.hakunapi.core.config;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import org.junit.Test;
+import java.util.Properties;
 
-import fi.nls.hakunapi.core.config.HakunaConfigParser;
+import org.junit.Test;
 
 public class HakunaConfigParserTest {
 
@@ -14,6 +14,28 @@ public class HakunaConfigParserTest {
         int[] actuals = HakunaConfigParser.getSRIDs(srid);
         int[] expecteds = { 3067, 4326, 1337 };
         assertArrayEquals(expecteds, actuals);
+    }
+
+    @Test
+    public void testExternalizedProperties() {
+        String property = "hakunapi.test";
+        String initialTestValue = System.getProperty(property);
+
+        System.setProperty(property, "dynamic");
+
+        Properties cfg = new Properties();
+        cfg.setProperty("test.static", "my_static_value");
+        cfg.setProperty("test.dynamic", "my_${hakunapi.test}_value");
+
+        HakunaConfigParser parser = new HakunaConfigParser(cfg);
+        parser.get("my_static_value", "test.static");
+        parser.get("my_dynamic_value", "test.dynamic");
+
+        if (initialTestValue != null) {
+            System.setProperty(property, initialTestValue);
+        } else {
+            System.clearProperty(property);
+        }
     }
 
 }

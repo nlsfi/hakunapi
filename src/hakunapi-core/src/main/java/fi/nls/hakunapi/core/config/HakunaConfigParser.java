@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.nls.hakunapi.core.CacheSettings;
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.HakunapiPlaceholder;
+import fi.nls.hakunapi.core.HakunapiPlaceholder.PlaceholderSegment;
 import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
@@ -77,9 +79,41 @@ public class HakunaConfigParser {
     protected final Properties cfg;
 
     public HakunaConfigParser(Properties cfg) {
-        this.cfg = cfg;
+        this.cfg = replacePlaceholders(cfg);
     }
     
+    private static Properties replacePlaceholders(Properties src) {
+        Properties replaced = new Properties();
+        src.forEach((k, v) -> replaced.put(k, replacePlaceholderValue(v)));
+        return replaced;
+    }
+
+    private static Object replacePlaceholderValue(Object value) {
+        if (value instanceof String) {
+            return HakunapiPlaceholder.parseSegments(((String) value).strip()).stream()
+                    .map(HakunaConfigParser::mapPlaceholderValue)
+                    .collect(Collectors.joining());
+        }
+        return value;
+    }
+
+    private static String mapPlaceholderValue(PlaceholderSegment segment) {
+        String v = segment.value();
+        if (!segment.isPlaceholder()) {
+            return v;
+        }
+        String env = System.getenv(v);
+        if (env != null) {
+            return env;
+        }
+        String prop = System.getProperty(v);
+        if (prop != null) {
+            return prop;
+        }
+        // TODO: add fallback values to PlaceholderSegments?
+        throw new IllegalArgumentException("Could not find value for placeholder " + v);
+    }
+
     public Info readInfo() {
         Info info = new Info();
         info.setTitle(cfg.getProperty("api.title", "hakunapi OGC API Features Server"));
