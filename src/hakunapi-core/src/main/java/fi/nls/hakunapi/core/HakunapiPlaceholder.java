@@ -2,6 +2,8 @@ package fi.nls.hakunapi.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class HakunapiPlaceholder {
 
@@ -11,6 +13,38 @@ public class HakunapiPlaceholder {
 
     private HakunapiPlaceholder() {
         // Block init
+    }
+
+    public static Properties replacePlaceholders(Properties src) {
+        Properties replaced = new Properties();
+        src.forEach((k, v) -> replaced.put(k, replacePlaceholderValue(v)));
+        return replaced;
+    }
+
+    private static Object replacePlaceholderValue(Object value) {
+        if (value instanceof String) {
+            return HakunapiPlaceholder.parseSegments(((String) value).strip()).stream()
+                    .map(HakunapiPlaceholder::mapPlaceholderValue)
+                    .collect(Collectors.joining());
+        }
+        return value;
+    }
+
+    private static String mapPlaceholderValue(PlaceholderSegment segment) {
+        String v = segment.value();
+        if (!segment.isPlaceholder()) {
+            return v;
+        }
+        String env = System.getenv(v);
+        if (env != null) {
+            return env;
+        }
+        String prop = System.getProperty(v);
+        if (prop != null) {
+            return prop;
+        }
+        // If we can't replace it at this stage leave it as is
+        return String.format("${%s}", v);
     }
 
     public static List<PlaceholderSegment> parseSegments(String pattern) {

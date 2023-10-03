@@ -1,6 +1,8 @@
 package fi.nls.hakunapi.simple.postgis;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Path;
@@ -100,20 +102,20 @@ public class PostGISSimpleSource implements SimpleSource {
         }
         return (DataSource) value;
     }
-    
+
     private HikariDataSource readDataSource(HakunaConfigParser cfg, Path path, String name) {
-        final HikariConfig config;
+        final Properties props;
 
         if (Arrays.stream(cfg.getMultiple("db", new String[0])).anyMatch(name::equals)) {
             // if name appears in db=a,b,c,d listing then consider it's configuration to be inlined
-            Properties props = getInlinedDBProperties(cfg, name);
-            config = new HikariConfig(props);
+            props = getInlinedDBProperties(cfg, name);
         } else {
             // Not inlined, check separate file $name.properties
             String dataSourcePath = getDataSourcePath(path, name);
-            config = new HikariConfig(dataSourcePath);
+            props = loadProperties(dataSourcePath);
         }
 
+        HikariConfig config = new HikariConfig(props);
         HikariDataSource ds = new HikariDataSource(config);
         return ds;
     }
@@ -131,6 +133,16 @@ public class PostGISSimpleSource implements SimpleSource {
             prefix = path.getParent().toString() + "/";
         }
         return prefix + name + ".properties";
+    }
+
+    private Properties loadProperties(String path) {
+       try (InputStream in = new FileInputStream(path)) {
+         Properties props = new Properties();
+         props.load(in);
+         return props;
+       } catch (IOException e) {
+          throw new RuntimeException("Failed to read property file", e);
+       }
     }
 
     @Override
