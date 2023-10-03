@@ -1,6 +1,8 @@
 package fi.nls.hakunapi.simple.postgis;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -74,13 +77,13 @@ public class PostGISSimpleSource implements SimpleSource {
         return "pg";
     }
 
-    private DataSource getDataSource(Path path, String name) throws NamingException {
+    private DataSource getDataSource(HakunaConfigParser cfg, Path path, String name) throws NamingException {
         DataSource ds = dataSources.get(name);
         if (ds == null) {
             if (name.startsWith("java:comp/env/")) {
                 ds = getJNDIDataSource(new InitialContext(), name);
             } else {
-                HikariDataSource hds = readDataSource(path, name);
+                HikariDataSource hds = readDataSource(cfg, path, name);
                 dataSourcesToClose.add(hds);
                 ds = hds;
             }
@@ -99,14 +102,30 @@ public class PostGISSimpleSource implements SimpleSource {
         }
         return (DataSource) value;
     }
-    
-    private HikariDataSource readDataSource(Path path, String name) {
-        String dataSourcePath = getDataSourcePath(path, name);
-        HikariConfig cfg = new HikariConfig(dataSourcePath);
-        HikariDataSource ds = new HikariDataSource(cfg);
+
+    private HikariDataSource readDataSource(HakunaConfigParser cfg, Path path, String name) {
+        final Properties props;
+
+        if (Arrays.stream(cfg.getMultiple("db", new String[0])).anyMatch(name::equals)) {
+            // if name appears in db=a,b,c,d listing then consider it's configuration to be inlined
+            props = getInlinedDBProperties(cfg, name);
+        } else {
+            // Not inlined, check separate file $name.properties
+            String dataSourcePath = getDataSourcePath(path, name);
+            props = loadProperties(dataSourcePath);
+        }
+
+        HikariConfig config = new HikariConfig(props);
+        HikariDataSource ds = new HikariDataSource(config);
         return ds;
     }
-    
+
+    protected static Properties getInlinedDBProperties(HakunaConfigParser cfg, String name) {
+        Properties props = new Properties();
+        cfg.getAllStartingWith("db." + name + ".").forEach(props::setProperty);
+        return props;
+    }
+
     protected static String getDataSourcePath(Path path, String name) {
         String prefix = "";
         Path parent = path.getParent();
@@ -114,6 +133,16 @@ public class PostGISSimpleSource implements SimpleSource {
             prefix = path.getParent().toString() + "/";
         }
         return prefix + name + ".properties";
+    }
+
+    private Properties loadProperties(String path) {
+       try (InputStream in = new FileInputStream(path)) {
+         Properties props = new Properties();
+         props.load(in);
+         return props;
+       } catch (IOException e) {
+          throw new RuntimeException("Failed to read property file", e);
+       }
     }
 
     @Override
@@ -129,7 +158,7 @@ public class PostGISSimpleSource implements SimpleSource {
         ft.setName(collectionId);
 
         String db = cfg.get(p + "db");
-        DataSource ds = getDataSource(path, db);
+        DataSource ds = getDataSource(cfg, path, db);
         if (ds == null) {
             throw new IllegalArgumentException("Unknown db: " + db + " collection: " + collectionId);
         }
