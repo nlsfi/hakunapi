@@ -1,5 +1,6 @@
 package fi.nls.hakunapi.simple.postgis;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import fi.nls.hakunapi.core.HakunapiPlaceholder;
 import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyCursor;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
@@ -135,14 +137,27 @@ public class PostGISSimpleSource implements SimpleSource {
         return prefix + name + ".properties";
     }
 
-    private Properties loadProperties(String path) {
-       try (InputStream in = new FileInputStream(path)) {
-         Properties props = new Properties();
-         props.load(in);
-         return props;
-       } catch (IOException e) {
-          throw new RuntimeException("Failed to read property file", e);
-       }
+    protected Properties loadProperties(String path) {
+        try (InputStream in = getInputStream(path)) {
+            Properties props = new Properties();
+            props.load(in);
+            return HakunapiPlaceholder.replacePlaceholders(props);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read property file", e);
+        }
+    }
+
+    protected InputStream getInputStream(String path) throws IOException {
+        File file = new File(path);
+        if (file.isFile()) {
+            return new FileInputStream(file);
+        }
+        InputStream resource = getClass().getResourceAsStream(path);
+        if (resource != null) {
+            return resource;
+        }
+        resource = getClass().getClassLoader().getResourceAsStream(path);
+        return resource;
     }
 
     @Override

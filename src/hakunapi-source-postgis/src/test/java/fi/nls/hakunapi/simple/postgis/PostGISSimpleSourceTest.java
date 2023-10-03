@@ -44,4 +44,24 @@ public class PostGISSimpleSourceTest {
         assertEquals("yeah", toPassToHikari.get("whatever"));
     }
 
+    @Test
+    public void testReadingExternalDBProperties() {
+        String oldMyProp = System.getProperty("my.prop");
+        System.setProperty("my.prop", "yeah");
+
+        PostGISSimpleSource pg = new PostGISSimpleSource();
+        Properties properties = pg.loadProperties("test.properties");
+        assertEquals(4, properties.size());
+        assertEquals("localhost", properties.get("datasource.url"));
+        assertEquals("5432", properties.get("datasource.port"));
+        assertEquals("no-you", properties.get("datasource.whatever"));
+        assertEquals("yeah", properties.get("whatever"));
+
+        if (oldMyProp == null) {
+            System.clearProperty("my.prop");
+        } else {
+            System.setProperty("my.prop", oldMyProp);
+        }
+    }
+
 }
