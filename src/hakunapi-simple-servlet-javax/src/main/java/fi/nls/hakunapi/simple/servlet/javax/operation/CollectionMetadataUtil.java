@@ -101,7 +101,7 @@ public class CollectionMetadataUtil {
         String query = U.toQuery(queryParams);
         String path = "/collections/" + ft.getName() + "/schema" + query;
         String href = service.getCurrentServerURL(headers::getHeaderString) + path;
-        String rel = "describedBy";
+        String rel = "describedby";
         String type = "application/schema+json";
         return new Link(href, rel, type);
     }
