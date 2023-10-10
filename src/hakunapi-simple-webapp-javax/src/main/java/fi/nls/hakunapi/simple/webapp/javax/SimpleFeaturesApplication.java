@@ -40,6 +40,7 @@ import fi.nls.hakunapi.simple.servlet.javax.GzipFilter;
 import fi.nls.hakunapi.simple.servlet.javax.GzipInterceptor;
 import fi.nls.hakunapi.simple.servlet.javax.NotFoundExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.javax.ObjectMapperProvider;
+import fi.nls.hakunapi.simple.servlet.javax.OpenAPIObjectMapperProvider;
 import fi.nls.hakunapi.simple.servlet.javax.operation.CollectionMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.CollectionsMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.ConformanceImpl;
@@ -119,6 +120,8 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         // Use Jackson as POJO provider
         register(ObjectMapperProvider.class);
         register(JacksonFeature.class);
+
+        register(OpenAPIObjectMapperProvider.class);
 
         OutputFormat html = service.getOutputFormat(OutputFormatHTML.ID);
         if (html != null) {
