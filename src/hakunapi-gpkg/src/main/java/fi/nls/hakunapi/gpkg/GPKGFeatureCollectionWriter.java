@@ -111,7 +111,7 @@ public class GPKGFeatureCollectionWriter extends GPKGFeatureWriter implements Fe
         insert.close();
         GPKGGeometryColumn geometryColumn = createGeometryColumn(ft.getGeom());
         GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(srid));
-        GPKGFeaturesTable tableEntry = new GPKGFeaturesTable(tableName, ft.getName(), ft.getTitle(), ft.getDescription(), envelope, srid);
+        GPKGFeaturesTable tableEntry = new GPKGFeaturesTable(tableName, ft.getTitle(), ft.getDescription(), envelope, srid);
         GPKG.insertFeaturesTableEntry(c, tableEntry);
         GPKG.insertGeometryColumn(c, geometryColumn);
         String idColumnName = isPropertyIntegerType(ft.getId()) ? ft.getId().getName() : FALLBACK_ID_FIELD;
