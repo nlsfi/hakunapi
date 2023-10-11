@@ -28,6 +28,10 @@ public class RtreeIndexExtension extends GPKGExtension {
         createTriggers(c);
     }
 
+    public static String getRtreeName(String tableName, String columnName) {
+        return String.format("rtree_%s_%s", tableName, columnName);
+    }
+
     private void createVirtualTable(Connection c) throws SQLException {
         String sql = String.format("CREATE VIRTUAL TABLE rtree_%s_%s USING rtree(id, minx, maxx, miny, maxy)",
                 tableName, columnName);

@@ -51,6 +51,10 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-source-gpkg</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-jsonfg</artifactId>
         </dependency>
         <dependency>

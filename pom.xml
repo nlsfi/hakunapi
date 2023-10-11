@@ -104,6 +104,11 @@
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
+				<artifactId>hakunapi-source-gpkg</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-html</artifactId>
 				<version>${project.version}</version>
 			</dependency>

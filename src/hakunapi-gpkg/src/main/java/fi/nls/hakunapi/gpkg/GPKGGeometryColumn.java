@@ -2,6 +2,8 @@ package fi.nls.hakunapi.gpkg;
 
 public class GPKGGeometryColumn {
 
+    public static final String GPKG_TABLE_GEOMETRY_COLUMNS = "gpkg_geometry_columns";
+
     public enum GeometryTypeName {
         GEOMETRY,
         POINT,

@@ -72,15 +72,15 @@ public class GPKGGeometry {
     public static int getWKBOffset(int envelopeIndicator) {
         switch (envelopeIndicator) {
         case NO_ENVELOPE:
-            return 8 + LENGHT_NO_ENVELOPE;
+            return LENGHT_NO_ENVELOPE;
         case XY_ENVELOPE:
-            return 8 + LENGHT_XY_ENVELOPE;
+            return LENGHT_XY_ENVELOPE;
         case XYZ_ENVELOPE:
-            return 8 + LENGHT_XYZ_ENVELOPE;
+            return LENGHT_XYZ_ENVELOPE;
         case XYM_ENVELOPE:
-            return 8 + LENGHT_XYM_ENVELOPE;
+            return LENGHT_XYM_ENVELOPE;
         case XYZM_ENVELOPE:
-            return 8 + LENGHT_XYZM_ENVELOPE;
+            return LENGHT_XYZM_ENVELOPE;
         default:
             throw new IllegalArgumentException("Invalid value");
         }

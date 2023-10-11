@@ -8,7 +8,6 @@ public class GPKGFeaturesTable {
 
     private final String tableName;
     private final String identifier;
-    private final String title;
     private final String description;
     private final double minX;
     private final double minY;
@@ -16,10 +15,9 @@ public class GPKGFeaturesTable {
     private final double maxY;
     private final int srid;
 
-    public GPKGFeaturesTable(String tableName, String identifier, String title, String description, Envelope envelope, int srid) {
+    public GPKGFeaturesTable(String tableName, String identifier, String description, Envelope envelope, int srid) {
         this.tableName = tableName;
         this.identifier = identifier;
-        this.title = title;
         this.description = description;
         this.minX = envelope.getMinX();
         this.minY = envelope.getMinY();
@@ -34,10 +32,6 @@ public class GPKGFeaturesTable {
 
     public String getIdentifier() {
         return identifier;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getDescription() {
