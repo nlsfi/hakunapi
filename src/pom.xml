@@ -16,6 +16,7 @@
 		<module>hakunapi-simple-webapp-javax</module>
 		<module>hakunapi-source-postgis</module>
 		<module>hakunapi-geojson</module>
+		<module>hakunapi-jsonfg</module>
 		<module>hakunapi-gpkg</module>
 		<module>hakunapi-html</module>
 		<module>hakunapi-gml</module>
