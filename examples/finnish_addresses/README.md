@@ -97,6 +97,16 @@ Restart your tomcat instance and navigate to http://localhost:8080/features
 
 ## Preparing for production
 
+### Configure contact information
+
+Enable (by removing the #) and provide correct values for the following properties in `addresses.properties`:
+
+```
+#api.contact.name=Name of Contact
+#api.contact.email=concat@email.com
+#api.contact.url=https://github.com/nlsfi/hakunapi
+```
+
 ### Configure endpoint servers
 
 In order for hakunapi to work properly it needs to know the URL the user is using to access it. Currently hakunapi only supports setting this manually in the configuration (meaning there's no support for extracting the information from http headers for example), see `addresses.properties` lines 12-17:
