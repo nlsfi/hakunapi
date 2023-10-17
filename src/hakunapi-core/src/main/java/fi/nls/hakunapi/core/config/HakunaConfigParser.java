@@ -88,10 +88,12 @@ public class HakunaConfigParser {
         info.setDescription(cfg.getProperty("api.description", "hakunapi OGC API Features Server"));
 
         Contact contact = new Contact();
-        contact.setName(cfg.getProperty("api.contact.name", "N/A"));
-        contact.setEmail(cfg.getProperty("api.contact.email", "N/A"));
-        contact.setUrl(cfg.getProperty("api.contact.url", "N/A"));
-        info.setContact(contact);
+        contact.setName(cfg.getProperty("api.contact.name"));
+        contact.setEmail(cfg.getProperty("api.contact.email"));
+        contact.setUrl(cfg.getProperty("api.contact.url"));
+        if (contact.getName() != null || contact.getEmail() != null || contact.getUrl() != null) {
+            info.setContact(contact);
+        }
 
         License license = new License();
         license.setName(cfg.getProperty("api.license.name"));
