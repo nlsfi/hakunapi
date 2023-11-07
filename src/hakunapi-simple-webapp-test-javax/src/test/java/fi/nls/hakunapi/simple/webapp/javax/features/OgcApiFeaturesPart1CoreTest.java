@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.either;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 
@@ -76,6 +77,7 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 		with(response)
 				//
 				.assertThat("$.openapi", equalTo("3.0.1"));
+		assertFalse(response.contains("exampleSetFlag"));
 	}
 
 	@SuppressWarnings("unchecked")
