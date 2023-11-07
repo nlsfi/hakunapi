@@ -3,32 +3,29 @@ package fi.nls.hakunapi.jsonfg;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
-import fi.nls.hakunapi.geojson.hakuna.JSONFGFeatureCollectionWriter;
-import fi.nls.hakunapi.geojson.hakuna.JSONFGSingleFeatureWriter;
 
-public class JSONFGOutputFormat implements OutputFormat, JSONFG {
+public class JSONFGOutputFormat implements OutputFormat {
 
 	public static final OutputFormat INSTANCE = new JSONFGOutputFormat();
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return JSONFG.TYPE;
 	}
 
 	@Override
 	public String getMediaMainType() {
-		return MEDIA_MAIN_TYPE;
+		return JSONFG.MEDIA_MAIN_TYPE;
 	}
 
 	@Override
 	public String getMediaSubType() {
-		return MEDIA_SUB_TYPE;
+		return JSONFG.MEDIA_SUB_TYPE;
 	}
 
 	@Override
 	public String getMimeType() {
-		return MIME_TYPE;
+		return JSONFG.MIME_TYPE;
 	}
 
 	@Override

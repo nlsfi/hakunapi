@@ -90,7 +90,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         register(NotFoundExceptionMapper.class);
         register(CatchAllExceptionMapper.class);
 
-        register(GlobalFQueryParamFilter.class);
+        //register(GlobalFQueryParamFilter.class);
 
         if (Boolean.parseBoolean(parser.get("hakuna.cors", "true"))) {
             register(CorsFilter.class);

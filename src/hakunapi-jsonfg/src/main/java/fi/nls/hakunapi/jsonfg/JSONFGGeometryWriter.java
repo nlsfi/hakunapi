@@ -1,9 +1,11 @@
-package fi.nls.hakunapi.geojson.hakuna;
+package fi.nls.hakunapi.jsonfg;
 
 import java.io.IOException;
 
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.geojson.hakuna.HakunaGeoJSONGeometryWriter;
+import fi.nls.hakunapi.geojson.hakuna.HakunaJsonWriter;
 
 public class JSONFGGeometryWriter extends HakunaGeoJSONGeometryWriter {
 

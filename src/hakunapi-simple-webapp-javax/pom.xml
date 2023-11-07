@@ -36,6 +36,10 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-jsonfg</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-smile</artifactId>
         </dependency>
         <dependency>

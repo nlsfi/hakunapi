@@ -16,6 +16,7 @@ import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
+import fi.nls.hakunapi.jsonfg.JSONFGFeatureCollectionWriter;
 import fi.nls.hakunapi.jsonfg.JSONFGTestUtils;
 
 public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {

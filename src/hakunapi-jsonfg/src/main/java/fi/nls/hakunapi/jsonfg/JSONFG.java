@@ -1,10 +1,23 @@
 package fi.nls.hakunapi.jsonfg;
 
-import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
-import fi.nls.hakunapi.core.schemas.Crs;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
 
-public interface JSONFG {
+import org.locationtech.jts.geom.Geometry;
+
+import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.GeometryWriter;
+import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
+import fi.nls.hakunapi.core.projection.ProjectionHelper;
+import fi.nls.hakunapi.core.projection.ProjectionTransformer;
+import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
+import fi.nls.hakunapi.core.util.CrsUtil;
+import fi.nls.hakunapi.geojson.hakuna.HakunaJsonWriter;
+
+public final class JSONFG {
 	public static final String TYPE = "jsonfg";
 
 	public static final String MEDIA_MAIN_TYPE = "application";
@@ -23,6 +36,8 @@ public interface JSONFG {
 	// writer already has camelCase timeStamp
 	public static final byte[] _TIMESTAMP = "timestamp".getBytes();
 	public static final byte[] INTERVAL = "interval".getBytes();
+
+	public static final byte[] GEOMETRY = "geometry".getBytes(StandardCharsets.UTF_8);
 	public static final byte[] PLACE = "place".getBytes();
 
 	public static final byte[][] CONF = new byte[][] {
@@ -31,20 +46,15 @@ public interface JSONFG {
 			// "http://www.opengis.net/spec/json-fg-1/0.2/conf/types-schemas".getBytes()
 	};
 
-	// TODO: JSONFG schema differs from JSON schema.
-	// We'll need JSONFG schema resource or SchemaFormatFactorySpi or such to
-	// support
-	// providing one
-	default String getJSONFGSchema(FeatureType ft) {
+	/*
+	 * TODO: JSONFG schema differs from JSON schema. We'll need JSONFG schema
+	 * resource or SchemaFormatFactorySpi or such to support providing JSONFG schema
+	 */
+	public static String getJSONFGSchema(FeatureType ft) {
 		return null;
 	}
 
-	// TODO: spec
-	default boolean isWGS84(int srid) {
-		return srid == Crs.CRS84_SRID || srid == 4326 || srid == 4258;
-	}
-
-	default Integer getGeometryDimension(HakunaPropertyGeometry geomType) {
+	public static Integer getGeometryDimension(HakunaPropertyGeometry geomType) {
 		if (geomType == null) {
 			return null;
 		}
@@ -72,4 +82,52 @@ public interface JSONFG {
 		}
 		return geometryDimension;
 	}
+
+	public static void writePlace(HakunaJsonWriter json, HakunaGeometry placeGeometry, HakunaGeometry geometry,
+			JSONFGGeometryWriter placeJson, GeometryWriter geometryJson, ProjectionTransformer outputCrs84Proj)
+			throws Exception {
+		if (placeGeometry != null) {
+
+			placeGeometry.write(placeJson);
+			if (geometry != null) {
+				geometry.write(geometryJson);
+			}
+		} else if (geometry != null) {
+			geometry.write(geometryJson);
+		} else {
+			json.writeFieldName(GEOMETRY);
+			json.writeNull();
+		}
+	}
+
+	public static void writeTemporal(HakunaJsonWriter json, LocalDate date, Instant timestamp) throws IOException {
+		// TODO what when why multiple temporal?
+		if (date != null || timestamp != null) {
+
+			json.writeFieldName(JSONFG.TIME);
+			json.writeStartObject();
+
+			if (timestamp != null) {
+				json.writeFieldName(JSONFG._TIMESTAMP);
+				json.writeStringUnsafe(timestamp.toString());
+			} else if (date != null) {
+				json.writeFieldName(DATE);
+				json.writeStringUnsafe(date.toString());
+			}
+
+			json.writeEndObject();
+		}
+
+	}
+
+	public static HakunaGeometry getFootprintGeometry(HakunaGeometry placeGeometry,
+			ProjectionTransformer outputCrs84Proj) {
+	
+		Geometry src = placeGeometry.toJTSGeometry();
+		
+		Geometry dup = src.copy();
+		Geometry wgs84Geometry = ProjectionHelper.reproject(dup, outputCrs84Proj);
+		return new HakunaGeometryJTS(wgs84Geometry);		
+	}
+	
 }
