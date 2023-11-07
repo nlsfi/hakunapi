@@ -2,7 +2,6 @@ package fi.nls.hakunapi.jsonfg;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
@@ -20,10 +19,14 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
 
 	// local cached (+inherited geometryCached & cachedGeometry )
 	FeatureType collectionFt = null;
-	List<DatetimeProperty> collectionDateTimeProperties;
+	DatetimeProperty dateTimeProperty;
+	String dateTimePropertyName;
 	ProjectionTransformer outputCrs84Proj;
 
 	boolean isCrs84;
+
+	private Instant timestamp;
+	private LocalDate date;
 
 	@Override
 	public void initGeometryWriter(HakunaGeometryDimension dims) {
@@ -36,7 +39,11 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
 	protected void startJsonFgFeature(FeatureType ft) throws Exception {
 
 		collectionFt = ft;
-		collectionDateTimeProperties = ft.getDatetimeProperties();
+
+		if (ft.getDatetimeProperties() != null && !ft.getDatetimeProperties().isEmpty()) {
+			dateTimeProperty = ft.getDatetimeProperties().get(0);
+			dateTimePropertyName = dateTimeProperty.getProperty().getName();
+		}
 
 		if (getSrid() == 84) {
 			outputCrs84Proj = null;
@@ -110,40 +117,33 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
 		}
 
 		JSONFG.writePlace(json, placeGeometry, geometry, placeJson, geometryJson, outputCrs84Proj);
-
-		geometryCached = false;
-		cachedGeometry = null;
-
-		// JSONFG.writeTemporal(json, date, timestamp);
+		JSONFG.writeTemporal(json, date, timestamp);
 
 		// writeEndObject handled outside
 	}
 
 	@Override
 	public void writeGeometry(String name, HakunaGeometry geometry) throws Exception {
-		// force cache to enable geometry and/or place output quirks
 		geometryCached = true;
 		cachedGeometry = geometry;
 	}
 
 	@Override
 	public void writeProperty(String name, Instant value) throws Exception {
-		super.writeProperty(name, value);
-
-		/*
-		 * // TODO what when why multiple temporal? if (timestamp == null && value !=
-		 * null) { timestamp = value; }
-		 */
+		if (dateTimePropertyName == null || !name.equals(dateTimePropertyName)) {
+			super.writeProperty(name, value);
+		} else {
+			timestamp = value;
+		}
 	}
 
 	@Override
 	public void writeProperty(String name, LocalDate value) throws Exception {
-		super.writeProperty(name, value);
-
-		/*
-		 * // TODO what when why multiple temporal? if (date == null && value != null) {
-		 * date = value; }
-		 */
+		if (dateTimePropertyName == null || !name.equals(dateTimePropertyName)) {
+			super.writeProperty(name, value);
+		} else {
+			date = value;
+		}
 	}
 
 }

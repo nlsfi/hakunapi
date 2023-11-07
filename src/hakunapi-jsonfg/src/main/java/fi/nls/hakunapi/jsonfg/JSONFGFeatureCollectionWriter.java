@@ -26,10 +26,14 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
 	protected JSONFGGeometryWriter placeJson;
 
 	FeatureType collectionFt = null;
-	List<DatetimeProperty> collectionDateTimeProperties;
+	DatetimeProperty dateTimeProperty;
+	String dateTimePropertyName;
 
 	ProjectionTransformer outputCrs84Proj;
 	boolean isCrs84;
+
+	private Instant timestamp;
+	private LocalDate date;
 
 	@Override
 	public void initGeometryWriter(HakunaGeometryDimension dims) {
@@ -48,6 +52,10 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
 	public void startFeatureCollection(FeatureType ft, String layername) throws Exception {
 
 		collectionFt = ft;
+		if (ft.getDatetimeProperties() != null && !ft.getDatetimeProperties().isEmpty()) {
+			dateTimeProperty = ft.getDatetimeProperties().get(0);
+			dateTimePropertyName = dateTimeProperty.getProperty().getName();
+		}
 		if (getSrid() == 84) {
 			outputCrs84Proj = null;
 			isCrs84 = true;
@@ -113,17 +121,17 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
 
 	@Override
 	public void startFeature(String fid) throws IOException {
-		startFeature();
+		startJsonFgFeature();
 		json.writeString(fid);
 	}
 
 	@Override
 	public void startFeature(long fid) throws IOException {
-		startFeature();
+		startJsonFgFeature();
 		json.writeNumber(fid);
 	}
 
-	private void startFeature() throws IOException {
+	private void startJsonFgFeature() throws IOException {
 		resetFeature();
 		json.writeStartObject();
 		json.writeFieldName(HakunaGeoJSON.TYPE);
@@ -133,37 +141,35 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
 	}
 
 	private void resetFeature() {
-//		date = null;
-//		timestamp = null;
+		date = null;
+		timestamp = null;
 		cachedGeometry = null;
 		geometryCached = false;
 
 	}
 
 	@Override
-	public void writeProperty(String name, Instant value) throws Exception {
-		super.writeProperty(name, value);
+	public void writeGeometry(String name, HakunaGeometry geometry) throws Exception {
+		geometryCached = true;
+		cachedGeometry = geometry;
+	}
 
-		/*
-		 * // TODO what when why multiple temporal? if (timestamp == null && value !=
-		 * null) { timestamp = value; }
-		 */
+	@Override
+	public void writeProperty(String name, Instant value) throws Exception {
+		if (dateTimePropertyName == null || !name.equals(dateTimePropertyName)) {
+			super.writeProperty(name, value);
+		} else {
+			timestamp = value;
+		}
 	}
 
 	@Override
 	public void writeProperty(String name, LocalDate value) throws Exception {
-		super.writeProperty(name, value);
-		/*
-		 * // TODO what when why multiple temporal? if (date == null && value != null) {
-		 * date = value; }
-		 */
-	}
-
-	@Override
-	public void writeGeometry(String name, HakunaGeometry geometry) throws Exception {
-		// force cache to enable quirks
-		geometryCached = true;
-		cachedGeometry = geometry;
+		if (dateTimePropertyName == null || !name.equals(dateTimePropertyName)) {
+			super.writeProperty(name, value);
+		} else {
+			date = value;
+		}
 	}
 
 	@Override
@@ -181,11 +187,7 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
 		}
 
 		JSONFG.writePlace(json, placeGeometry, geometry, placeJson, geometryJson, outputCrs84Proj);
-		// cleanup
-		geometryCached = false;
-		cachedGeometry = null;
-
-		// JSONFG.writeTemporal(json, date, timestamp);
+		JSONFG.writeTemporal(json, date, timestamp);
 
 		json.writeEndObject();
 	}

@@ -34,7 +34,7 @@ public final class JSONFG {
 	public static final byte[] DATE = "date".getBytes();
 
 	// writer already has camelCase timeStamp
-	public static final byte[] _TIMESTAMP = "timestamp".getBytes();
+	public static final byte[] TIMESTAMP = "timestamp".getBytes();
 	public static final byte[] INTERVAL = "interval".getBytes();
 
 	public static final byte[] GEOMETRY = "geometry".getBytes(StandardCharsets.UTF_8);
@@ -101,33 +101,33 @@ public final class JSONFG {
 	}
 
 	public static void writeTemporal(HakunaJsonWriter json, LocalDate date, Instant timestamp) throws IOException {
-		// TODO what when why multiple temporal?
-		if (date != null || timestamp != null) {
-
-			json.writeFieldName(JSONFG.TIME);
-			json.writeStartObject();
-
-			if (timestamp != null) {
-				json.writeFieldName(JSONFG._TIMESTAMP);
-				json.writeStringUnsafe(timestamp.toString());
-			} else if (date != null) {
-				json.writeFieldName(DATE);
-				json.writeStringUnsafe(date.toString());
-			}
-
-			json.writeEndObject();
+		if (date == null && timestamp == null) {
+			return;
 		}
+
+		json.writeFieldName(JSONFG.TIME);
+		json.writeStartObject();
+
+		if (timestamp != null) {
+			json.writeFieldName(JSONFG.TIMESTAMP);
+			json.writeStringUnsafe(timestamp.toString());
+		} else if (date != null) {
+			json.writeFieldName(DATE);
+			json.writeStringUnsafe(date.toString());
+		}
+
+		json.writeEndObject();
 
 	}
 
 	public static HakunaGeometry getFootprintGeometry(HakunaGeometry placeGeometry,
 			ProjectionTransformer outputCrs84Proj) {
-	
+
 		Geometry src = placeGeometry.toJTSGeometry();
-		
+
 		Geometry dup = src.copy();
 		Geometry wgs84Geometry = ProjectionHelper.reproject(dup, outputCrs84Proj);
-		return new HakunaGeometryJTS(wgs84Geometry);		
+		return new HakunaGeometryJTS(wgs84Geometry);
 	}
-	
+
 }
