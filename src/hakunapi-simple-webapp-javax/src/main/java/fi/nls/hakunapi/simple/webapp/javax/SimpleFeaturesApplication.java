@@ -90,6 +90,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         register(NotFoundExceptionMapper.class);
         register(CatchAllExceptionMapper.class);
 
+        final GlobalFQueryParamFilter fParamFilter = new GlobalFQueryParamFilter(service);
         register(GlobalFQueryParamFilter.class);
 
         if (Boolean.parseBoolean(parser.get("hakuna.cors", "true"))) {
@@ -111,6 +112,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
                 bind(service).to(FeatureServiceConfig.class);
                 bind(service).to(SimpleFeatureServiceConfig.class);
                 bind(api).to(OpenAPI30ApiOperation.class);
+                bind(fParamFilter).to(GlobalFQueryParamFilter.class);
                 bind(cacheManager).to(CacheManager.class);
             }
         });

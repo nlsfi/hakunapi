@@ -11,11 +11,18 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.MetadataFormat;
 
 @Provider
 @PreMatching
 public class GlobalFQueryParamFilter implements ContainerRequestFilter {
+
+    private final FeatureServiceConfig service;
+
+    public GlobalFQueryParamFilter(FeatureServiceConfig service) {
+        this.service = service;
+    }
 
     private static final String F_QUERY_PARAM = "f";
 
@@ -26,24 +33,24 @@ public class GlobalFQueryParamFilter implements ContainerRequestFilter {
             return;
         }
 
-        MetadataFormat format = Arrays.stream(MetadataFormat.values())
+        List<String> mediaTypeToPrefer = Arrays.stream(MetadataFormat.values())
                 .filter(it -> it.id.equals(f))
+                .map(it -> it.contentTypes)
                 .findAny()
-                .orElse(null);
+                .orElseGet(() -> service.getOutputFormat(f) != null ? List.of(service.getOutputFormat(f).getMimeType()) : null);
 
-        if (format == null) {
+        if (mediaTypeToPrefer == null) {
             String expected = Arrays.stream(MetadataFormat.values())
                     .map(it -> it.id)
                     .collect(Collectors.joining(",", "[", "]"));
             req.abortWith(ResponseUtil.exception(
                     Status.BAD_REQUEST,
                     "Invalid value for param '" + F_QUERY_PARAM + "', expected one of " + expected));
-            return;
+        } else {
+            String accept = req.getHeaders().getFirst("accept");
+            String modified = modifyAcceptHeader(accept, mediaTypeToPrefer);
+            req.getHeaders().put("accept", List.of(modified));
         }
-
-        String accept = req.getHeaders().getFirst("accept");
-        String modified = modifyAcceptHeader(accept, format.contentTypes);
-        req.getHeaders().put("accept", List.of(modified));
     }
 
     private String modifyAcceptHeader(String accept, List<String> mediaTypeToPrefer) {
