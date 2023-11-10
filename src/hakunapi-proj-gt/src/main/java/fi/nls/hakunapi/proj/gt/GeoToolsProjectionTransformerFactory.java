@@ -1,7 +1,6 @@
 package fi.nls.hakunapi.proj.gt;
 
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CompoundCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -38,7 +37,12 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
         CoordinateReferenceSystem from = getCRS(sridFrom);
         CoordinateReferenceSystem to = getCRS(sridTo);
         if (equals2D(from, to)) {
-            return NOPProjectionTransformer.INSTANCE;
+            // Double check if they are the same even without forcing lon,lat order
+            CoordinateReferenceSystem fromAuthority = getCRSForce(sridFrom, false);
+            CoordinateReferenceSystem toAuthority = getCRSForce(sridTo, false);
+            if (equals2D(fromAuthority, toAuthority)) {
+                return NOPProjectionTransformer.INSTANCE;
+            }
         }
         return getProjectionTransformer(sridFrom, from, sridTo, to);
     }
@@ -74,9 +78,14 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
 
     private CoordinateReferenceSystem getCRS(int srid) throws Exception {
         if (srid == 3903) {
+            // TODO: Figure out if this is causes more errors than it fixes
             srid = 3067;
         }
-        return CRS.decode("EPSG:" + srid, true);
+        return getCRSForce(srid, true);
+    }
+
+    private CoordinateReferenceSystem getCRSForce(int srid, boolean forceLonLat) throws Exception {
+        return CRS.decode("EPSG:" + srid, forceLonLat);
     }
 
     private GeoToolsProjectionTransformer getProjectionTransformer(int fromSRID,
