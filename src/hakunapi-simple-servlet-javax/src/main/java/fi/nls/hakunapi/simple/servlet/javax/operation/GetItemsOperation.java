@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -82,8 +83,12 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
             request.getCollections().stream()
                     .map(fc -> fc.getFt().getParameters())
                     .forEach(param -> GetFeaturesUtil.modify(service, request, param, queryParams));
+
+            GetCollectionItemsOperation.checkUnknownOutputFormat(request);
         } catch (IllegalArgumentException e) {
             return ResponseUtil.exception(Status.BAD_REQUEST, e.getMessage());
+        } catch (NotAcceptableException e) {
+            return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
 
         StreamingOutput output = new StreamingOutput() {
