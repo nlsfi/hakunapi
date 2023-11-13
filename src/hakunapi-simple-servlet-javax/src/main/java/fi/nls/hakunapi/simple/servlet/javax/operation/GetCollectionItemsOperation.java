@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -132,6 +133,8 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
             }
         } catch (IllegalArgumentException e) {
             return ResponseUtil.exception(Status.BAD_REQUEST, e.getMessage());
+        } catch (NotAcceptableException e) {
+            return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
 
         GetFeatureCollection c = request.getCollections().get(0);
@@ -203,7 +206,9 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         GetFeaturesUtil.modify(service, request, ParamUtil.getParameters(ft, service), uriInfo.getQueryParameters());
 
         checkUnknownParameters(service, ParamUtil.getParameters(ft, service), uriInfo.getQueryParameters());
-        
+
+        checkUnknownOutputFormat(request);
+
         return request;
     }
     
@@ -247,6 +252,12 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
             }
             String err = String.format("Unknown parameter '%s'", key);
             throw new IllegalArgumentException(err);
+        }
+    }
+
+    public static void checkUnknownOutputFormat(GetFeatureRequest request) {
+        if (request.getFormat() == null) {
+            throw new NotAcceptableException();
         }
     }
 
