@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -121,8 +122,11 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
             GetFeaturesUtil.modify(service, request, NON_DYNAMIC, uriInfo.getQueryParameters());
 
             GetCollectionItemsOperation.checkUnknownParameters(service, NON_DYNAMIC, uriInfo.getQueryParameters());
+            GetCollectionItemsOperation.checkUnknownOutputFormat(request);
         } catch (IllegalArgumentException e) {
             return ResponseUtil.exception(Status.BAD_REQUEST, e.getMessage());
+        } catch (NotAcceptableException e) {
+            return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
         try (SingleFeatureWriter writer = request.getFormat().getSingleFeatureWriter()) {
             return getResponse(writer, ft.getFeatureProducer(), request, c);
