@@ -38,6 +38,7 @@ import fi.nls.hakunapi.simple.servlet.javax.CorsFilter;
 import fi.nls.hakunapi.simple.servlet.javax.GlobalFQueryParamFilter;
 import fi.nls.hakunapi.simple.servlet.javax.GzipFilter;
 import fi.nls.hakunapi.simple.servlet.javax.GzipInterceptor;
+import fi.nls.hakunapi.simple.servlet.javax.NotAcceptableExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.javax.NotFoundExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.javax.ObjectMapperProvider;
 import fi.nls.hakunapi.simple.servlet.javax.OpenAPIObjectMapperProvider;
@@ -88,9 +89,11 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         }
 
         register(NotFoundExceptionMapper.class);
+        register(NotAcceptableExceptionMapper.class);
         register(CatchAllExceptionMapper.class);
 
-        //register(GlobalFQueryParamFilter.class);
+        final GlobalFQueryParamFilter fParamFilter = new GlobalFQueryParamFilter(service);
+        register(GlobalFQueryParamFilter.class);
 
         if (Boolean.parseBoolean(parser.get("hakuna.cors", "true"))) {
             register(CorsFilter.class);
@@ -111,6 +114,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
                 bind(service).to(FeatureServiceConfig.class);
                 bind(service).to(SimpleFeatureServiceConfig.class);
                 bind(api).to(OpenAPI30ApiOperation.class);
+                bind(fParamFilter).to(GlobalFQueryParamFilter.class);
                 bind(cacheManager).to(CacheManager.class);
             }
         });

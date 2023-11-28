@@ -303,7 +303,7 @@ public class HakunaGeometryEWKB implements HakunaGeometry {
             }
             wkb[off] = ewkb[0];
             putInt(wkb, off + 1, bo, type);
-            System.arraycopy(ewkb, 9, wkb, off + 5, wkb.length - 5);
+            System.arraycopy(ewkb, 9, wkb, off + 5, ewkb.length - 9);
             return;
         }
 
