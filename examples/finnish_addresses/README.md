@@ -97,6 +97,14 @@ Restart your tomcat instance and navigate to http://localhost:8080/features
 
 ## Preparing for production
 
+### Configure GeoPackage output format
+
+GeoPackage output format requires a directory in which it can create temporary SQLite (geopackage) files before they are ready to be written out to the client. On startup GeoPackage output format factory checks if the configured directory exists and also tests if it can write files to that directory. If any of the checks fail the output format doesn't get loaded. So either create a `tmp` directory in `/app/features_addresses` or adjust the tmp directory path to fit your needs.
+
+```
+formats.gpkg.dir=/app/features_addresses/tmp
+```
+
 ### Configure contact information
 
 Enable (by removing the #) and provide correct values for the following properties in `addresses.properties`:
