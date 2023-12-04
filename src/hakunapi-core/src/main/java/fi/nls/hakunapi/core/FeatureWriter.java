@@ -27,8 +27,8 @@ public interface FeatureWriter extends AutoCloseable {
     public default void init(OutputStream out, int maxDecimalsCoordinate, int srid, boolean crsIsLatLon) throws Exception {
         int minDecimalsFloat = 0;
         int maxDecimalsFloat = 5;
-        int maxDecimalsDouble = 0;
-        int minDecimalsDouble = 8;
+        int minDecimalsDouble = 0;
+        int maxDecimalsDouble = 8;
         int minDecimalsOrdinate = 0;
         FloatingPointFormatter f = new DefaultFloatingPointFormatter(
                 minDecimalsFloat,
