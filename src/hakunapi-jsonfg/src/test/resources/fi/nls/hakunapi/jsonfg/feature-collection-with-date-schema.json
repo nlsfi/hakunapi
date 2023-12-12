@@ -1,0 +1,175 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/nlsfi/hakunapi/jsonfg/FeatureCollectionWithDate",
+	"title": "Schema for JSONFG",
+	"description": "JSON Schema describing the properties for each feature",
+	"type": "object",
+	"properties": {
+		"required": [
+			"type",
+			"features"
+		],
+		"type": "object",
+		"properties": {
+			"conformsTo": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"required": true
+			},
+			"featureType": {
+				"type": "string",
+				"required": true
+			},
+			"geometryDimension": {
+				"type": "integer",
+				"required": true
+			},
+			"coordRefSys": {
+				"type": "string",
+				"required": false
+			},
+			"type": {
+				"type": "string",
+				"enum": [
+					"FeatureCollection"
+				]
+			},
+			"features": {
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/Feature"
+				}
+			},
+			"links": {
+				"type": "array",
+				"items": {
+					"type": "object"
+				},
+				"required": false
+			},
+			"timeStamp": {
+				"type": "string",
+				"format": "date-time"
+			},
+			"numberMatched": {
+				"minimum": 0,
+				"type": "integer",
+				"format": "int32"
+			},
+			"numberReturned": {
+				"minimum": 0,
+				"type": "integer",
+				"format": "int32"
+			}
+		}
+	},
+	"$defs": {
+		"Feature": {
+			"properties": {
+				"conformsTo": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"required": false
+				},
+				"featureType": {
+					"type": "string",
+					"required": false
+				},
+				"geometryDimension": {
+					"type": "integer",
+					"required": false
+				},
+				"coordRefSys": {
+					"type": "string",
+					"required": false
+				},
+				"type": {
+					"type": "string",
+					"enum": [
+						"Feature"
+					],
+					"required": true
+				},
+				"id": {
+					"type": "integer"
+				},
+				"geometry": {
+					"required": [
+						"type",
+						"coordinates"
+					],
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"Point"
+							]
+						},
+						"coordinates": {
+							"minItems": 2,
+							"type": "array",
+							"items": {
+								"type": "number"
+							}
+						}
+					}
+				},
+				"place": {
+					"required": [
+						"type",
+						"coordinates"
+					],
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"Point"
+							]
+						},
+						"coordinates": {
+							"minItems": 2,
+							"type": "array",
+							"items": {
+								"type": "number"
+							}
+						}
+					}
+				},
+				"properties": {
+					"type": "object",
+					"properties": {
+						"prop": {
+							"type": "string",
+							"required": false
+						},
+						"date": {
+							"type": "string",
+							"format": "date",
+							"required": false
+						}
+					}
+				},
+				"time": {
+					"type": "object",
+					"properties": {
+						"date": {
+							"type": "string",
+							"format": "date",
+							"required": true
+						}
+					}
+				},
+				"timeStamp": {
+					"type": "string",
+					"format": "date-time"
+				}
+			}
+		}
+	}
+}

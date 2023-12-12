@@ -8,6 +8,9 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion.VersionFlag;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureStream;
@@ -23,7 +26,7 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
     @Test
     public void testWriteJSONFGWithDateProperty() throws Exception {
         String ftName = "ExampleWithDate";
-        JSONFGTestData data = new JSONFGTestData();
+        JSONFGTestUtils data = new JSONFGTestUtils();
 
         FeatureType ft = data.getFeatureTypeWithDate(ftName);
 
@@ -55,12 +58,14 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
 
         mapper.writeValue(System.out, json);
 
+        data.validateFeatureCollectionWithDate(json);
+       
     }
     
     @Test
     public void testWriteJSONFGWithTimestampProperty() throws Exception {
         String ftName = "ExampleWithTimestamp";
-        JSONFGTestData data = new JSONFGTestData();
+        JSONFGTestUtils data = new JSONFGTestUtils();
 
         FeatureType ft = data.getFeatureTypeWithTimestamp(ftName);
 
@@ -91,6 +96,8 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
         JsonNode json = mapper.readTree(baos.toByteArray());
 
         mapper.writeValue(System.out, json);
+
+        data.validateFeatureCollectionWithTimestamp(json);
 
     }
 

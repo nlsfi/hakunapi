@@ -24,7 +24,7 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
     @Test
     public void testWriteJSONFGFeatureWithDate() throws Exception {
         String ftName = "ExampleWithDate";
-        JSONFGTestData data = new JSONFGTestData();
+        JSONFGTestUtils data = new JSONFGTestUtils();
 
         FeatureType ft = data.getFeatureTypeWithDate(ftName);
 
@@ -62,13 +62,16 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
         JsonNode json = mapper.readTree(baos.toByteArray());
 
         mapper.writeValue(System.out, json);
+        
+        
+        data.validateFeatureWithDate(json);
 
     }
     
     @Test
     public void testWriteJSONFGFeatureWithTimestamp() throws Exception {
         String ftName = "ExampleWithTimestamp";
-        JSONFGTestData data = new JSONFGTestData();
+        JSONFGTestUtils data = new JSONFGTestUtils();
 
         FeatureType ft = data.getFeatureTypeWithTimestamp(ftName);
 
@@ -106,6 +109,8 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
         JsonNode json = mapper.readTree(baos.toByteArray());
 
         mapper.writeValue(System.out, json);
+
+        data.validateFeatureWithTimestamp(json);
 
     }
 
