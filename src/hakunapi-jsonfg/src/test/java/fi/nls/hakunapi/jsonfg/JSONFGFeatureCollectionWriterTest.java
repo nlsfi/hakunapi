@@ -8,9 +8,6 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion.VersionFlag;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureStream;
@@ -21,7 +18,7 @@ import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
-public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
+public class JSONFGFeatureCollectionWriterTest {
 
     @Test
     public void testWriteJSONFGWithDateProperty() throws Exception {
@@ -45,7 +42,7 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
 
             fw.startFeatureCollection(ft, null);
 
-            int numberReturned = writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
+            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
 
             fw.endFeatureCollection();
             fw.end(false, Collections.emptyList(), numberReturned);
@@ -58,10 +55,10 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
 
         mapper.writeValue(System.out, json);
 
-        data.validateFeatureCollectionWithDate(json);
-       
+        data.validateFeatureCollection(json);
+
     }
-    
+
     @Test
     public void testWriteJSONFGWithTimestampProperty() throws Exception {
         String ftName = "ExampleWithTimestamp";
@@ -84,7 +81,7 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
 
             fw.startFeatureCollection(ft, null);
 
-            int numberReturned = writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
+            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
 
             fw.endFeatureCollection();
             fw.end(false, Collections.emptyList(), numberReturned);
@@ -97,8 +94,7 @@ public class JSONFGFeatureCollectionWriterTest extends JSONFGTestUtils {
 
         mapper.writeValue(System.out, json);
 
-        data.validateFeatureCollectionWithTimestamp(json);
+        data.validateFeatureCollection(json);
 
     }
-
 }

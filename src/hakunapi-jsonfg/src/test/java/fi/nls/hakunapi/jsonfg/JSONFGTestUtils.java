@@ -175,45 +175,35 @@ public class JSONFGTestUtils {
 
     }
 
+    public void validateFeatureCollection(JsonNode jsonNode) {
+        JsonSchema jsonSchema = factory
+                .getSchema(JSONFGTestUtils.class.getResourceAsStream("featurecollection.min.json"));
+
+        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        for (ValidationMessage err : errors) {
+            System.err.println(err);
+        }
+        assertTrue(errors.isEmpty());
+    }
+
     public void validateFeatureWithDate(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory.getSchema( 
-                JSONFGTestUtils.class.getResourceAsStream("feature-with-date-schema.json")); 
+        JsonSchema jsonSchema = factory
+                .getSchema(JSONFGTestUtils.class.getResourceAsStream("feature-with-date-schema.json"));
 
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode); 
-        for(ValidationMessage err: errors) {
+        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        for (ValidationMessage err : errors) {
             System.err.println(err);
         }
         assertTrue(errors.isEmpty());
     }
-    
+
     public void validateFeatureWithTimestamp(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory.getSchema( 
-                JSONFGTestUtils.class.getResourceAsStream("feature-with-timestamp-schema.json")); 
+        JsonSchema jsonSchema = factory
+                .getSchema(JSONFGTestUtils.class.getResourceAsStream("feature-with-timestamp-schema.json"));
 
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode); 
+        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
         assertTrue(errors.isEmpty());
-        
-    }
 
-
-    public void validateFeatureCollectionWithDate(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory.getSchema( 
-                JSONFGTestUtils.class.getResourceAsStream("feature-collection-with-date-schema.json")); 
-
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode); 
-        for(ValidationMessage err: errors) {
-            System.err.println(err);
-        }
-        assertTrue(errors.isEmpty());
-    }
-    
-    public void validateFeatureCollectionWithTimestamp(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory.getSchema( 
-                JSONFGTestUtils.class.getResourceAsStream("feature-collection-with-timestamp-schema.json")); 
-
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode); 
-        assertTrue(errors.isEmpty());
-        
     }
 
     public static WriteReport writeFeatureCollection(FeatureCollectionWriter writer, FeatureType ft,
