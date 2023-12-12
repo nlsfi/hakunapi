@@ -117,7 +117,7 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
         }
 
         JSONFG.writePlace(json, placeGeometry, geometry, placeJson, geometryJson);
-        JSONFG.writeTemporal(json, date, timestamp);
+        JSONFG.writeTemporal(json, dateTimeProperty, date, timestamp);
 
         // writeEndObject handled outside
     }

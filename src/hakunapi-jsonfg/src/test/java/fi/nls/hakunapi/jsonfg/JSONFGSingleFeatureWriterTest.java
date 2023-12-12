@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import fi.nls.hakunapi.core.FeatureStream;
+import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
@@ -20,43 +21,92 @@ import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
 public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
-	@Test
-	public void testWriteJSONFGFeature() throws Exception {
-		FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    @Test
+    public void testWriteJSONFGFeatureWithDate() throws Exception {
+        String ftName = "ExampleWithDate";
+        JSONFGTestData data = new JSONFGTestData();
 
-		GetFeatureRequest request = new GetFeatureRequest();
-		GetFeatureCollection coll = new GetFeatureCollection(ft);
-		request.addCollection(coll);
+        FeatureType ft = data.getFeatureTypeWithDate(ftName);
 
-		try (FeatureStream fs = new TestFeaturesStream();
-				JSONFGSingleFeatureWriter fw = new JSONFGSingleFeatureWriter()) {
+        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-			ValueProvider feat = fs.next();
+        GetFeatureRequest request = new GetFeatureRequest();
+        GetFeatureCollection coll = new GetFeatureCollection(ft);
+        request.addCollection(coll);
 
-			fw.init(baos, f, PLACE_SRID);
-			fw.initGeometryWriter(HakunaGeometryDimension.XY);
+        try (FeatureStream fs = data.getFeaturesWithDate();
+                JSONFGSingleFeatureWriter fw = new JSONFGSingleFeatureWriter()) {
 
-			// Note: contains implicit call to startFeature !
-			int i = 0;
-			for (HakunaProperty prop : coll.getProperties()) {
-				prop.write(feat, i++, fw);
-			}
+            ValueProvider feat = fs.next();
 
-			fw.endFeature();
-			fw.end(true, Collections.emptyList(), 1);
-		}
+            fw.init(baos, f, data.PLACE_SRID);
+            fw.initGeometryWriter(HakunaGeometryDimension.XY);
 
-		System.out.println(baos.toString("UTF-8"));
-		System.out.flush();
+            // Note: contains implicit call to startFeature !
+            int i = 0;
+            for (HakunaProperty prop : coll.getProperties()) {
+                prop.write(feat, i++, fw);
+            }
 
-		ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-				.disable(SerializationFeature.CLOSE_CLOSEABLE);
+            fw.endFeature();
+            fw.end(true, Collections.emptyList(), 1);
+        }
 
-		JsonNode json = mapper.readTree(baos.toByteArray());
+        System.out.println(baos.toString("UTF-8"));
+        System.out.flush();
 
-		mapper.writeValue(System.out, json);
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
+                .disable(SerializationFeature.CLOSE_CLOSEABLE);
 
-	}
+        JsonNode json = mapper.readTree(baos.toByteArray());
+
+        mapper.writeValue(System.out, json);
+
+    }
+    
+    @Test
+    public void testWriteJSONFGFeatureWithTimestamp() throws Exception {
+        String ftName = "ExampleWithTimestamp";
+        JSONFGTestData data = new JSONFGTestData();
+
+        FeatureType ft = data.getFeatureTypeWithTimestamp(ftName);
+
+        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        GetFeatureRequest request = new GetFeatureRequest();
+        GetFeatureCollection coll = new GetFeatureCollection(ft);
+        request.addCollection(coll);
+
+        try (FeatureStream fs = data.getFeaturesWithTimestamp();
+                JSONFGSingleFeatureWriter fw = new JSONFGSingleFeatureWriter()) {
+
+            ValueProvider feat = fs.next();
+
+            fw.init(baos, f, data.PLACE_SRID);
+            fw.initGeometryWriter(HakunaGeometryDimension.XY);
+
+            // Note: contains implicit call to startFeature !
+            int i = 0;
+            for (HakunaProperty prop : coll.getProperties()) {
+                prop.write(feat, i++, fw);
+            }
+
+            fw.endFeature();
+            fw.end(true, Collections.emptyList(), 1);
+        }
+
+        System.out.println(baos.toString("UTF-8"));
+        System.out.flush();
+
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
+                .disable(SerializationFeature.CLOSE_CLOSEABLE);
+
+        JsonNode json = mapper.readTree(baos.toByteArray());
+
+        mapper.writeValue(System.out, json);
+
+    }
 
 }

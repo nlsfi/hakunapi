@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 import org.locationtech.jts.geom.Geometry;
 
+import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
@@ -83,8 +84,7 @@ public final class JSONFG {
     }
 
     public static void writePlace(HakunaJsonWriter json, HakunaGeometry placeGeometry, HakunaGeometry geometry,
-            JSONFGGeometryWriter placeJson, GeometryWriter geometryJson)
-            throws Exception {
+            JSONFGGeometryWriter placeJson, GeometryWriter geometryJson) throws Exception {
         if (placeGeometry != null) {
 
             placeGeometry.write(placeJson);
@@ -99,24 +99,29 @@ public final class JSONFG {
         }
     }
 
-    public static void writeTemporal(HakunaJsonWriter json, LocalDate date, Instant timestamp) throws IOException {
-        if (date == null && timestamp == null) {
+    public static void writeTemporal(HakunaJsonWriter json, DatetimeProperty prop, LocalDate date, Instant timestamp)
+            throws IOException {
+        if (prop == null) {
             return;
         }
 
-        json.writeFieldName(JSONFG.TIME);
-        json.writeStartObject();
+        if (date == null && timestamp == null) {
+            json.writeNullField(JSONFG.TIME);
+        } else {
 
-        if (timestamp != null) {
-            json.writeFieldName(JSONFG.TIMESTAMP);
-            json.writeStringUnsafe(timestamp.toString());
-        } else if (date != null) {
-            json.writeFieldName(DATE);
-            json.writeStringUnsafe(date.toString());
+            json.writeFieldName(JSONFG.TIME);
+            json.writeStartObject();
+
+            if (timestamp != null) {
+                json.writeFieldName(JSONFG.TIMESTAMP);
+                json.writeStringUnsafe(timestamp.toString());
+            } else if (date != null) {
+                json.writeFieldName(DATE);
+                json.writeStringUnsafe(date.toString());
+            }
+
+            json.writeEndObject();
         }
-
-        json.writeEndObject();
-
     }
 
     public static HakunaGeometry getFootprintGeometry(HakunaGeometry placeGeometry,
