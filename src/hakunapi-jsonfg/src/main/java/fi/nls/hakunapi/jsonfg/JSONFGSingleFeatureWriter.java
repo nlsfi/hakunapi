@@ -3,6 +3,7 @@ package fi.nls.hakunapi.jsonfg;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import static fi.nls.hakunapi.core.schemas.Crs.CRS84_SRID;
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
@@ -44,7 +45,7 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
             dateTimePropertyName = dateTimeProperty.getProperty().getName();
         }
 
-        if (getSrid() == 84) {
+        if (getSrid() == CRS84_SRID) {
             outputCrs84Proj = null;
             isCrs84 = true;
         } else {
