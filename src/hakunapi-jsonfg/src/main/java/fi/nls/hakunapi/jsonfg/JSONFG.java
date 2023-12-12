@@ -83,7 +83,7 @@ public final class JSONFG {
     }
 
     public static void writePlace(HakunaJsonWriter json, HakunaGeometry placeGeometry, HakunaGeometry geometry,
-            JSONFGGeometryWriter placeJson, GeometryWriter geometryJson, ProjectionTransformer outputCrs84Proj)
+            JSONFGGeometryWriter placeJson, GeometryWriter geometryJson)
             throws Exception {
         if (placeGeometry != null) {
 

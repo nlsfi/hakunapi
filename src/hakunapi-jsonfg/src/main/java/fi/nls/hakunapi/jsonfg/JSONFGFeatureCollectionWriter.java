@@ -180,7 +180,7 @@ public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectio
             geometry = JSONFG.getFootprintGeometry(placeGeometry, outputCrs84Proj);
         }
 
-        JSONFG.writePlace(json, placeGeometry, geometry, placeJson, geometryJson, outputCrs84Proj);
+        JSONFG.writePlace(json, placeGeometry, geometry, placeJson, geometryJson);
         JSONFG.writeTemporal(json, date, timestamp);
 
         json.writeEndObject();
