@@ -1,0 +1,110 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/nlsfi/hakunapi/jsonfg/FeatureWithDate",
+	"title": "Schema for JSONFG",
+	"description": "JSON Schema describing the properties for each feature",
+	"type": "object",
+	"properties": {
+		"conformsTo": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"required": true
+		},
+		"featureType": {
+			"type": "string",
+			"required": true
+		},
+		"geometryDimension": {
+			"type": "integer",
+			"required": true
+		},
+		"coordRefSys": {
+			"type": "string",
+			"required": false
+		},
+		"type": {
+			"type": "string",
+			"enum": [
+				"Feature"
+			],
+			"required": true
+		},
+		"id": {
+			"type": "integer"
+		},
+		"geometry": {
+			"required": [
+				"type",
+				"coordinates"
+			],
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"Point"
+					]
+				},
+				"coordinates": {
+					"minItems": 2,
+					"type": "array",
+					"items": {
+						"type": "number"
+					}
+				}
+			}
+		},
+		"place": {
+			"required": [
+				"type",
+				"coordinates"
+			],
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"Point"
+					]
+				},
+				"coordinates": {
+					"minItems": 2,
+					"type": "array",
+					"items": {
+						"type": "number"
+					}
+				}
+			}
+		},
+		"properties": {
+			"type": "object",
+			"properties": {
+				"prop": {
+					"type": "string",
+					"required": false
+				},
+				"date": {
+					"type": "string",
+					"format": "date",
+					"required": false
+				}
+			}
+		},
+		"time": {
+			"type": "object",
+			"properties": {
+				"date": {
+				    "type": "string",
+					"format": "date",
+					"required": true
+				}
+			}
+		},
+		"timeStamp": {
+		    "type" : "string",
+			"format": "date-time"
+		}
+	}
+}

@@ -192,7 +192,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         return count;
     }
 
-    void writeStringUnsafe(String s) throws IOException {
+    public void writeStringUnsafe(String s) throws IOException {
         switch (state) {
         case STATE_ARRAY:
             if (pos + 1 >= BUF_LEN) {
@@ -221,11 +221,11 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
-    void writeStringUnsafe(byte[] utf8) throws IOException {
+    public void writeStringUnsafe(byte[] utf8) throws IOException {
         writeStringUnsafe(utf8, 0, utf8.length);
     }
 
-    void writeStringUnsafe(byte[] utf8, int off, int len) throws IOException {
+    public void writeStringUnsafe(byte[] utf8, int off, int len) throws IOException {
         switch (state) {
         case STATE_ARRAY:
             if (pos + 1 >= BUF_LEN) {
