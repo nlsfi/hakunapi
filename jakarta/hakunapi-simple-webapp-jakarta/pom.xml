@@ -1,12 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>fi.nls.hakunapi</groupId>
-        <artifactId>src</artifactId>
+        <artifactId>jakarta</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>hakunapi-simple-webapp-javax</artifactId>
+    <artifactId>hakunapi-simple-webapp-jakarta</artifactId>
     <packaging>war</packaging>
 
     <properties>
@@ -15,8 +16,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-simple-servlet-javax</artifactId>
+            <artifactId>hakunapi-simple-servlet-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
@@ -62,24 +69,7 @@
             <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-cql2-functions</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>

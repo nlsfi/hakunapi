@@ -12,8 +12,6 @@
 	<modules>
 		<module>hakunapi-core</module>
 		<module>hakunapi-config-test</module>
-		<module>hakunapi-simple-servlet-javax</module>
-		<module>hakunapi-simple-webapp-javax</module>
 		<module>hakunapi-source-postgis</module>
 		<module>hakunapi-geojson</module>
 		<module>hakunapi-jsonfg</module>
@@ -27,6 +25,5 @@
 		<module>hakunapi-csv</module>
 		<module>hakunapi-cql2</module>
 		<module>hakunapi-cql2-functions</module>
-		<module>hakunapi-simple-webapp-test-javax</module>
 	</modules>
 </project>

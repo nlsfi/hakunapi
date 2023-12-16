@@ -13,6 +13,9 @@
 
 	<modules>
 		<module>src</module>
+		<module>javax</module>
+		<module>jakarta</module>
+
 	</modules>
 
 	<licenses>
@@ -38,12 +41,9 @@
 	</scm>
 
 	<properties>
-		<servlet.version>3.0.1</servlet.version>
-		<jaxrs.version>2.0.1</jaxrs.version>
-		<jersey.version>2.31</jersey.version>
 		<freemarker.version>2.3.31</freemarker.version>
-		<jackson.version>2.12.7</jackson.version>
-		<jackson-databind.version>2.12.7.1</jackson-databind.version>
+		<jackson.version>2.16.0</jackson.version>
+		<jackson-databind.version>2.16.0</jackson-databind.version>
 		<swagger.version>2.1.13</swagger.version>
 		<jts.version>1.19.0</jts.version>
 		<hikari.version>4.0.3</hikari.version>
@@ -167,27 +167,6 @@
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>${jaxrs.version}</version>
 				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.inject</groupId>
-				<artifactId>jersey-hk2</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.media</groupId>
-				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>${jersey.version}</version>
 			</dependency>
 
 			<dependency>
