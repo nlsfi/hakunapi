@@ -28,19 +28,20 @@ import fi.nls.hakunapi.simple.postgis.filter.PostGISOverlaps;
 import fi.nls.hakunapi.simple.postgis.filter.PostGISTouches;
 import fi.nls.hakunapi.simple.postgis.filter.PostGISWithin;
 import fi.nls.hakunapi.simple.postgis.filter.PostgresArrayOverlaps;
-import fi.nls.hakunapi.simple.postgis.filter.SQLAnd;
-import fi.nls.hakunapi.simple.postgis.filter.SQLEqualTo;
-import fi.nls.hakunapi.simple.postgis.filter.SQLFilter;
-import fi.nls.hakunapi.simple.postgis.filter.SQLGreaterThan;
-import fi.nls.hakunapi.simple.postgis.filter.SQLGreaterThanOrEqualTo;
-import fi.nls.hakunapi.simple.postgis.filter.SQLIsNotNull;
-import fi.nls.hakunapi.simple.postgis.filter.SQLIsNull;
-import fi.nls.hakunapi.simple.postgis.filter.SQLLessThan;
-import fi.nls.hakunapi.simple.postgis.filter.SQLLessThanOrEqualTo;
-import fi.nls.hakunapi.simple.postgis.filter.SQLLike;
-import fi.nls.hakunapi.simple.postgis.filter.SQLNot;
-import fi.nls.hakunapi.simple.postgis.filter.SQLNotEqualTo;
-import fi.nls.hakunapi.simple.postgis.filter.SQLOr;
+import fi.nls.hakunapi.sql.SQLUtil;
+import fi.nls.hakunapi.sql.filter.SQLAnd;
+import fi.nls.hakunapi.sql.filter.SQLEqualTo;
+import fi.nls.hakunapi.sql.filter.SQLFilter;
+import fi.nls.hakunapi.sql.filter.SQLGreaterThan;
+import fi.nls.hakunapi.sql.filter.SQLGreaterThanOrEqualTo;
+import fi.nls.hakunapi.sql.filter.SQLIsNotNull;
+import fi.nls.hakunapi.sql.filter.SQLIsNull;
+import fi.nls.hakunapi.sql.filter.SQLLessThan;
+import fi.nls.hakunapi.sql.filter.SQLLessThanOrEqualTo;
+import fi.nls.hakunapi.sql.filter.SQLLike;
+import fi.nls.hakunapi.sql.filter.SQLNot;
+import fi.nls.hakunapi.sql.filter.SQLNotEqualTo;
+import fi.nls.hakunapi.sql.filter.SQLOr;
 
 public class PostGISUtil {
 

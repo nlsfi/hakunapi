@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis;
+package fi.nls.hakunapi.sql;
 
 import fi.nls.hakunapi.core.property.HakunaProperty;
 

@@ -9,6 +9,7 @@ import java.util.List;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyArray;
+import fi.nls.hakunapi.sql.filter.SQLFilter;
 
 public class PostgresArrayOverlaps implements SQLFilter {
 

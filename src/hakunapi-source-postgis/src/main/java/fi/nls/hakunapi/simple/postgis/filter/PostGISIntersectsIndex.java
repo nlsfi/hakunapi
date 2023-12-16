@@ -11,6 +11,7 @@ import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
+import fi.nls.hakunapi.sql.filter.SQLFilter;
 
 public class PostGISIntersectsIndex implements SQLFilter {
 

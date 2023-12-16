@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis.filter;
+package fi.nls.hakunapi.sql.filter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +9,11 @@ import java.util.List;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.filter.FilterOp;
 
-public class SQLOr implements SQLFilter {
+public class SQLAnd implements SQLFilter {
 
     private final EnumMap<FilterOp, SQLFilter> filterOpToImpl;
 
-    public SQLOr(EnumMap<FilterOp, SQLFilter> filterOpToImpl) {
+    public SQLAnd(EnumMap<FilterOp, SQLFilter> filterOpToImpl) {
         this.filterOpToImpl = filterOpToImpl;
     }
 
@@ -26,7 +26,7 @@ public class SQLOr implements SQLFilter {
         boolean first = true;
         for (Filter subFilter : subFilters) {
             if (!first) {
-                sb.append(" OR ");
+                sb.append(" AND ");
             }
             SQLFilter sqlFilter = filterOpToImpl.get(subFilter.getOp());
             if (sqlFilter != null) {

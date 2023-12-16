@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis.filter;
+package fi.nls.hakunapi.sql.filter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

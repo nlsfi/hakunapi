@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis.filter;
+package fi.nls.hakunapi.sql.filter;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.HakunaProperty;
-import fi.nls.hakunapi.simple.postgis.SQLUtil;
+import fi.nls.hakunapi.sql.SQLUtil;
 
 public abstract class SQLComparison implements SQLFilter {
 

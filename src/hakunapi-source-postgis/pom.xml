@@ -11,6 +11,10 @@
     <dependencies>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-core</artifactId>
         </dependency>
         <dependency>

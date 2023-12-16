@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis;
+package fi.nls.hakunapi.sql;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Array;

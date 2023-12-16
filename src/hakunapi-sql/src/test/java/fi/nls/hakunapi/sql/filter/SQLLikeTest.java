@@ -1,8 +1,10 @@
-package fi.nls.hakunapi.simple.postgis.filter;
+package fi.nls.hakunapi.sql.filter;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import fi.nls.hakunapi.sql.filter.SQLLike;
 
 public class SQLLikeTest {
     

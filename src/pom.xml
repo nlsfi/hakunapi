@@ -14,6 +14,7 @@
 		<module>hakunapi-config-test</module>
 		<module>hakunapi-simple-servlet-javax</module>
 		<module>hakunapi-simple-webapp-javax</module>
+		<module>hakunapi-sql</module>
 		<module>hakunapi-source-postgis</module>
 		<module>hakunapi-geojson</module>
 		<module>hakunapi-jsonfg</module>
