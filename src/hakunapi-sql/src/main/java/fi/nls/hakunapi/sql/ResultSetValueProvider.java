@@ -16,8 +16,8 @@ import fi.nls.hakunapi.core.geom.HakunaGeometryEWKB;
 
 public class ResultSetValueProvider implements ValueProvider {
 
-    private final ResultSet rs;
-    private final int numCols;
+    protected final ResultSet rs;
+    protected final int numCols;
 
     public ResultSetValueProvider(ResultSet rs, int numCols) {
         this.rs = rs;

@@ -38,6 +38,14 @@ public class BufferedResultSet implements FeatureStream {
         this.mappers = mappers;
         this.buffer = new ValueContainer[bufSize];
     }
+    public BufferedResultSet(Connection c, PreparedStatement ps, ResultSetValueProvider vp, ResultSet rs, List<ValueMapper> mappers, int bufSize) {
+        this.c = c;
+        this.ps = ps;
+        this.rs = rs;
+        this.valueProvider = vp;
+        this.mappers = mappers;
+        this.buffer = new ValueContainer[bufSize];
+    }
     
     @Override
     public boolean hasNext() {
