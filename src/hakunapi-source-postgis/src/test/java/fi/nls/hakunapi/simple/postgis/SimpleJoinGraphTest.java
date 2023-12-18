@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import fi.nls.hakunapi.core.join.Join;
 import fi.nls.hakunapi.core.join.OneToOneJoin;
+import fi.nls.hakunapi.sql.SimpleJoinGraph;
 
 public class SimpleJoinGraphTest {
     

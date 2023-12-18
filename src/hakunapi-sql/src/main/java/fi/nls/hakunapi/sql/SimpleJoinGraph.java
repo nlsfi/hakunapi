@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis;
+package fi.nls.hakunapi.sql;
 
 import java.util.ArrayList;
 import java.util.Collections;

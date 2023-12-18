@@ -30,6 +30,7 @@ import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.util.EmptyFeatureStream;
 import fi.nls.hakunapi.core.util.U;
 import fi.nls.hakunapi.sql.BufferedResultSet;
+import fi.nls.hakunapi.sql.SQLFeatureType;
 
 /**
  * Streaming implementation

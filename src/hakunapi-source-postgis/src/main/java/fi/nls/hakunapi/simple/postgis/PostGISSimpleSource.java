@@ -66,6 +66,7 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyUUID;
 import fi.nls.hakunapi.core.transformer.ValueTransformer;
+import fi.nls.hakunapi.sql.SQLFeatureType;
 
 public class PostGISSimpleSource implements SimpleSource {
 
@@ -169,7 +170,7 @@ public class PostGISSimpleSource implements SimpleSource {
     public SimpleFeatureType parse(HakunaConfigParser cfg, Path path, String collectionId, int[] srids) throws Exception {
         // Current prefix for properties
         String p = "collections." + collectionId + ".";
-        SQLFeatureType ft = new SQLFeatureType();
+        SQLFeatureType ft = new PostGISFeatureType();
         ft.setName(collectionId);
 
         String db = cfg.get(p + "db");

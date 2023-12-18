@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.simple.postgis;
+package fi.nls.hakunapi.sql;
 
 import java.util.List;
 
@@ -8,12 +8,12 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.join.Join;
 
-public class SQLFeatureType extends SimpleFeatureType {
+public abstract class SQLFeatureType extends SimpleFeatureType {
 
-    private String dbSchema;
-    private String primaryTable;
-    private List<Join> joins;
-    private DataSource ds;
+    protected String dbSchema;
+    protected String primaryTable;
+    protected List<Join> joins;
+    protected DataSource ds;
 
     public String getDbSchema() {
         return dbSchema;
@@ -47,9 +47,7 @@ public class SQLFeatureType extends SimpleFeatureType {
         this.ds = ds;
     }
 
-    @Override
-    public FeatureProducer getFeatureProducer() {
-        return new SimplePostGIS(ds);
-    }
+
+    public abstract FeatureProducer getFeatureProducer() ;
 
 }
