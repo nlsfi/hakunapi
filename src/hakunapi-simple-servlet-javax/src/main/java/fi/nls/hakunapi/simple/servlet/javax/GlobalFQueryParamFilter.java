@@ -29,7 +29,7 @@ public class GlobalFQueryParamFilter implements ContainerRequestFilter {
     
     private static final List<String> DEFAULT_ACCEPT_VALUES = 
             List.of(MediaType.APPLICATION_JSON, MediaTypes.APPLICATION_GEOJSON, 
-                    // "application/schema+json","application/vnd.oai.openapi+json;version=3.0", 
+                    MediaTypes.APPLICATION_SCHEMA, MediaTypes.APPLICATION_OPENAPI_V3,
                     "*/*" );
 
     @Override
