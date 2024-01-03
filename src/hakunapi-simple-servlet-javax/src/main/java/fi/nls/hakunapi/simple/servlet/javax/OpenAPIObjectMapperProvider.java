@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.v3.core.util.Json;
 
 @Provider
-@Produces("application/vnd.oai.openapi+json;version=3.0")
+@Produces(MediaTypes.APPLICATION_OPENAPI_V3)
 public class OpenAPIObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
     @Override

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
@@ -25,11 +26,22 @@ public class GlobalFQueryParamFilter implements ContainerRequestFilter {
     }
 
     private static final String F_QUERY_PARAM = "f";
+    
+    private static final List<String> DEFAULT_ACCEPT_VALUES = 
+            List.of(MediaType.APPLICATION_JSON, MediaTypes.APPLICATION_GEOJSON, 
+                    // "application/schema+json","application/vnd.oai.openapi+json;version=3.0", 
+                    "*/*" );
 
     @Override
     public void filter(ContainerRequestContext req) throws IOException {
         String f = req.getUriInfo().getQueryParameters().getFirst(F_QUERY_PARAM);
-        if (f == null || f.isBlank()) {
+        String accept = req.getHeaders().getFirst("accept");
+        if ((f == null || f.isBlank() ) && (accept == null || accept.isBlank())) {
+            // if f not present and accept header not present
+            // => force json 
+            req.getHeaders().put("accept", DEFAULT_ACCEPT_VALUES);
+            return;
+        } else if (f == null || f.isBlank()) {
             return;
         }
 
@@ -47,15 +59,14 @@ public class GlobalFQueryParamFilter implements ContainerRequestFilter {
                     Status.BAD_REQUEST,
                     "Invalid value for param '" + F_QUERY_PARAM + "', expected one of " + expected));
         } else {
-            String accept = req.getHeaders().getFirst("accept");
             String modified = modifyAcceptHeader(accept, mediaTypeToPrefer);
             req.getHeaders().put("accept", List.of(modified));
         }
     }
 
     private String modifyAcceptHeader(String accept, List<String> mediaTypeToPrefer) {
-        String a = mediaTypeToPrefer.stream().collect(Collectors.joining(","));
-        return accept == null || accept.isBlank() ? a : a + "," + accept;
+        String a = mediaTypeToPrefer.stream().collect(Collectors.joining(", "));
+        return accept == null || accept.isBlank() ? a : a + ", " + accept;
     }
 
 }
