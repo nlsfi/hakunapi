@@ -51,13 +51,14 @@ public class JSONFGTestUtils {
 
     protected final int SRID = Crs.CRS84_SRID;
     protected final int PLACE_SRID = 3067;
+    protected final boolean PLACE_SRID_IS_LATLON = false;
 
     static final GeometryFactory geomFac = new GeometryFactory();
     static final GeoToolsProjectionTransformerFactory projFac = new GeoToolsProjectionTransformerFactory();
 
     protected static final List<HakunaGeometry> GEOMS = Arrays.asList(
-            new HakunaGeometryJTS(geomFac.createPoint(new Coordinate(385511, 6675311))),
-            new HakunaGeometryJTS(geomFac.createPoint(new Coordinate(385022, 6674022))));
+            new HakunaGeometryJTS(geomFac.createPoint(new Coordinate(385511.123, 6675311.111))),
+            new HakunaGeometryJTS(geomFac.createPoint(new Coordinate(385022.231, 6674022.222))));
 
     final HakunaPropertyGeometry geomProp = new HakunaPropertyGeometry("geometry", "table", "geometry", true,
             HakunaGeometryType.POINT, new int[] { SRID }, PLACE_SRID, 2,
