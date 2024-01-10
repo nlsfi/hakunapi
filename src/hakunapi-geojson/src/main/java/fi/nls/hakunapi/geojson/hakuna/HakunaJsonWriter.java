@@ -393,6 +393,9 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
+    public void writeCoordinate(double x, double y) throws IOException {
+        writeCoordinate(x, y, numberPropertyFormatter);
+    }
     public void writeCoordinate(double x, double y, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ]
         if (pos + 2 + 22 + 1 + 22 + 1 +  2 * f.maxDecimalsOrdinate() >= BUF_LEN) {
@@ -410,6 +413,9 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         state = (int) (stack & 1L);
     }
 
+    public void writeCoordinate(double x, double y, double z) throws IOException {
+        writeCoordinate( x, y, z, numberPropertyFormatter);
+    }
     public void writeCoordinate(double x, double y, double z, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ,    z]
         if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 3 * f.maxDecimalsOrdinate() >= BUF_LEN) {
@@ -429,6 +435,9 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         state = (int) (stack & 1L);
     }
 
+    public void writeCoordinate(double x, double y, double z, double m) throws IOException {
+        writeCoordinate(x, y, z, m, numberPropertyFormatter);
+    }
     public void writeCoordinate(double x, double y, double z, double m, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ,    z   ,    m]
         if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 1 + 22 + 4 * f.maxDecimalsOrdinate() >= BUF_LEN) {
