@@ -13,12 +13,14 @@ import javax.ws.rs.core.MediaType;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.OperationImpl;
 import fi.nls.hakunapi.html.model.HTMLContext;
+import fi.nls.hakunapi.simple.servlet.javax.MediaTypes;
 import io.swagger.v3.oas.models.OpenAPI;
 
 @Singleton
 @Path("/")
 public class OpenAPI30ApiOperation {
 
+    
     private final FeatureServiceConfig service;
     private final OpenAPI30Generator api;
 
@@ -29,14 +31,14 @@ public class OpenAPI30ApiOperation {
 
     @GET
     @Path("/api")
-    @Produces("application/vnd.oai.openapi+json;version=3.0")
+    @Produces(MediaTypes.APPLICATION_OPENAPI_V3)
     public OpenAPI json(@Context HttpHeaders headers) {
         return api.create(headers);
     }
 
     @GET
     @Path("/api.json")
-    @Produces("application/vnd.oai.openapi+json;version=3.0")
+    @Produces(MediaTypes.APPLICATION_OPENAPI_V3)
     public OpenAPI jsonExt(@Context HttpHeaders headers) {
         return api.create(headers);
     }

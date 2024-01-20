@@ -16,15 +16,17 @@ import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.schemas.Queryables;
 import fi.nls.hakunapi.html.model.HTMLContext;
+import fi.nls.hakunapi.simple.servlet.javax.MediaTypes;
 
 @Path("/collections/{collectionId}/queryables")
 public class GetCollectionQueryablesImpl {
+
 
     @Inject
     private FeatureServiceConfig service;
 
     @GET
-    @Produces("application/schema+json")
+    @Produces(MediaTypes.APPLICATION_SCHEMA)
     public Queryables handle(
             @PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,
