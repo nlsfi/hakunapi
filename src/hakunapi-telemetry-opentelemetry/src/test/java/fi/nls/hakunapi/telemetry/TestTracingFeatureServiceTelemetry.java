@@ -29,7 +29,7 @@ import fi.nls.hakunapi.core.telemetry.TelemetryConfigParser;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 
-public class TestLoggingFeatureServiceUsage {
+public class TestTracingFeatureServiceTelemetry {
 
     @Test
     public void testReadConfig() throws IOException {
@@ -41,7 +41,7 @@ public class TestLoggingFeatureServiceUsage {
 
         ServiceTelemetry fst = TelemetryConfigParser.parse(null, parser);
 
-        assertTrue(fst instanceof LoggingServiceTelemetry);
+        assertTrue(fst instanceof TracingServiceTelemetry);
 
         Map<String, String> testHeaders = Map.of("remote-user", "testuser");
 

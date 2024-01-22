@@ -30,5 +30,6 @@
 		<module>hakunapi-simple-webapp-test-javax</module>
         <module>hakunapi-telemetry</module>
         <module>hakunapi-telemetry-webapp-javax</module>
+        <module>hakunapi-telemetry-opentelemetry</module>
 	</modules>
 </project>
