@@ -72,7 +72,7 @@ public class LoggingRequestTelemetry implements RequestTelemetry {
                 headersMap.entrySet().forEach(e -> {
                     Object value = getHeaderValue(e.getValue());
                     if (value != null) {
-                        values.put(e.getKey(), value);
+                        json.put(e.getKey(), value);
                     }
                 });
                 json.putAll(entries);
