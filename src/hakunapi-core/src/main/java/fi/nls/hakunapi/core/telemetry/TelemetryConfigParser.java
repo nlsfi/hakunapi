@@ -81,6 +81,8 @@ public class TelemetryConfigParser {
                 }
             }
         }
+        
+        telemetry.parse(service,parser);
 
         return telemetry;
     }

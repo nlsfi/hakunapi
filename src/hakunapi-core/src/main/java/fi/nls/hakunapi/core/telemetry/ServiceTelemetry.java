@@ -2,6 +2,8 @@ package fi.nls.hakunapi.core.telemetry;
 
 import java.util.Map;
 
+import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 
 public interface ServiceTelemetry {
@@ -14,6 +16,7 @@ public interface ServiceTelemetry {
     public default String getName() { return "telemetry"; };
     public default void setHeaders(Map<String, String> headersMap) {};
     public default void setCollections(Map<String, String> collectionsMap) {};
+    public default void parse(FeatureServiceConfig service, HakunaConfigParser parser) {}
 
     public RequestTelemetry forRequest(GetFeatureRequest r);
 
@@ -39,6 +42,7 @@ public interface ServiceTelemetry {
             return TelemetrySpan.NOP;
         }
     }
+
 
 
 

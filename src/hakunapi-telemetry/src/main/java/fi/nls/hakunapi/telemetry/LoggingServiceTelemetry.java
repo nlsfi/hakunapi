@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
@@ -23,14 +25,10 @@ public class LoggingServiceTelemetry implements ServiceTelemetry {
     public LoggingServiceTelemetry() {
     }
     
-    
-    
     @Override
     public String getId() {
         return "log-json";
     }
-
-
 
     @Override
     public String getName() {
@@ -68,5 +66,12 @@ public class LoggingServiceTelemetry implements ServiceTelemetry {
 
         return new LoggingRequestTelemetry(request, log, headersMap);
     }
+
+    @Override
+    public void parse(FeatureServiceConfig service, HakunaConfigParser parser) {
+        // additional configuration
+    }
+    
+    
 
 }
