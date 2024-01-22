@@ -61,7 +61,7 @@ public class LoggingRequestTelemetry implements RequestTelemetry {
                 return;
             }
             
-            final Map<String, Object> json = headersMap.isEmpty() ? entries : json = new HashMap<>();
+            final Map<String, Object> json = headersMap.isEmpty() ? entries : new HashMap<>();
             if(!headersMap.isEmpty()) {
                 // this is to get implementation independent headers
                 // key = logged header name, value = actual header name
