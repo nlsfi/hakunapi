@@ -73,7 +73,7 @@ public class TracingServiceTelemetry implements ServiceTelemetry {
         if(!collectionsMap.containsKey(ft.getName())) {
             return NOPFeatureTypeTelemetry.NOP;
         }
-        return new TracingRequestTelemetry(request, log, headersMap, tracer);
+        return new TracingRequestTelemetry(request, log, headersMap, tracer, openTelemetry);
     }
 
     @Override
