@@ -47,7 +47,7 @@ public class TracingRequestTelemetry implements RequestTelemetry {
 
     // https://opentelemetry.io/docs/languages/java/instrumentation/#context-propagation
     
-    TextMapGetter<GetFeatureRequest> getter = new TextMapGetter<>() {
+     protected static final TextMapGetter<GetFeatureRequest> getter = new TextMapGetter<>() {
         @Override
         public String get(GetFeatureRequest carrier, String key) {
             if (carrier.getQueryHeaders().containsKey(key)) {
