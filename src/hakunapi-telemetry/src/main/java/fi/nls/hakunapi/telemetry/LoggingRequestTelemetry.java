@@ -13,7 +13,7 @@ import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 
 public class LoggingRequestTelemetry implements RequestTelemetry {
 
-    protected final Map<String, Integer> entries = new HashMap<>();
+    protected final Map<String, Object> entries = new HashMap<>();
     protected final Logger log;
     protected final GetFeatureRequest request;
     protected final FeatureType ft;
@@ -41,7 +41,7 @@ public class LoggingRequestTelemetry implements RequestTelemetry {
         @Override
         public void counts(int count) {
             final String name = ft.getName();
-            entries.put(name, count);
+            entries.put(name, Integer.valueOf(count));
         }
 
         @Override
