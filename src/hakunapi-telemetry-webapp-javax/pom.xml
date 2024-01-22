@@ -40,6 +40,11 @@
             <artifactId>hakunapi-telemetry</artifactId>
         </dependency>
         <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-telemetry-opentelemetry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
