@@ -43,7 +43,8 @@ public class TestTracingFeatureServiceTelemetry {
 
         assertTrue(fst instanceof TracingServiceTelemetry);
 
-        Map<String, String> testHeaders = Map.of("remote-user", "testuser");
+        Map<String, String> testHeaders = Map.of(
+                "host", "test.org");
 
         GetFeatureRequest request = new GetFeatureRequest();
         request.setQueryHeaders(testHeaders);
