@@ -155,7 +155,11 @@
 				<artifactId>hakunapi-cql2-functions</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-
+            <dependency>
+                <groupId>fi.nls.hakunapi</groupId>
+                <artifactId>hakunapi-telemetry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>

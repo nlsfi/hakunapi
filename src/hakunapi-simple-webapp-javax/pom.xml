@@ -63,6 +63,10 @@
             <artifactId>hakunapi-cql2-functions</artifactId>
         </dependency>
         <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-telemetry</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>

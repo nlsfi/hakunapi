@@ -50,6 +50,9 @@ import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.core.telemetry.FeatureServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetry;
+import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetrySpan;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
@@ -139,10 +142,14 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
+        
+        final FeatureServiceTelemetry fst = service.getTelemetry();
+        final FeatureTypeTelemetry ftt = fst.forFeatureType(ft);
+        ftt.headers((k)-> headers.getHeaderString(k));
 
         Object output;
         if (ft.getCacheSettings() != null) {
-            LoadingCache<CacheKey, byte[]> cache = cacheManager.getCache(ft.getName(), () -> getFeatureCache(ft));
+            LoadingCache<CacheKey, byte[]> cache = cacheManager.getCache(ft.getName(), () -> getFeatureCache(ft, ftt));
             CacheKey key = new CacheKey(request);
             output = cache.get(key);
             if (output == null) {
@@ -153,7 +160,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 @Override
                 public void write(OutputStream out) throws WebApplicationException {
                     try {
-                        writeResponseBody(request, service, out);
+                        writeResponseBody(request, service, out, ftt);
                     } catch (Exception e) {
                         LOG.warn(e.getMessage(), e);
                         throw new WebApplicationException("Unexpected error occured");
@@ -169,16 +176,16 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         return builder.build();
     }
     
-    protected LoadingCache<CacheKey, byte[]> getFeatureCache(FeatureType ft) {
+    protected LoadingCache<CacheKey, byte[]> getFeatureCache(FeatureType ft, FeatureTypeTelemetry ftt) {
         CacheSettings settings = ft.getCacheSettings();
         return Caffeine.newBuilder()
                 .maximumSize(settings.getMaximumSize())
                 .refreshAfterWrite(settings.getRefreshAfterMs(), TimeUnit.MILLISECONDS)
                 .expireAfterWrite(settings.getExpireAfterMs(), TimeUnit.MILLISECONDS)
                 .build(cacheKey -> {
-                    try {
+                    try( FeatureTypeTelemetrySpan span = ftt.span()) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        writeResponseBody(cacheKey.request, service, baos);
+                        writeResponseBody(cacheKey.request, service, baos, ftt);
                         return baos.toByteArray();
                     } catch (Exception e) {
                         LOG.warn(e.getMessage(), e);
@@ -212,7 +219,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         return request;
     }
     
-    public static void writeResponseBody(GetFeatureRequest request, FeatureServiceConfig service, OutputStream out) throws Exception {
+    public static void writeResponseBody(GetFeatureRequest request, FeatureServiceConfig service, OutputStream out, FeatureTypeTelemetry ftt) throws Exception {
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
         FeatureProducer producer = c.getFt().getFeatureProducer();
@@ -223,7 +230,8 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         boolean crsIsLatLon = service.isCrsLatLon(srid);
 
         try (FeatureStream features = producer.getFeatures(request, c);
-                FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter()) {
+                FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
+                FeatureTypeTelemetrySpan span = ftt.span()) {
             writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
             writer.initGeometryWriter(
                     CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
@@ -231,6 +239,8 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request.getOffset(), request.getLimit());
             writer.endFeatureCollection();
             writer.end(true, getLinks(service, request, report), report.numberReturned);
+
+            span.counts(report);
         }
     }
 

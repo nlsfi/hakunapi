@@ -28,5 +28,6 @@
 		<module>hakunapi-cql2</module>
 		<module>hakunapi-cql2-functions</module>
 		<module>hakunapi-simple-webapp-test-javax</module>
+        <module>hakunapi-telemetry</module>
 	</modules>
 </project>
