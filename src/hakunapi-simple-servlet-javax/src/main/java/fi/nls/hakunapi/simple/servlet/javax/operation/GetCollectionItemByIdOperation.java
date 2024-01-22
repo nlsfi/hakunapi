@@ -43,9 +43,9 @@ import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.schemas.Link;
-import fi.nls.hakunapi.core.telemetry.FeatureServiceTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetrySpan;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.geojson.FeatureGeoJSON;
@@ -132,8 +132,8 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
             return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
         
-        final FeatureServiceTelemetry fst = service.getTelemetry();
-        final FeatureTypeTelemetry ftt = fst.forFeatureType(ft);
+        final ServiceTelemetry fst = service.getTelemetry();
+        final RequestTelemetry ftt = fst.forFeatureType(ft);
         
         try (SingleFeatureWriter writer = request.getFormat().getSingleFeatureWriter()) {
             return getResponse(writer, ft.getFeatureProducer(), request, c, ftt);
@@ -145,10 +145,10 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     }
 
     public Response getResponse(SingleFeatureWriter writer, FeatureProducer producer,
-            GetFeatureRequest request, GetFeatureCollection c, FeatureTypeTelemetry ftt) throws Exception {
+            GetFeatureRequest request, GetFeatureCollection c, RequestTelemetry ftt) throws Exception {
 
         
-        try( FeatureTypeTelemetrySpan span = ftt.span()) {
+        try( TelemetrySpan span = ftt.span()) {
 
             ValueProvider feature = null;
             try (FeatureStream features = producer.getFeatures(request, c)) {

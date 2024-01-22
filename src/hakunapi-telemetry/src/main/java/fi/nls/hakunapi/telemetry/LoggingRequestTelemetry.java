@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.request.WriteReport;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetrySpan;
+import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 
-public class LoggingFeatureTypeTelemetry implements FeatureTypeTelemetry {
+public class LoggingRequestTelemetry implements RequestTelemetry {
 
     protected final Map<String, Object> values = new HashMap<>();
     protected final Map<String, Integer> counts = new HashMap<>();
@@ -18,14 +18,14 @@ public class LoggingFeatureTypeTelemetry implements FeatureTypeTelemetry {
     protected final FeatureType ft;
     protected final Map<String, String> headersMap;
 
-    public LoggingFeatureTypeTelemetry(FeatureType ft, Logger log, Map<String, String> headersMap) {
+    public LoggingRequestTelemetry(FeatureType ft, Logger log, Map<String, String> headersMap) {
         this.log = log;
         this.ft = ft;
         this.headersMap = headersMap;
     }
 
     @Override
-    public FeatureTypeTelemetrySpan span() {
+    public TelemetrySpan span() {
         return new LoggingFeatureTypeTelemetrySpan();
     }
     
@@ -43,7 +43,7 @@ public class LoggingFeatureTypeTelemetry implements FeatureTypeTelemetry {
         });
     }
 
-    class LoggingFeatureTypeTelemetrySpan implements FeatureTypeTelemetrySpan {
+    class LoggingFeatureTypeTelemetrySpan implements TelemetrySpan {
 
         @Override
         public void counts(int count) {
@@ -64,7 +64,7 @@ public class LoggingFeatureTypeTelemetry implements FeatureTypeTelemetry {
             }
             values.putAll(counts);
             try {
-                String str = LoggingFeatureServiceTelemetry.MAPPER.writeValueAsString(values);
+                String str = LoggingServiceTelemetry.MAPPER.writeValueAsString(values);
                 if (str != null) {
                     log.info(str);
                 }

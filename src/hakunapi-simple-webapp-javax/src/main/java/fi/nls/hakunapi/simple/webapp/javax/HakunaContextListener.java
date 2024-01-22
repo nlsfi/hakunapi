@@ -39,6 +39,9 @@ import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaApplicationJson;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetryConfigParser;
+import fi.nls.hakunapi.core.telemetry.TelemetryProvider;
 import fi.nls.hakunapi.core.util.PropertyUtil;
 import fi.nls.hakunapi.cql2.function.CQL2Functions;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
@@ -134,6 +137,9 @@ public class HakunaContextListener implements ServletContextListener {
             service.setFunctions(functionsMetadata);
             service.setMetadataFormats(List.of(MetadataFormat.JSON, MetadataFormat.HTML));
             service.setKnownSrids(knownSrids);
+            
+            ServiceTelemetry telemetry = TelemetryConfigParser.parse(service, parser);
+            service.setTelemetry(telemetry);
 
             LOG.info("Starting OGC API Features service with collections: {}", collections);
             sce.getServletContext().setAttribute("hakunaService", service);

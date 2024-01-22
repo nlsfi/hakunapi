@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.telemetry.FeatureServiceTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetry;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 
-public class LoggingFeatureServiceTelemetry implements FeatureServiceTelemetry {
+public class LoggingServiceTelemetry implements ServiceTelemetry {
 
     protected static ObjectMapper MAPPER = new ObjectMapper();
 
@@ -20,9 +20,18 @@ public class LoggingFeatureServiceTelemetry implements FeatureServiceTelemetry {
     protected Map<String, String> headersMap;
     protected Map<String, String> collectionsMap;
 
-    public LoggingFeatureServiceTelemetry() {
+    public LoggingServiceTelemetry() {
     }
     
+    
+    
+    @Override
+    public String getId() {
+        return "log-json";
+    }
+
+
+
     @Override
     public String getName() {
         return name;
@@ -46,7 +55,7 @@ public class LoggingFeatureServiceTelemetry implements FeatureServiceTelemetry {
     }
 
     @Override
-    public FeatureTypeTelemetry forFeatureType(FeatureType ft) {
+    public RequestTelemetry forFeatureType(FeatureType ft) {
         if (log == null) {
             return NOPFeatureTypeTelemetry.NOP;
         }
@@ -57,7 +66,7 @@ public class LoggingFeatureServiceTelemetry implements FeatureServiceTelemetry {
             return NOPFeatureTypeTelemetry.NOP;
         }
 
-        return new LoggingFeatureTypeTelemetry(ft, log, headersMap);
+        return new LoggingRequestTelemetry(ft, log, headersMap);
     }
 
 }

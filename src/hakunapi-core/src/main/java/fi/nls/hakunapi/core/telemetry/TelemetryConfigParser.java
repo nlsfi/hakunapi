@@ -1,20 +1,21 @@
-package fi.nls.hakunapi.telemetry.config;
+package fi.nls.hakunapi.core.telemetry;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
-import fi.nls.hakunapi.core.telemetry.FeatureServiceTelemetry;
-import fi.nls.hakunapi.telemetry.LoggingFeatureServiceTelemetry;
 
-public class FeatureServiceUsageConfigParser {
+public class TelemetryConfigParser {
 
-    protected static final String TELEMETRY_LOG_JSON = "json";
+    private static final Logger LOG = LoggerFactory.getLogger(TelemetryConfigParser.class);
+
     protected static final String TELEMETRY_LOG_NOP = "NOP";
     protected static final String TELEMETRY_MODE = "telemetry.mode";
     protected static final String TELEMETRY_LOGGER = "telemetry.logger";
@@ -23,19 +24,23 @@ public class FeatureServiceUsageConfigParser {
     protected static final String TELEMETRY_COLLECTIONS = "telemetry.collections";
     protected static final String TELEMETRY_COLLECTIONS_NAME = "telemetry.collections.%s.name";
     protected static final String TELEMETRY_COLLECTIONS_WILDCARD = "*";
+    
 
-    public static FeatureServiceTelemetry parse(FeatureServiceConfig service, HakunaConfigParser parser) {
+    public static ServiceTelemetry parse(FeatureServiceConfig service, HakunaConfigParser parser) {
 
-        String usageLog = parser.get(TELEMETRY_MODE, TELEMETRY_LOG_NOP);
-        if (TELEMETRY_LOG_NOP.equals(usageLog)) {
-            return FeatureServiceTelemetry.NOP;
+        String telemetryId = parser.get(TELEMETRY_MODE, TELEMETRY_LOG_NOP);
+        if (TELEMETRY_LOG_NOP.equals(telemetryId)) {
+            LOG.info("Using no-op telemetry");
+            return ServiceTelemetry.NOP;
+        }
+       
+        ServiceTelemetry telemetry = TelemetryProvider.getTelemetries().get(telemetryId);
+        if(telemetry==null) {
+            LOG.info("Telemetry not found "+telemetryId+". Using no-op telemetry");
+            return ServiceTelemetry.NOP;
         }
 
-        if (!TELEMETRY_LOG_JSON.equals(usageLog)) {
-            return FeatureServiceTelemetry.NOP;
-        }
-
-        LoggingFeatureServiceTelemetry telemetry = new LoggingFeatureServiceTelemetry();
+        LOG.info("Using telemetry "+telemetry.getClass().getName());
 
         String usageLogName = parser.get(TELEMETRY_LOGGER);
         telemetry.setName(usageLogName);
@@ -53,7 +58,7 @@ public class FeatureServiceUsageConfigParser {
 
         String collectionsWildcard = parser.get(TELEMETRY_COLLECTIONS);
         if (collectionsWildcard == null) {
-            return FeatureServiceTelemetry.NOP;
+            return ServiceTelemetry.NOP;
 
         } else if (service != null && "*".equals(collectionsWildcard)) {
             Collection<FeatureType> collections = service.getCollections();
@@ -79,5 +84,5 @@ public class FeatureServiceUsageConfigParser {
 
         return telemetry;
     }
-
+    
 }

@@ -2,7 +2,7 @@ package fi.nls.hakunapi.core.telemetry;
 
 import fi.nls.hakunapi.core.request.WriteReport;
 
-public interface FeatureTypeTelemetrySpan extends AutoCloseable {
+public interface TelemetrySpan extends AutoCloseable {
 
     default void counts(int count) {};
     default void counts(WriteReport report) {};
@@ -11,7 +11,7 @@ public interface FeatureTypeTelemetrySpan extends AutoCloseable {
     public void close();
 
     // No op implementation
-    FeatureTypeTelemetrySpan NOP = new FeatureTypeTelemetrySpan() {
+    TelemetrySpan NOP = new TelemetrySpan() {
 
         @Override
         public void close() {

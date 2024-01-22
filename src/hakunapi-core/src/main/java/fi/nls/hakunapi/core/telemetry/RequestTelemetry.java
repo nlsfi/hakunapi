@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.telemetry;
 
-public interface FeatureTypeTelemetry {
+public interface RequestTelemetry {
 
     @FunctionalInterface
     public interface ToValue {
@@ -9,6 +9,6 @@ public interface FeatureTypeTelemetry {
 
     // implementation independent (javax vs. jakarta etc) header
     public default void headers(ToValue v) {}
-    public FeatureTypeTelemetrySpan span();
+    public TelemetrySpan span();
 
 }

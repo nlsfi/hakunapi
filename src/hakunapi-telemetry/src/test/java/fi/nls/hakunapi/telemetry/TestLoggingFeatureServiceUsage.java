@@ -21,10 +21,10 @@ import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
-import fi.nls.hakunapi.core.telemetry.FeatureServiceTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetry;
-import fi.nls.hakunapi.core.telemetry.FeatureTypeTelemetrySpan;
-import fi.nls.hakunapi.telemetry.config.FeatureServiceUsageConfigParser;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetryConfigParser;
+import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 
 public class TestLoggingFeatureServiceUsage {
 
@@ -36,16 +36,15 @@ public class TestLoggingFeatureServiceUsage {
 
         HakunaConfigParser parser = new HakunaConfigParser(props);
 
-        FeatureServiceTelemetry fst = FeatureServiceUsageConfigParser.parse(null, parser);
+        ServiceTelemetry fst = TelemetryConfigParser.parse(null, parser);
 
-        assertTrue(fst instanceof LoggingFeatureServiceTelemetry);
+        assertTrue(fst instanceof LoggingServiceTelemetry);
 
-        
-        Map<String, String> testHeaders = Map.of("remote-user","testuser");
-      
-        FeatureTypeTelemetry ftt = fst.forFeatureType(ft );
-        ftt.headers((k)->testHeaders.get(k));
-        try(FeatureTypeTelemetrySpan span = ftt.span()){
+        Map<String, String> testHeaders = Map.of("remote-user", "testuser");
+
+        RequestTelemetry ftt = fst.forFeatureType(ft);
+        ftt.headers((k) -> testHeaders.get(k));
+        try (TelemetrySpan span = ftt.span()) {
             Thread.sleep(1000);
             span.counts(5);
         } catch (InterruptedException e) {
@@ -53,8 +52,7 @@ public class TestLoggingFeatureServiceUsage {
             e.printStackTrace();
         }
     }
-    
-    
+
     FeatureType ft = new FeatureType() {
 
         @Override
@@ -168,6 +166,6 @@ public class TestLoggingFeatureServiceUsage {
 
             return null;
         }
-        
+
     };
 }
