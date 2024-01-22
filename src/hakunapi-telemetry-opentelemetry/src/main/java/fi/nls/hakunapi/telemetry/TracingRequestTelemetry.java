@@ -85,6 +85,11 @@ public class TracingRequestTelemetry implements RequestTelemetry {
         }
 
         @Override
+        public void put(String key, String value) {
+            span.setAttribute(key, value);
+        }
+
+        @Override
         public void close() {
             headersMap.entrySet().forEach(e -> {
                 String value = getHeaderValue(e.getValue());
