@@ -2,7 +2,7 @@ package fi.nls.hakunapi.core.telemetry;
 
 import java.util.Map;
 
-import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.request.GetFeatureRequest;
 
 public interface ServiceTelemetry {
 
@@ -15,14 +15,14 @@ public interface ServiceTelemetry {
     public default void setHeaders(Map<String, String> headersMap) {};
     public default void setCollections(Map<String, String> collectionsMap) {};
 
-    public RequestTelemetry forFeatureType(FeatureType ft);
+    public RequestTelemetry forRequest(GetFeatureRequest r);
 
     
     // No op implementation
     static ServiceTelemetry NOP = new ServiceTelemetry() {
 
         @Override
-        public RequestTelemetry forFeatureType(FeatureType ft) {
+        public RequestTelemetry forRequest(GetFeatureRequest r) {
             return NOPFeatureTypeTelemetry.NOP;
 
         }

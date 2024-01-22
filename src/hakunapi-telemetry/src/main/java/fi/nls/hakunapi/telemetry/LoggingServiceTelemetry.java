@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 
 public class LoggingServiceTelemetry implements ServiceTelemetry {
 
@@ -55,18 +55,18 @@ public class LoggingServiceTelemetry implements ServiceTelemetry {
     }
 
     @Override
-    public RequestTelemetry forFeatureType(FeatureType ft) {
+    public RequestTelemetry forRequest(GetFeatureRequest request) {
         if (log == null) {
             return NOPFeatureTypeTelemetry.NOP;
         }
         if (collectionsMap.isEmpty()) {
             return NOPFeatureTypeTelemetry.NOP;
         }
-        if (ft == null) {
+        if (request == null) {
             return NOPFeatureTypeTelemetry.NOP;
         }
 
-        return new LoggingRequestTelemetry(ft, log, headersMap);
+        return new LoggingRequestTelemetry(request, log, headersMap);
     }
 
 }

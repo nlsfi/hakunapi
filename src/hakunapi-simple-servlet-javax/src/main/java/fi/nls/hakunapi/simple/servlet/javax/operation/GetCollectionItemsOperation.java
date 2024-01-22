@@ -144,8 +144,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         FeatureType ft = c.getFt();
         
         final ServiceTelemetry fst = service.getTelemetry();
-        final RequestTelemetry ftt = fst.forFeatureType(ft);
-        ftt.headers((k)-> headers.getHeaderString(k));
+        final RequestTelemetry ftt = fst.forRequest(request);
 
         Object output;
         if (ft.getCacheSettings() != null) {

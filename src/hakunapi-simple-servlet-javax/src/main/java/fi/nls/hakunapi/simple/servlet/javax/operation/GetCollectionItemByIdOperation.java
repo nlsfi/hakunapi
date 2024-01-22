@@ -133,8 +133,8 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
         }
         
         final ServiceTelemetry fst = service.getTelemetry();
-        final RequestTelemetry ftt = fst.forFeatureType(ft);
-        
+        final RequestTelemetry ftt = fst.forRequest(request);
+
         try (SingleFeatureWriter writer = request.getFormat().getSingleFeatureWriter()) {
             return getResponse(writer, ft.getFeatureProducer(), request, c, ftt);
         } catch (Exception e) {
