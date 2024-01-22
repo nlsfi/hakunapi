@@ -13,7 +13,7 @@ import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 
 public class LoggingRequestTelemetry implements RequestTelemetry {
 
-    protected final Map<String, Integer> counts = new HashMap<>();
+    protected final Map<String, Integer> entries = new HashMap<>();
     protected final Logger log;
     protected final GetFeatureRequest request;
     protected final FeatureType ft;
@@ -41,35 +41,45 @@ public class LoggingRequestTelemetry implements RequestTelemetry {
         @Override
         public void counts(int count) {
             final String name = ft.getName();
-            counts.put(name, count);
+            entries.put(name, count);
         }
 
         @Override
         public void counts(WriteReport report) {
             final String name = ft.getName();
-            counts.put(name, report.numberReturned);
+            entries.put(name, report.numberReturned);
+        }
+
+        @Override
+        public void put(String key, String value) {
+            entries.put(key,value);
         }
 
         @Override
         public void close() {
-            if(counts.isEmpty()) {
+            if(entries.isEmpty()) {
                 return;
             }
-            Map<String, Object> values = new HashMap<>();
-            // this is to get implementation independent headers
-            // key = logged header name, value = actual header name
-            // value = actual value
-            headersMap.entrySet().forEach(e -> {
-                Object value = getHeaderValue(e.getValue());
-                if (value != null) {
-                    values.put(e.getKey(), value);
-                }
+            Map<String, Object> json = null;
 
-            });
-
-            values.putAll(counts);
+            if(headersMap.isEmpty()) {
+                json = entries;
+            } else {
+                json = new HashMap<>();
+                // this is to get implementation independent headers
+                // key = logged header name, value = actual header name
+                // value = actual value
+                headersMap.entrySet().forEach(e -> {
+                    Object value = getHeaderValue(e.getValue());
+                    if (value != null) {
+                        values.put(e.getKey(), value);
+                    }
+                });
+                json.putAll(entries);
+            }
+            
             try {
-                String str = LoggingServiceTelemetry.MAPPER.writeValueAsString(values);
+                String str = LoggingServiceTelemetry.MAPPER.writeValueAsString(json);
                 if (str != null) {
                     log.info(str);
                 }
