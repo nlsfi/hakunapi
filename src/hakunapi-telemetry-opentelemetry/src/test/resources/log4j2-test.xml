@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <properties>
+        <property name="name">gateway</property>
+    </properties>
+    <appenders>
+        <Console name="telemetry" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5.5p|%logger|%msg%n" />
+        </Console>
+        <!-- RollingFile name="usage"
+            fileName="/var/log/features/usage-${web:contextPathName}.log"
+            filePattern="/var/log/features/usage-${web:contextPathName}.log-%d{yyyy-MM-dd}.gz">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5.5p|%logger|%msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile-->
+    </appenders>
+    <loggers>
+        <Logger name="fi.nls.hakunapi.telemetry" level="info" additivity="false">
+            <appender-ref ref="telemetry" level="info" />
+        </Logger>
+    </loggers>
+</configuration>

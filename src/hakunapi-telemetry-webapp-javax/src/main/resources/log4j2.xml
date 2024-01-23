@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <RollingFile name="telemetry"
+            fileName="/var/log/features/usage-${web:contextPathName}.log"
+            filePattern="/var/log/features/usage-${web:contextPathName}.log-%d{yyyy-MM-dd}.gz">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5.5p|%logger|%msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console" />
+        </Root>
+        <Logger name="fi.nls.hakunapi.telemetry" level="info"
+            additivity="false">
+            <appender-ref ref="telemetry" level="info" />
+        </Logger>
+    </Loggers>
+</Configuration>
