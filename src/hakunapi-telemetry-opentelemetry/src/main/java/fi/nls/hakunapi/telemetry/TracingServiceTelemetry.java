@@ -116,8 +116,6 @@ public class TracingServiceTelemetry implements ServiceTelemetry {
     /**
      * Initializes an OpenTelemetry SDK with a logging exporter and a
      * SimpleSpanProcessor.
-     *
-     * @return A ready-to-use {@link OpenTelemetry} instance.
      */
     public void initOpenTelemetry(long exportInterval) {
         // Create an instance of PeriodicMetricReader and configure it
