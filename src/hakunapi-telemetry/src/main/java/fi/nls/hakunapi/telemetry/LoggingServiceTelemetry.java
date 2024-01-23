@@ -1,5 +1,6 @@
 package fi.nls.hakunapi.telemetry;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -39,10 +40,6 @@ public class LoggingServiceTelemetry implements ServiceTelemetry {
     @Override
     public void setName(String name) {
         this.name = name;
-        if (name == null) {
-            return;
-        }
-        log = LoggerFactory.getLogger(name);
     }
 
     public void setHeaders(Map<String, String> headersMap) {
@@ -74,9 +71,17 @@ public class LoggingServiceTelemetry implements ServiceTelemetry {
 
     @Override
     public void parse(FeatureServiceConfig service, HakunaConfigParser parser) {
-        // additional configuration
     }
-    
-    
 
+    @Override
+    public void close() throws IOException {        
+    }
+
+    @Override
+    public void start() {
+        if(name==null) {
+            return;
+        }
+        log = LoggerFactory.getLogger(name);
+    }
 }

@@ -4,9 +4,9 @@ import fi.nls.hakunapi.core.request.WriteReport;
 
 public interface TelemetrySpan extends AutoCloseable {
 
-    default void counts(int count) {};
-    default void counts(WriteReport report) {};
-    default void put(String key, String value)  {};
+    void counts(int count);
+    void counts(WriteReport report);
+    void put(String key, String value);
 
     public void close();
 
@@ -15,7 +15,18 @@ public interface TelemetrySpan extends AutoCloseable {
 
         @Override
         public void close() {
+        }
 
+        @Override
+        public void counts(int count) {
+        }
+
+        @Override
+        public void counts(WriteReport report) {
+        }
+
+        @Override
+        public void put(String key, String value) {
         }
 
     };

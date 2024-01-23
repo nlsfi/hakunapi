@@ -17,6 +17,7 @@ public class TelemetryConfigParser {
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryConfigParser.class);
 
     protected static final String TELEMETRY_LOG_NOP = "NOP";
+    public static final String TELEMETRY_MODULE_PROP = "telemetry.module.%s";
     protected static final String TELEMETRY_MODE = "telemetry.mode";
     protected static final String TELEMETRY_LOGGER = "telemetry.logger";
     protected static final String TELEMETRY_FIELDS = "telemetry.fields";
@@ -60,7 +61,7 @@ public class TelemetryConfigParser {
         if (collectionsWildcard == null) {
             return ServiceTelemetry.NOP;
 
-        } else if (service != null && "*".equals(collectionsWildcard)) {
+        } else if (service != null && TELEMETRY_COLLECTIONS_WILDCARD.equals(collectionsWildcard)) {
             Collection<FeatureType> collections = service.getCollections();
 
             // defaults to logging ft.name as ft.name

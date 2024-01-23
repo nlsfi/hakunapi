@@ -140,6 +140,10 @@ public class HakunaContextListener implements ServletContextListener {
             
             ServiceTelemetry telemetry = TelemetryConfigParser.parse(service, parser);
             service.setTelemetry(telemetry);
+            toClose.add(telemetry);
+
+            telemetry.start();
+            
 
             LOG.info("Starting OGC API Features service with collections: {}", collections);
             sce.getServletContext().setAttribute("hakunaService", service);

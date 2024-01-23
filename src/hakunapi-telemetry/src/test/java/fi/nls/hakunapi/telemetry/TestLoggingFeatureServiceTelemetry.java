@@ -40,6 +40,7 @@ public class TestLoggingFeatureServiceTelemetry {
         HakunaConfigParser parser = new HakunaConfigParser(props);
 
         ServiceTelemetry fst = TelemetryConfigParser.parse(null, parser);
+        fst.start();
 
         assertTrue(fst instanceof LoggingServiceTelemetry);
 
@@ -59,6 +60,8 @@ public class TestLoggingFeatureServiceTelemetry {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        fst.close();
     }
 
     FeatureType ft = new FeatureType() {
