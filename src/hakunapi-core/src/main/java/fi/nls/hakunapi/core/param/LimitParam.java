@@ -19,8 +19,7 @@ public class LimitParam implements GetFeatureParam {
             "Only items are counted that are on the first level of the collection in\n" +
             "the response document. Nested objects contained within the explicitly\n" +
             "requested items shall not be counted.\n\n" +
-            "Valid values are positive integers. Invalid values are replaced with the default value.\n" +
-            "As a special case, -1 is allowed as 'unlimited'.";
+            "Valid values are positive integers. Invalid values are replaced with the default value.\n";
 
     @Override
     public String getParamName() {
