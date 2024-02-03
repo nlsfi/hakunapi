@@ -20,6 +20,7 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.schemas.GeoJSONGeometrySchema;
 import fi.nls.hakunapi.core.schemas.OAS30toJsonSchema;
 import fi.nls.hakunapi.core.schemas.SchemaDefinition;
+import fi.nls.hakunapi.simple.servlet.javax.MediaTypes;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -27,12 +28,14 @@ import io.swagger.v3.oas.models.media.StringSchema;
 @Path("/collections")
 public class GetCollectionSchemaImpl {
 
+    
+    
     @Inject
     private FeatureServiceConfig service;
 
     @GET
     @Path("/{collectionId}/schema")
-    @Produces("application/schema+json")
+    @Produces(MediaTypes.APPLICATION_SCHEMA)
     public SchemaDefinition handle(
             @PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,

@@ -43,6 +43,9 @@ import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
+import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
+import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.geojson.FeatureGeoJSON;
@@ -128,8 +131,12 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
         } catch (NotAcceptableException e) {
             return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
+        
+        final ServiceTelemetry fst = service.getTelemetry();
+        final RequestTelemetry ftt = fst.forRequest(request);
+
         try (SingleFeatureWriter writer = request.getFormat().getSingleFeatureWriter()) {
-            return getResponse(writer, ft.getFeatureProducer(), request, c);
+            return getResponse(writer, ft.getFeatureProducer(), request, c, ftt);
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
             return ResponseUtil.exception(Status.INTERNAL_SERVER_ERROR,
@@ -138,42 +145,51 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
     }
 
     public Response getResponse(SingleFeatureWriter writer, FeatureProducer producer,
-            GetFeatureRequest request, GetFeatureCollection c) throws Exception {
-        ValueProvider feature = null;
-        try (FeatureStream features = producer.getFeatures(request, c)) {
-            if (!features.hasNext()) {
-                return ResponseUtil.exception(Status.NOT_FOUND, "Feature not found");
+            GetFeatureRequest request, GetFeatureCollection c, RequestTelemetry ftt) throws Exception {
+
+        
+        try( TelemetrySpan span = ftt.span()) {
+
+            ValueProvider feature = null;
+            try (FeatureStream features = producer.getFeatures(request, c)) {
+                if (!features.hasNext()) {
+                    return ResponseUtil.exception(Status.NOT_FOUND, "Feature not found");
+                }
+                feature = features.next();
             }
-            feature = features.next();
+
+            int srid = request.getSRID();
+
+            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+            boolean crsIsLatLon = service.isCrsLatLon(srid);
+
+
+            // Feature response rarely needs 8kb of memory
+            // Let's allocate a little less
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
+            writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
+            if (c.getFt().getGeom() != null) {
+                writer.initGeometryWriter(CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
+            }
+
+            int i = 0;
+            for (HakunaProperty prop : c.getProperties()) {
+                prop.write(feature, i++, writer);
+            }
+
+            writer.endFeature();
+            writer.end(true, getLinks(request, writer), 1);
+            writer.close();
+
+            span.counts(1);
+
+
+            ResponseBuilder builder = Response.ok();
+            request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
+            request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+            builder.entity(baos.toByteArray());
+            return builder.build();
         }
-
-        int srid = request.getSRID();
-
-        int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
-        boolean crsIsLatLon = service.isCrsLatLon(srid);
-
-        // Feature response rarely needs 8kb of memory
-        // Let's allocate a little less
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-        writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
-        if (c.getFt().getGeom() != null) {
-            writer.initGeometryWriter(CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
-        }
-
-        int i = 0;
-        for (HakunaProperty prop : c.getProperties()) {
-            prop.write(feature, i++, writer);
-        }
-
-        writer.endFeature();
-        writer.end(true, getLinks(request, writer), 1);
-        writer.close();
-
-        ResponseBuilder builder = Response.ok();
-        request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-        request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
-        builder.entity(baos.toByteArray());
-        return builder.build();
     }
 
     public List<Link> getLinks(GetFeatureRequest request, FeatureWriter writer) {
