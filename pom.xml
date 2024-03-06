@@ -95,6 +95,11 @@
 				<artifactId>hakunapi-source-postgis</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>fi.nls.hakunapi</groupId>
+                <artifactId>hakunapi-source-oracle</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-geojson</artifactId>

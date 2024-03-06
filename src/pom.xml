@@ -15,6 +15,7 @@
 		<module>hakunapi-simple-servlet-javax</module>
 		<module>hakunapi-simple-webapp-javax</module>
 		<module>hakunapi-source-postgis</module>
+        <module>hakunapi-source-oracle</module>
 		<module>hakunapi-geojson</module>
 		<module>hakunapi-jsonfg</module>
 		<module>hakunapi-gpkg</module>
@@ -31,5 +32,6 @@
         <module>hakunapi-telemetry</module>
         <module>hakunapi-telemetry-webapp-javax</module>
         <module>hakunapi-telemetry-opentelemetry</module>
+        <module>hakunapi-oracle-webapp-javax</module>
 	</modules>
 </project>
