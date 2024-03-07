@@ -2,6 +2,7 @@ package fi.nls.hakunapi.geojson.hakuna;
 
 import java.io.IOException;
 
+import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 
@@ -10,11 +11,13 @@ public class HakunaGeoJSONGeometryWriter implements GeometryWriter {
     protected final HakunaJsonWriter json;
     protected final byte[] fieldName;
     protected final boolean lonLat;
+    protected FloatingPointFormatter formatter;
 
-    public HakunaGeoJSONGeometryWriter(HakunaJsonWriter json, byte[] fieldName, boolean lonLat) {
+    public HakunaGeoJSONGeometryWriter(HakunaJsonWriter json, FloatingPointFormatter f, byte[] fieldName, boolean lonLat) {
         this.json = json;
         this.fieldName = fieldName;
         this.lonLat = lonLat;
+        this.formatter = f;
     }
 
     @Override
@@ -46,25 +49,25 @@ public class HakunaGeoJSONGeometryWriter implements GeometryWriter {
 
     public void writeCoordinate(double x, double y) throws IOException {
         if (lonLat) {
-            json.writeCoordinate(x, y);
+            json.writeCoordinate(x, y, formatter);
         } else {
-            json.writeCoordinate(y, x);
+            json.writeCoordinate(y, x, formatter);
         }
     }
 
     public void writeCoordinate(double x, double y, double z) throws IOException {
         if (lonLat) {
-            json.writeCoordinate(x, y, z);
+            json.writeCoordinate(x, y, z, formatter);
         } else {
-            json.writeCoordinate(y, x, z);
+            json.writeCoordinate(y, x, z, formatter);
         }
     }
 
     public void writeCoordinate(double x, double y, double z, double m) throws IOException {
         if (lonLat) {
-            json.writeCoordinate(x, y, z, m);
+            json.writeCoordinate(x, y, z, m, formatter);
         } else {
-            json.writeCoordinate(y, x, z, m);
+            json.writeCoordinate(y, x, z, m, formatter);
         }
     }
 

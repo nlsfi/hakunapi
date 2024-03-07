@@ -2,6 +2,7 @@ package fi.nls.hakunapi.jsonfg;
 
 import java.io.IOException;
 
+import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.geojson.hakuna.HakunaGeoJSONGeometryWriter;
@@ -10,10 +11,10 @@ import fi.nls.hakunapi.geojson.hakuna.HakunaJsonWriter;
 public class JSONFGGeometryWriter extends HakunaGeoJSONGeometryWriter {
 
     int srid;
-    private HakunaGeometryDimension mode;
+    protected HakunaGeometryDimension mode;
 
-    public JSONFGGeometryWriter(HakunaJsonWriter json, byte[] fieldName, boolean lonLat, HakunaGeometryDimension mode) {
-        super(json, fieldName, lonLat);
+    public JSONFGGeometryWriter(HakunaJsonWriter json, FloatingPointFormatter formatter, byte[] fieldName, boolean lonLat, HakunaGeometryDimension mode) {
+        super(json, formatter, fieldName, lonLat);
         this.mode = mode;
     }
 
@@ -58,4 +59,5 @@ public class JSONFGGeometryWriter extends HakunaGeoJSONGeometryWriter {
             break;
         }
     }
+
 }

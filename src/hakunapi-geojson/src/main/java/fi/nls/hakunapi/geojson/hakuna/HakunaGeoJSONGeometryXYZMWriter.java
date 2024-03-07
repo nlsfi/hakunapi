@@ -2,16 +2,17 @@ package fi.nls.hakunapi.geojson.hakuna;
 
 import java.io.IOException;
 
+import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 
 public class HakunaGeoJSONGeometryXYZMWriter extends HakunaGeoJSONGeometryWriter {
 
     private final HakunaGeometryDimension mode;
 
-    public HakunaGeoJSONGeometryXYZMWriter(HakunaJsonWriter json, byte[] fieldName,
+    public HakunaGeoJSONGeometryXYZMWriter(HakunaJsonWriter json, FloatingPointFormatter formatter, byte[] fieldName,
             boolean lonLat,
             HakunaGeometryDimension mode) {
-        super(json, fieldName, lonLat);
+        super(json, formatter, fieldName, lonLat);
         this.mode = mode;
     }
 

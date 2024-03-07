@@ -1,5 +1,7 @@
 package fi.nls.hakunapi.jsonfg;
 
+import static fi.nls.hakunapi.core.schemas.Crs.CRS84_SRID;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -9,12 +11,16 @@ import org.locationtech.jts.geom.Geometry;
 
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
 import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.projection.ProjectionTransformer;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
+import fi.nls.hakunapi.core.util.CrsUtil;
+import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 import fi.nls.hakunapi.geojson.hakuna.HakunaJsonWriter;
 
 public final class JSONFG {
@@ -45,6 +51,9 @@ public final class JSONFG {
             "http://www.opengis.net/spec/json-fg-1/0.2/conf/core".getBytes(),
             // "http://www.opengis.net/spec/json-fg-1/0.2/conf/types-schemas".getBytes()
     };
+    
+    public static HakunaGeometryDimension CRS84_DIM = HakunaGeometryDimension.XY;
+    
 
     /*
      * TODO: JSONFG schema differs from JSON schema. We'll need JSONFG schema
@@ -132,6 +141,57 @@ public final class JSONFG {
         Geometry dup = src.copy();
         Geometry wgs84Geometry = ProjectionHelper.reproject(dup, outputCrs84Proj);
         return new HakunaGeometryJTS(wgs84Geometry);
+    }
+
+    public static FloatingPointFormatter createCrs84GeometryFormatter() {
+        int crs84maxDecimalsCoordinate = CrsUtil.getMaxDecimalCoordinates(CRS84_SRID);
+        int minDecimalsFloat = 0;
+        int maxDecimalsFloat = 5;
+        int minDecimalsDouble = 0;
+        int maxDecimalsDouble = 8;
+        int minDecimalsOrdinate = 0;
+        FloatingPointFormatter fCrs84 = new DefaultFloatingPointFormatter(
+                minDecimalsFloat,
+                maxDecimalsFloat,
+                minDecimalsDouble,
+                maxDecimalsDouble,
+                minDecimalsOrdinate,
+                crs84maxDecimalsCoordinate);
+        return fCrs84;
+    }
+    
+    public static void writeMetadata(HakunaJsonWriter json, FeatureType ft, 
+            int srid, boolean isCrs84) throws IOException {
+
+        String ftName = ft.getName();
+        String ftJSONFGSchema = JSONFG.getJSONFGSchema(ft);
+
+        HakunaPropertyGeometry geomType = ft.getGeom();
+        Integer geometryDimension = JSONFG.getGeometryDimension(geomType);
+
+        json.writeStartObject();
+
+        json.writeFieldName(JSONFG.CONFORMS_TO);
+        json.writeStartArray();
+        for (byte[] conf : JSONFG.CONF) {
+            json.writeStringUnsafe(conf);
+        }
+        json.writeEndArray();
+
+        json.writeStringField(JSONFG.FEATURE_TYPE, ftName);
+
+        if (geometryDimension != null) {
+            json.writeFieldName(JSONFG.GEOMETRY_DIMENSION);
+            json.writeNumber(geometryDimension);
+        }
+        if (ftJSONFGSchema != null) {
+            json.writeStringField(JSONFG.FEATURE_SCHEMA, ftJSONFGSchema);
+        }
+
+        if (!isCrs84) {
+            String coordRefSys = CrsUtil.toUri(srid);
+            json.writeStringField(JSONFG.COORD_REF_SYS, coordRefSys);
+        }        
     }
 
 }

@@ -46,6 +46,8 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
 
     protected HakunaGeometryDimension dims;
     protected GeometryWriter geometryJson;
+    protected FloatingPointFormatter decimalFormatter;
+    
     protected Map<String, byte[]> propertyNameUTF8Cache = new HashMap<>();
     protected Map<String, GeometryWriter> propertyGeometryJson = new HashMap<>();
 
@@ -79,6 +81,7 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
         this.srid = srid;
         this.json = new HakunaJsonWriter(out, formatter);
         this.crsIsLatLon = crsIsLatLon;
+        this.decimalFormatter = formatter;
         initGeometryWriter(HakunaGeometryDimension.DEFAULT);
     }
 
@@ -92,14 +95,14 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
     public GeometryWriter geometryWriter(byte[] name, boolean lonLat) {
         switch (dims) {
         case GEOMETRY:
-            return new HakunaGeoJSONGeometryWriter(json, name, lonLat);
+            return new HakunaGeoJSONGeometryWriter(json, decimalFormatter, name, lonLat);
         case EPSG:
         case XY:
         case XYZ:
         case XYZM:
         case DEFAULT:
         default:
-            return new HakunaGeoJSONGeometryXYZMWriter(json, name, lonLat, dims);
+            return new HakunaGeoJSONGeometryXYZMWriter(json, decimalFormatter, name, lonLat, dims);
         }
     }
 
