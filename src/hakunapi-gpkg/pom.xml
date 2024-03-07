@@ -9,7 +9,7 @@
     <artifactId>hakunapi-gpkg</artifactId>
 
     <properties>
-        <sqlite-jdbc.version>3.32.3.2</sqlite-jdbc.version>
+        <sqlite-jdbc.version>3.41.2.2</sqlite-jdbc.version>
     </properties>
 
     <dependencies>
