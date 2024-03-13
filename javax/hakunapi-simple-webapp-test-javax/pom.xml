@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>fi.nls.hakunapi</groupId>
 		<artifactId>javax</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>hakunapi-simple-webapp-test-javax</artifactId>
 	<packaging>jar</packaging>
