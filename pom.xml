@@ -38,28 +38,28 @@
 	</scm>
 
 	<properties>
-    <servlet.version>3.0.1</servlet.version>
-        <jaxrs.version>2.0.1</jaxrs.version>
-        <jersey.version>2.42</jersey.version>
-        <freemarker.version>2.3.32</freemarker.version>
-        <jackson.version>2.17.0</jackson.version>
-        <jackson-databind.version>2.17.0</jackson-databind.version>
-        <swagger.version>2.2.21</swagger.version>
-        <jts.version>1.19.0</jts.version>
-        <hikari.version>4.0.3</hikari.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <log4j.version>2.23.1</log4j.version>
-        <pgjdbc.version>42.7.3</pgjdbc.version>
-        <junit.version>4.13.2</junit.version>
-        <mockito.version>4.11.0</mockito.version>
-        <cyclonedx.version>2.7.3</cyclonedx.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
-        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+		<servlet.version>3.0.1</servlet.version>
+		<jaxrs.version>2.0.1</jaxrs.version>
+		<jersey.version>2.42</jersey.version>
+		<freemarker.version>2.3.32</freemarker.version>
+		<jackson.version>2.17.0</jackson.version>
+		<jackson-databind.version>2.17.0</jackson-databind.version>
+		<swagger.version>2.2.21</swagger.version>
+		<jts.version>1.19.0</jts.version>
+		<hikari.version>4.0.3</hikari.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<log4j.version>2.23.1</log4j.version>
+		<pgjdbc.version>42.7.3</pgjdbc.version>
+		<junit.version>4.13.2</junit.version>
+		<mockito.version>4.11.0</mockito.version>
+		<cyclonedx.version>2.7.3</cyclonedx.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>11</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 	</properties>
 
 	<dependencyManagement>
