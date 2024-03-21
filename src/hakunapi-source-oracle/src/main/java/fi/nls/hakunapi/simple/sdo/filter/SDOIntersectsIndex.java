@@ -15,10 +15,9 @@ import fi.nls.hakunapi.sql.filter.SQLFilter;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleStruct;
 
-public abstract class SDOGeometryFunction implements SQLFilter {
+public class SDOIntersectsIndex implements SQLFilter {
 
-    public abstract String getFunctionName();
-
+    //https://docs.oracle.com/database/121/SPATL/sdo_filter.htm#SPATL1028
     @Override
     public String toSQL(Filter filter) {
         HakunaProperty prop = filter.getProp();
@@ -26,12 +25,10 @@ public abstract class SDOGeometryFunction implements SQLFilter {
         return String.format(
                 //
                 //
-                "MDSYS.SDO_RELATE(\"%s\".\"%s\", %s,'MASK=%s')='TRUE'",
+                "MDSYS.SDO_FILTER(\"%s\".\"%s\", %s )='TRUE'",
                 //
-                prop.getTable(), prop.getColumn(), "?",
-                //
-                getFunctionName());
-    }
+                prop.getTable(), prop.getColumn(), "?");
+        }
 
     @Override
     public int bind(Filter filter, Connection c, PreparedStatement ps, int i) throws SQLException {
@@ -53,7 +50,8 @@ public abstract class SDOGeometryFunction implements SQLFilter {
 
     /*
      * https://docs.oracle.com/database/121/SPATL/sdo_relate.htm#SPATL1039
-     * https://docs.oracle.com/database/121/SPATL/spatial-relationships-and-filtering.htm#SPATL460
+     * https://docs.oracle.com/database/121/SPATL/spatial-relationships-and-
+     * filtering.htm#SPATL460
      * 
      * The mask keyword specifies the topological relationship of interest. This is
      * a required parameter. Valid mask keyword values are one or more of the
