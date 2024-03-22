@@ -9,6 +9,10 @@
     </parent>
     <artifactId>hakunapi-jsonfg</artifactId>
 
+    <properties>
+
+        <json-schema-validator.version>1.4.0</json-schema-validator.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
@@ -40,7 +44,7 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>1.0.88</version>
+            <version>${json-schema-validator.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

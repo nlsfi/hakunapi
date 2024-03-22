@@ -66,18 +66,18 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyUUID;
 import fi.nls.hakunapi.core.transformer.ValueTransformer;
+import fi.nls.hakunapi.simple.sdo.SDOPaginationStrategy;
 
 public abstract class SQLSimpleSource implements SimpleSource {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SQLSimpleSource.class);
-    
+
     protected List<HikariDataSource> dataSourcesToClose = new ArrayList<>();
     protected Map<String, DataSource> dataSources = new HashMap<>();
-    
-    public abstract String getType(); 
+
+    public abstract String getType();
+
     public abstract SQLFeatureType createFeatureType();
-    
-    
 
     protected DataSource getDataSource(HakunaConfigParser cfg, Path path, String name) throws NamingException {
         DataSource ds = dataSources.get(name);
@@ -93,7 +93,7 @@ public abstract class SQLSimpleSource implements SimpleSource {
         }
         return ds;
     }
-    
+
     protected DataSource getJNDIDataSource(InitialContext ctx, String name) throws NamingException {
         Object value = ctx.lookup(name);
         if (value == null) {
@@ -109,7 +109,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
         final Properties props;
 
         if (Arrays.stream(cfg.getMultiple("db", new String[0])).anyMatch(name::equals)) {
-            // if name appears in db=a,b,c,d listing then consider it's configuration to be inlined
+            // if name appears in db=a,b,c,d listing then consider it's configuration to be
+            // inlined
             props = getInlinedDBProperties(cfg, name);
         } else {
             // Not inlined, check separate file $name.properties
@@ -122,7 +123,7 @@ public abstract class SQLSimpleSource implements SimpleSource {
         return ds;
     }
 
-	public static Properties getInlinedDBProperties(HakunaConfigParser cfg, String name) {
+    public static Properties getInlinedDBProperties(HakunaConfigParser cfg, String name) {
         Properties props = new Properties();
         cfg.getAllStartingWith("db." + name + ".").forEach(props::setProperty);
         return props;
@@ -166,7 +167,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
     }
 
     @Override
-    public SimpleFeatureType parse(HakunaConfigParser cfg, Path path, String collectionId, int[] srids) throws Exception {
+    public SimpleFeatureType parse(HakunaConfigParser cfg, Path path, String collectionId, int[] srids)
+            throws Exception {
         // Current prefix for properties
         String p = "collections." + collectionId + ".";
         SQLFeatureType ft = createFeatureType();
@@ -220,10 +222,11 @@ public abstract class SQLSimpleSource implements SimpleSource {
         String geometryMapping = cfg.get(p + "geometry.mapping");
         String geometryAlias = cfg.get(p + "geometry.alias");
         if (geometryMapping != null) {
-            geometryMapping = geometryMapping.replace("\"", "");    
+            geometryMapping = geometryMapping.replace("\"", "");
         }
         if (geometryMapping != null) {
-            columnsByTable.computeIfAbsent(geometryTable, __ -> new HashSet<>()).add(new ColumnAlias(geometryMapping, geometryAlias));
+            columnsByTable.computeIfAbsent(geometryTable, __ -> new HashSet<>())
+                    .add(new ColumnAlias(geometryMapping, geometryAlias));
         }
 
         String[] properties = cfg.getMultiple(p + "properties");
@@ -274,7 +277,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
             String alias = idAliases.length > 0 ? idAliases[0] : mapping;
             HakunaPropertyType idColumnType = propertyTypes.get(table).get(alias).get(0);
             boolean nullable = propertyNullability.get(table).get(alias);
-            HakunaPropertyWriter propWriter = HakunaPropertyWriters.getIdPropertyWriter(ft, ft.getName(), "id", idColumnType);
+            HakunaPropertyWriter propWriter = HakunaPropertyWriters.getIdPropertyWriter(ft, ft.getName(), "id",
+                    idColumnType);
             switch (idColumnType) {
             case INT:
                 idProperty = new HakunaPropertyInt("id", table, mapping, nullable, true, propWriter);
@@ -305,13 +309,15 @@ public abstract class SQLSimpleSource implements SimpleSource {
                     List<HakunaPropertyType> typeChain = propertyTypes.get(table).get(alias);
                     boolean unique = false;
                     boolean hidden = true;
-                    parts.add(getDynamicProperty(cfg, HakunaConfigParser.REF_ID_PROP, table, mapping, typeChain, nullable, unique, hidden));
+                    parts.add(getDynamicProperty(cfg, HakunaConfigParser.REF_ID_PROP, table, mapping, typeChain,
+                            nullable, unique, hidden));
                 }
             }
             String transformerClass = cfg.get(p + "id.transformer");
             String transformerArg = cfg.get(p + "id.transformer.arg");
             ValueTransformer vt = cfg.instantiateTransformer(transformerClass);
-            HakunaPropertyWriter propWriter = HakunaPropertyWriters.getIdPropertyWriter(ft, ft.getName(), "id", vt.getPublicType());
+            HakunaPropertyWriter propWriter = HakunaPropertyWriters.getIdPropertyWriter(ft, ft.getName(), "id",
+                    vt.getPublicType());
             idProperty = new HakunaPropertyComposite("id", parts, vt, true, propWriter);
             vt.init(idProperty, transformerArg);
         }
@@ -388,7 +394,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
         return ft;
     }
 
-    protected String[] discoverProperties(DataSource ds, String schema, String table, Predicate<String> check) throws SQLException {
+    protected String[] discoverProperties(DataSource ds, String schema, String table, Predicate<String> check)
+            throws SQLException {
         try (Connection c = ds.getConnection()) {
             DatabaseMetaData md = c.getMetaData();
             try (ResultSet rs = md.getColumns(null, schema, table, null)) {
@@ -468,12 +475,15 @@ public abstract class SQLSimpleSource implements SimpleSource {
     }
 
     protected PaginationStrategy getPaginationStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String paginationStrategy = cfg.get(p + "pagination.strategy", "cursor").toLowerCase();
+
+        String paginationStrategy = cfg.get(p + "pagination.strategy", "offset").toLowerCase();
         switch (paginationStrategy) {
         case "cursor":
+            LOG.warn("cursor pagination IS SLOW atm");
             return getPaginationCursor(cfg, p, sft);
         case "offset":
-            return PaginationStrategyOffset.INSTANCE;
+            LOG.warn("offset pagination WITH sort used");
+            return SDOPaginationStrategy.INSTANCE;
         default:
             throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
         }
@@ -487,10 +497,7 @@ public abstract class SQLSimpleSource implements SimpleSource {
         if (pagination.length == 0) {
             HakunaProperty id = new HakunaPropertyHidden(sft.getId());
             boolean asc = true;
-            return new PaginationStrategyCursor(
-                    Collections.singletonList(id),
-                    Collections.singletonList(asc)
-                    );
+            return new PaginationStrategyCursor(Collections.singletonList(id), Collections.singletonList(asc));
         } else {
             List<HakunaProperty> props = new ArrayList<>(pagination.length);
             List<Boolean> ascending = new ArrayList<>(pagination.length);
@@ -523,7 +530,7 @@ public abstract class SQLSimpleSource implements SimpleSource {
                         throw new IllegalArgumentException("Unknown type " + type + " column " + label);
                     }
                     if (hakunaType != HakunaPropertyType.ARRAY) {
-                        propertyTypes.put(label, Collections.singletonList(hakunaType));    
+                        propertyTypes.put(label, Collections.singletonList(hakunaType));
                     } else {
                         List<HakunaPropertyType> chain = null;
                         if (hasRow) {
@@ -547,11 +554,11 @@ public abstract class SQLSimpleSource implements SimpleSource {
     }
 
     public HakunaPropertyType fromJDBCType(int columnType, String columnTypeName) {
-        
-        if("json".equals(columnTypeName)||"jsonb".equals(columnTypeName)) {
+
+        if ("json".equals(columnTypeName) || "jsonb".equals(columnTypeName)) {
             return HakunaPropertyType.JSON;
         }
-        
+
         switch (columnType) {
         case java.sql.Types.BIT:
         case java.sql.Types.BOOLEAN:
@@ -600,7 +607,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
     }
 
     protected HakunaPropertyGeometry getGeometryColumn(DataSource ds, String schema, String table, String name,
-            String column, int[] srids, int sridStorage, boolean isDefault, boolean nullable, boolean hidden) throws SQLException {
+            String column, int[] srids, int sridStorage, boolean isDefault, boolean nullable, boolean hidden)
+            throws SQLException {
         String sql = "SELECT coord_dimension,srid,type FROM geometry_columns WHERE f_table_schema=? AND f_table_name=? AND f_geometry_column=?";
         try (Connection c = ds.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             int idx = 1;
@@ -619,11 +627,14 @@ public abstract class SQLSimpleSource implements SimpleSource {
                 int srid = getSrid(table, column, sridStorage, dbSrid);
                 if (Arrays.stream(srids).noneMatch(it -> it == srid)) {
                     throw new IllegalArgumentException(String.format(
-                            "For table %s column %s storage srid is %d which is missing from configured srid list!", table, column, srid));
+                            "For table %s column %s storage srid is %d which is missing from configured srid list!",
+                            table, column, srid));
                 }
                 HakunaGeometryType geometryType = HakunaGeometryType.valueOf(type.toUpperCase());
-                HakunaPropertyWriter propWriter = hidden ? HakunaPropertyWriters.HIDDEN : HakunaPropertyWriters.getGeometryPropertyWriter(name, isDefault);
-                return new HakunaPropertyGeometry(name, table, column, nullable, geometryType, srids, srid, dim, propWriter);
+                HakunaPropertyWriter propWriter = hidden ? HakunaPropertyWriters.HIDDEN
+                        : HakunaPropertyWriters.getGeometryPropertyWriter(name, isDefault);
+                return new HakunaPropertyGeometry(name, table, column, nullable, geometryType, srids, srid, dim,
+                        propWriter);
             }
         }
     }
@@ -635,7 +646,8 @@ public abstract class SQLSimpleSource implements SimpleSource {
             return sridStorage;
         } else {
             if (sridStorage > 0) {
-                LOG.warn("For table {} column {} using srid {} from database instead of configured {}", table, column, dbSrid, sridStorage);
+                LOG.warn("For table {} column {} using srid {} from database instead of configured {}", table, column,
+                        dbSrid, sridStorage);
             }
             return dbSrid;
         }
@@ -655,7 +667,6 @@ public abstract class SQLSimpleSource implements SimpleSource {
             List<HakunaPropertyType> typeChain, boolean nullable, boolean unique, boolean hidden) {
         return cfg.getDynamicProperty(name, table, column, typeChain, nullable, unique, hidden);
     }
-
 
     protected final class ColumnAlias {
 

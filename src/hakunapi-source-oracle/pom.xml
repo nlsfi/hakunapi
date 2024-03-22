@@ -10,7 +10,7 @@
     <artifactId>hakunapi-source-oracle</artifactId>
 
     <properties>
-        <gt.version>29.2</gt.version>
+        <gt.version>29.5</gt.version>
         <ojdbc8.version>19.18.0.0</ojdbc8.version>
     </properties>
     <dependencies>
