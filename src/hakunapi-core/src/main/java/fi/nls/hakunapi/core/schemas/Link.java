@@ -54,11 +54,11 @@ public class Link implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .name(getComponentName())
-                    .addProperties("href", new StringSchema().name("href"))
-                    .addProperties("rel", new StringSchema().name("rel").example("prev"))
-                    .addProperties("type", new StringSchema().name("type").example("application/geo+json"))
-                    .addProperties("title", new StringSchema().name("title"))
-                    .addProperties("hreflang", new StringSchema().name("hreflang").example("en"));
+                    .addProperty("href", new StringSchema().name("href"))
+                    .addProperty("rel", new StringSchema().name("rel").example("prev"))
+                    .addProperty("type", new StringSchema().name("type").example("application/geo+json"))
+                    .addProperty("title", new StringSchema().name("title"))
+                    .addProperty("hreflang", new StringSchema().name("hreflang").example("en"));
             schema.setRequired(Collections.singletonList("href"));
             components.put(getComponentName(), schema);
         }

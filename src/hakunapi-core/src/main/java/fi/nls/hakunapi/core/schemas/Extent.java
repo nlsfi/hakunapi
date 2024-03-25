@@ -37,8 +37,8 @@ public class Extent implements Component {
             Schema spatial = SpatialExtent.toSchema();
             Schema temporal = TemporalExtent.toSchema();
             Schema schema = new ObjectSchema()
-                    .addProperties("spatial", spatial)
-                    .addProperties("temporal", temporal)
+                    .addProperty("spatial", spatial)
+                    .addProperty("temporal", temporal)
                     .description(DESCRIPTION);
             components.put(getComponentName(), schema);
         }

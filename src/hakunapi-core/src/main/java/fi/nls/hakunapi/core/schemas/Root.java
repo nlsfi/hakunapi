@@ -50,9 +50,9 @@ public class Root implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .name(getComponentName())
-                    .addProperties("title", new StringSchema())
-                    .addProperties("description", new StringSchema())
-                    .addProperties("links", new ArraySchema().items(new Link().toSchema(components).name("links")));
+                    .addProperty("title", new StringSchema())
+                    .addProperty("description", new StringSchema())
+                    .addProperty("links", new ArraySchema().items(new Link().toSchema(components).name("links")));
             schema.setRequired(Collections.singletonList("links"));
             components.put(getComponentName(), schema);
         }

@@ -20,7 +20,7 @@ public abstract class ExtendableComponent implements Component {
     protected void addExtensionsToSchema(Schema schema) {
         Schema extensionsSchema = new ObjectSchema();
         extensionsSchema.description("Free form object containing additional metadata");
-        schema.addProperties("extensions", extensionsSchema);
+        schema.addProperty("extensions", extensionsSchema);
     }
     
 }
