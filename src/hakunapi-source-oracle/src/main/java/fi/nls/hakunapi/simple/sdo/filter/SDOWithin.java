@@ -1,10 +1,10 @@
 package fi.nls.hakunapi.simple.sdo.filter;
 
-public class SDOIntersects extends SDOGeometryFunction {
+public class SDOWithin extends SDOGeometryFunction {
 
     @Override
     public String getMask() {
-        return "ANYINTERACT";
+        return "INSIDE+COVEREDBY";
     }
 
 }

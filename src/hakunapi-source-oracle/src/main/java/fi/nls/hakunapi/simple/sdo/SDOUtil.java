@@ -17,11 +17,15 @@ import fi.nls.hakunapi.core.join.Join;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyComposite;
 import fi.nls.hakunapi.core.util.StringPair;
+import fi.nls.hakunapi.simple.sdo.filter.SDOContains;
+import fi.nls.hakunapi.simple.sdo.filter.SDOCrosses;
 import fi.nls.hakunapi.simple.sdo.filter.SDODisjoint;
 import fi.nls.hakunapi.simple.sdo.filter.SDOEquals;
 import fi.nls.hakunapi.simple.sdo.filter.SDOIntersects;
 import fi.nls.hakunapi.simple.sdo.filter.SDOIntersectsIndex;
+import fi.nls.hakunapi.simple.sdo.filter.SDOOverlaps;
 import fi.nls.hakunapi.simple.sdo.filter.SDOTouches;
+import fi.nls.hakunapi.simple.sdo.filter.SDOWithin;
 import fi.nls.hakunapi.sql.filter.SQLAnd;
 import fi.nls.hakunapi.sql.filter.SQLEqualTo;
 import fi.nls.hakunapi.sql.filter.SQLFilter;
@@ -75,13 +79,15 @@ public class SDOUtil {
         FILTERS.put(FilterOp.NOT, new SQLNot(FILTERS));
 
         // SDO
-        FILTERS.put(FilterOp.INTERSECTS, new SDOIntersects());
-        //FILTERS.put(FilterOp.INTERSECTS, new SDOIntersectsIndex());
         FILTERS.put(FilterOp.INTERSECTS_INDEX, new SDOIntersectsIndex());
-        FILTERS.put(FilterOp.CONTAINS, new SDOIntersects());
+        FILTERS.put(FilterOp.INTERSECTS, new SDOIntersects());
         FILTERS.put(FilterOp.EQUALS, new SDOEquals());
         FILTERS.put(FilterOp.DISJOINT, new SDODisjoint());
         FILTERS.put(FilterOp.TOUCHES, new SDOTouches());
+        FILTERS.put(FilterOp.WITHIN, new SDOWithin());
+        FILTERS.put(FilterOp.OVERLAPS, new SDOOverlaps());
+        FILTERS.put(FilterOp.CROSSES, new SDOCrosses());
+        FILTERS.put(FilterOp.CONTAINS, new SDOContains());
     }
 
     public static void bind(Connection c, PreparedStatement ps, List<Filter> filters) throws SQLException {

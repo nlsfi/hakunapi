@@ -17,7 +17,7 @@ import oracle.jdbc.OracleStruct;
 
 public abstract class SDOGeometryFunction implements SQLFilter {
 
-    public abstract String getFunctionName();
+    public abstract String getMask();
 
     @Override
     public String toSQL(Filter filter) {
@@ -30,7 +30,7 @@ public abstract class SDOGeometryFunction implements SQLFilter {
                 //
                 prop.getTable(), prop.getColumn(), "?",
                 //
-                getFunctionName());
+                getMask());
     }
 
     @Override
