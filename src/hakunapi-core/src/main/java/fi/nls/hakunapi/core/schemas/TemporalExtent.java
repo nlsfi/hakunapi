@@ -55,8 +55,8 @@ public class TemporalExtent {
                 .description(DESCRIPTION_TRS);
 
         return new ObjectSchema()
-                .addProperties("bbox", intervalSchemaSchema)
-                .addProperties("crs", trsSchema)
+                .addProperty("bbox", intervalSchemaSchema)
+                .addProperty("crs", trsSchema)
                 .description(DESCRIPTION);
     }
 

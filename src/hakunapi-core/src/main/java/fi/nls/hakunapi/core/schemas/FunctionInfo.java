@@ -42,14 +42,14 @@ public class FunctionInfo extends ExtendableComponent {
                 schemaInOut.addEnumItem(s);
             }
             Schema schema = new ObjectSchema().name(getComponentName())
-                    .addProperties("name", new StringSchema().description("name of the function"))
-                    .addProperties("description", new StringSchema().description("description of the function"))
-                    .addProperties("metadataUrl", new StringSchema().description("metadata url for function"))
-                    .addProperties("arguments", new ArraySchema().items(new ObjectSchema())
+                    .addProperty("name", new StringSchema().description("name of the function"))
+                    .addProperty("description", new StringSchema().description("description of the function"))
+                    .addProperty("metadataUrl", new StringSchema().description("metadata url for function"))
+                    .addProperty("arguments", new ArraySchema().items(new ObjectSchema())
                             .description("a description of the arguments of the function")
-                            .addProperties("title", new StringSchema()).addProperties("description", new StringSchema())
-                            .addProperties("type", new ArraySchema().items(schemaInOut)))
-                    .addProperties("returns", new ArraySchema().items(schemaInOut))
+                            .addProperty("title", new StringSchema()).addProperty("description", new StringSchema())
+                            .addProperty("type", new ArraySchema().items(schemaInOut)))
+                    .addProperty("returns", new ArraySchema().items(schemaInOut))
                     .description("a description of the results of the function");
             addExtensionsToSchema(schema);
             components.put(getComponentName(), schema);
