@@ -34,8 +34,8 @@ public class CollectionsContent implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .name(getComponentName())
-                    .addProperties("links", new ArraySchema().items(new Link().toSchema(components)))
-                    .addProperties("collections", new ArraySchema().items(new CollectionInfo().toSchema(components)));
+                    .addProperty("links", new ArraySchema().items(new Link().toSchema(components)))
+                    .addProperty("collections", new ArraySchema().items(new CollectionInfo().toSchema(components)));
             schema.setRequired(Arrays.asList("links", "collections"));
             components.put(getComponentName(), schema);
         }

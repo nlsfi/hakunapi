@@ -28,7 +28,7 @@ public class FunctionsContent implements Component {
     @Override
     public Schema toSchema(Map<String, Schema> components) {
         if (!components.containsKey(getComponentName())) {
-            Schema schema = new ObjectSchema().name(getComponentName()).addProperties("functions",
+            Schema schema = new ObjectSchema().name(getComponentName()).addProperty("functions",
                     new ArraySchema().items(new FunctionInfo().toSchema(components)));
             components.put(getComponentName(), schema);
         }

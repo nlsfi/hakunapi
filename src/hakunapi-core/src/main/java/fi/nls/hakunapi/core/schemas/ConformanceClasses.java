@@ -49,7 +49,7 @@ public class ConformanceClasses implements Component {
             components.put(getComponentName(), schema);
             schema
             .name(getComponentName())
-            .addProperties("conformsTo", new ArraySchema().items(new StringSchema()).example(example));
+            .addProperty("conformsTo", new ArraySchema().items(new StringSchema()).example(example));
             schema.setRequired(Collections.singletonList("conformsTo"));
             components.put(getComponentName(), schema);
         }
