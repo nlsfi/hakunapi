@@ -22,8 +22,8 @@ public class GeometryCollectionGeoJSON implements Component {
             ObjectSchema schema = new ObjectSchema();
             components.put(getComponentName(), schema);
             schema.required(Arrays.asList("type", "geometries"));
-            schema.addProperties("type", new StringSchema()._enum(Arrays.asList("GeometryCollection")));
-            schema.addProperties("geometries", new ArraySchema().items(new GeometryGeoJSON().toSchema(components)));
+            schema.addProperty("type", new StringSchema()._enum(Arrays.asList("GeometryCollection")));
+            schema.addProperty("geometries", new ArraySchema().items(new GeometryGeoJSON().toSchema(components)));
         }
         return new Schema<>().$ref(getComponentName());
     }
