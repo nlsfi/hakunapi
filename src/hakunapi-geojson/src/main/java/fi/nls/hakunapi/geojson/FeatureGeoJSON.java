@@ -23,13 +23,13 @@ public class FeatureGeoJSON implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .required(Arrays.asList("type", "geometry", "properties"))
-                    .addProperties("type", new StringSchema()._enum(Arrays.asList("Feature")))
-                    .addProperties("geometry", new GeometryGeoJSON().toSchema(components))
-                    .addProperties("properties", new ObjectSchema().nullable(true))
-                    .addProperties("id", new ComposedSchema()
+                    .addProperty("type", new StringSchema()._enum(Arrays.asList("Feature")))
+                    .addProperty("geometry", new GeometryGeoJSON().toSchema(components))
+                    .addProperty("properties", new ObjectSchema().nullable(true))
+                    .addProperty("id", new ComposedSchema()
                             .addOneOfItem(new StringSchema())
                             .addOneOfItem(new Schema<>().type("integer")))
-                    .addProperties("links", new ArraySchema().items(new Link().toSchema(components)));
+                    .addProperty("links", new ArraySchema().items(new Link().toSchema(components)));
             components.put(getComponentName(), schema);
         }
         return new Schema<>().$ref(getComponentName());

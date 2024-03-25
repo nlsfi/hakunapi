@@ -25,12 +25,12 @@ public class FeatureCollectionGeoJSON implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .required(Arrays.asList("type", "features"))
-                    .addProperties("type", new StringSchema()._enum(Arrays.asList("FeatureCollection")))
-                    .addProperties("features", new ArraySchema().items(new FeatureGeoJSON().toSchema(components)))
-                    .addProperties("links", new ArraySchema().items(new Link().toSchema(components)))
-                    .addProperties("timeStamp", new DateTimeSchema())
-                    .addProperties("numberMatched", new IntegerSchema().minimum(BigDecimal.ZERO))
-                    .addProperties("numberReturned", new IntegerSchema().minimum(BigDecimal.ZERO));
+                    .addProperty("type", new StringSchema()._enum(Arrays.asList("FeatureCollection")))
+                    .addProperty("features", new ArraySchema().items(new FeatureGeoJSON().toSchema(components)))
+                    .addProperty("links", new ArraySchema().items(new Link().toSchema(components)))
+                    .addProperty("timeStamp", new DateTimeSchema())
+                    .addProperty("numberMatched", new IntegerSchema().minimum(BigDecimal.ZERO))
+                    .addProperty("numberReturned", new IntegerSchema().minimum(BigDecimal.ZERO));
             components.put(getComponentName(), schema);
         }
         return new Schema<>().$ref(getComponentName());
