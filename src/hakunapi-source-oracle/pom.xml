@@ -13,6 +13,15 @@
         <gt.version>29.5</gt.version>
         <ojdbc8.version>19.18.0.0</ojdbc8.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
