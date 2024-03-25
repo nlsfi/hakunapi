@@ -34,14 +34,14 @@ public final class GeoJSONGeometrySchema {
         } else if (type == HakunaGeometryType.GEOMETRYCOLLECTION) {
             ObjectSchema schema = new ObjectSchema();
             schema.required(Arrays.asList("type", "geometries"));
-            schema.addProperties("type", new StringSchema()._enum(Collections.singletonList(type.geoJsonType)));
-            schema.addProperties("geometries", getSchema(HakunaGeometryType.GEOMETRY));
+            schema.addProperty("type", new StringSchema()._enum(Collections.singletonList(type.geoJsonType)));
+            schema.addProperty("geometries", getSchema(HakunaGeometryType.GEOMETRY));
             return schema;
         } else {
             ObjectSchema schema = new ObjectSchema();
             schema.required(Arrays.asList("type", "coordinates"));
-            schema.addProperties("type", new StringSchema()._enum(Collections.singletonList(type.geoJsonType)));
-            schema.addProperties("coordinates", getCoordinatesSchema(type));
+            schema.addProperty("type", new StringSchema()._enum(Collections.singletonList(type.geoJsonType)));
+            schema.addProperty("coordinates", getCoordinatesSchema(type));
             return schema;
         }
     }

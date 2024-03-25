@@ -32,8 +32,8 @@ public class FeaturesException implements Component {
         if (!components.containsKey(getComponentName())) {
             Schema schema = new ObjectSchema()
                     .name(getComponentName())
-                    .addProperties("code", new StringSchema().name("code"))
-                    .addProperties("description", new StringSchema().name("description"));
+                    .addProperty("code", new StringSchema().name("code"))
+                    .addProperty("description", new StringSchema().name("description"));
             schema.setRequired(Collections.singletonList("code"));
             components.put(getComponentName(), schema);
         }

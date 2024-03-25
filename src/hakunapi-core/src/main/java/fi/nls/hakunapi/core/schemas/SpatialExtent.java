@@ -62,8 +62,8 @@ public class SpatialExtent {
                 .description(DESCRIPTION_CRS);
 
         return new ObjectSchema()
-                .addProperties("bbox", bboxSchema)
-                .addProperties("crs", crsSchema)
+                .addProperty("bbox", bboxSchema)
+                .addProperty("crs", crsSchema)
                 .description(DESCRIPTION);
     }
 

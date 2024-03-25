@@ -164,6 +164,10 @@ public final class HakunaPropertyWriters {
             return (vp, i, writer) -> {
                 writeStartFeature(ft, layerName, writer, type, vp.getObject(i).toString());
             };
+        case DOUBLE:
+            return (vp, i, writer) -> {
+                writeStartFeature(ft, layerName, writer, type, vp.getObject(i).toString());
+            };
         default:
             throw new IllegalArgumentException("Invalid type for id property");
         }
