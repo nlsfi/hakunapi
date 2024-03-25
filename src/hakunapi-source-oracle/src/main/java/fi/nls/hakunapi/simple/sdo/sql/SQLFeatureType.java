@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.sql;
+package fi.nls.hakunapi.simple.sdo.sql;
 
 import java.util.List;
 

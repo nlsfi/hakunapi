@@ -7,7 +7,7 @@ import org.locationtech.jts.geom.Geometry;
 
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
-import fi.nls.hakunapi.sql.ResultSetValueProvider;
+import fi.nls.hakunapi.simple.sdo.sql.ResultSetValueProvider;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleResultSet;
 import oracle.jdbc.OracleStruct;

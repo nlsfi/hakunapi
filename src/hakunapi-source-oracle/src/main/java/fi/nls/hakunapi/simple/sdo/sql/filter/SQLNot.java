@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.sql.filter;
+package fi.nls.hakunapi.simple.sdo.sql.filter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

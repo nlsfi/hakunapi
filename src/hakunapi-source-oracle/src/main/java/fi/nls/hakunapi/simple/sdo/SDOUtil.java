@@ -26,19 +26,19 @@ import fi.nls.hakunapi.simple.sdo.filter.SDOIntersectsIndex;
 import fi.nls.hakunapi.simple.sdo.filter.SDOOverlaps;
 import fi.nls.hakunapi.simple.sdo.filter.SDOTouches;
 import fi.nls.hakunapi.simple.sdo.filter.SDOWithin;
-import fi.nls.hakunapi.sql.filter.SQLAnd;
-import fi.nls.hakunapi.sql.filter.SQLEqualTo;
-import fi.nls.hakunapi.sql.filter.SQLFilter;
-import fi.nls.hakunapi.sql.filter.SQLGreaterThan;
-import fi.nls.hakunapi.sql.filter.SQLGreaterThanOrEqualTo;
-import fi.nls.hakunapi.sql.filter.SQLIsNotNull;
-import fi.nls.hakunapi.sql.filter.SQLIsNull;
-import fi.nls.hakunapi.sql.filter.SQLLessThan;
-import fi.nls.hakunapi.sql.filter.SQLLessThanOrEqualTo;
-import fi.nls.hakunapi.sql.filter.SQLLike;
-import fi.nls.hakunapi.sql.filter.SQLNot;
-import fi.nls.hakunapi.sql.filter.SQLNotEqualTo;
-import fi.nls.hakunapi.sql.filter.SQLOr;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLAnd;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLEqualTo;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLFilter;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLGreaterThan;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLGreaterThanOrEqualTo;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLIsNotNull;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLIsNull;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLLessThan;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLLessThanOrEqualTo;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLLike;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLNot;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLNotEqualTo;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLOr;
 
 public class SDOUtil {
 

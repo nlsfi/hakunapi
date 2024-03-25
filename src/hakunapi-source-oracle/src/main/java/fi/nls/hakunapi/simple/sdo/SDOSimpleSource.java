@@ -34,8 +34,8 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyUUID;
 import fi.nls.hakunapi.core.transformer.ValueTransformer;
-import fi.nls.hakunapi.sql.SQLFeatureType;
-import fi.nls.hakunapi.sql.SQLSimpleSource;
+import fi.nls.hakunapi.simple.sdo.sql.SQLFeatureType;
+import fi.nls.hakunapi.simple.sdo.sql.SQLSimpleSource;
 
 public class SDOSimpleSource extends SQLSimpleSource implements SimpleSource {
 

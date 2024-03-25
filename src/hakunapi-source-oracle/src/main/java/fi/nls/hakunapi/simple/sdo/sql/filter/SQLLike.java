@@ -1,4 +1,4 @@
-package fi.nls.hakunapi.sql.filter;
+package fi.nls.hakunapi.simple.sdo.sql.filter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.filter.LikeFilter;
 import fi.nls.hakunapi.core.property.HakunaProperty;
-import fi.nls.hakunapi.sql.SQLUtil;
+import fi.nls.hakunapi.simple.sdo.sql.SQLUtil;
 
 public class SQLLike implements SQLFilter {
     

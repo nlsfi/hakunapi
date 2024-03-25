@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import fi.nls.hakunapi.core.ValueMapper;
-import fi.nls.hakunapi.sql.BufferedResultSet;
-import fi.nls.hakunapi.sql.ResultSetValueProvider;
+import fi.nls.hakunapi.simple.sdo.sql.BufferedResultSet;
+import fi.nls.hakunapi.simple.sdo.sql.ResultSetValueProvider;
 import oracle.jdbc.driver.OracleConnection;
 
 public class SDOBufferedResultSet extends BufferedResultSet {

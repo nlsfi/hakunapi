@@ -1,7 +1,7 @@
 package fi.nls.hakunapi.simple.sdo;
 
 import fi.nls.hakunapi.core.FeatureProducer;
-import fi.nls.hakunapi.sql.SQLFeatureType;
+import fi.nls.hakunapi.simple.sdo.sql.SQLFeatureType;
 
 public class SDOFeatureType extends SQLFeatureType {
 

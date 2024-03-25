@@ -11,7 +11,7 @@ import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
-import fi.nls.hakunapi.sql.filter.SQLFilter;
+import fi.nls.hakunapi.simple.sdo.sql.filter.SQLFilter;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleStruct;
 
