@@ -97,5 +97,6 @@
 
 	<modules>
 		<module>hakunapi-simple-servlet-jakarta</module>
+		<module>hakunapi-simple-webapp-jakarta</module>
 	</modules>
 </project>
