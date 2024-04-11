@@ -8,10 +8,6 @@
     </parent>
     <artifactId>hakunapi-proj-gt</artifactId>
 
-    <properties>
-        <geotools.version>29.5</geotools.version>
-    </properties>
-
     <repositories>
         <repository>
             <id>osgeo</id>
