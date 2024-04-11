@@ -16,6 +16,7 @@ import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
+import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
 public class JSONFGFeatureCollectionWriterTest {
@@ -27,7 +28,6 @@ public class JSONFGFeatureCollectionWriterTest {
 
         FeatureType ft = data.getFeatureTypeWithDate(ftName);
 
-        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
@@ -37,7 +37,10 @@ public class JSONFGFeatureCollectionWriterTest {
         try (FeatureStream fs = data.getFeaturesWithDate();
                 FeatureCollectionWriter fw = new JSONFGFeatureCollectionWriter()) {
 
-            fw.init(baos, f, data.PLACE_SRID);
+            int srid =data.PLACE_SRID;
+            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+
+            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);
 
             fw.startFeatureCollection(ft, null);
@@ -51,6 +54,8 @@ public class JSONFGFeatureCollectionWriterTest {
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
                 .disable(SerializationFeature.CLOSE_CLOSEABLE);
 
+        System.out.println(new String(baos.toByteArray()));
+        
         JsonNode json = mapper.readTree(baos.toByteArray());
 
         mapper.writeValue(System.out, json);
@@ -66,7 +71,6 @@ public class JSONFGFeatureCollectionWriterTest {
 
         FeatureType ft = data.getFeatureTypeWithTimestamp(ftName);
 
-        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
@@ -76,7 +80,10 @@ public class JSONFGFeatureCollectionWriterTest {
         try (FeatureStream fs = data.getFeaturesWithTimestamp();
                 FeatureCollectionWriter fw = new JSONFGFeatureCollectionWriter()) {
 
-            fw.init(baos, f, data.PLACE_SRID);
+            int srid =data.PLACE_SRID;
+            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+
+            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);
 
             fw.startFeatureCollection(ft, null);

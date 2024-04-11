@@ -11,13 +11,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
-import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
+import fi.nls.hakunapi.core.util.CrsUtil;
 
 public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
@@ -28,7 +27,6 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
         FeatureType ft = data.getFeatureTypeWithDate(ftName);
 
-        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
@@ -40,7 +38,10 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
             ValueProvider feat = fs.next();
 
-            fw.init(baos, f, data.PLACE_SRID);
+            int srid =data.PLACE_SRID;
+            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+
+            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);
 
             // Note: contains implicit call to startFeature !
@@ -75,8 +76,7 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
         FeatureType ft = data.getFeatureTypeWithTimestamp(ftName);
 
-        FloatingPointFormatter f = new DefaultFloatingPointFormatter(0, 5, 0, 5, 0, 13);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
         GetFeatureCollection coll = new GetFeatureCollection(ft);
@@ -87,7 +87,10 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
 
             ValueProvider feat = fs.next();
 
-            fw.init(baos, f, data.PLACE_SRID);
+            int srid =data.PLACE_SRID;
+            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+
+            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);
 
             // Note: contains implicit call to startFeature !

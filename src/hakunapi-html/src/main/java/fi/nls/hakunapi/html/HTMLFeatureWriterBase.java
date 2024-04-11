@@ -60,7 +60,7 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
         this.formatter = formatter;
         this.geojsonBuffer = new ByteArrayOutputStream();
         this.jsonWriter = new HakunaJsonWriter(geojsonBuffer, formatter);
-        this.geometryWriter = new HakunaGeoJSONGeometryWriterNoField(jsonWriter);
+        this.geometryWriter = new HakunaGeoJSONGeometryWriterNoField(jsonWriter, formatter);
     }
 
     @Override

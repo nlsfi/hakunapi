@@ -42,7 +42,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     private static final int STATE_INIT = 3;
 
     private final OutputStream out;
-    private final FloatingPointFormatter formatter;
+    private final FloatingPointFormatter numberPropertyFormatter;
 
     private final byte[] buf;
     private int pos;
@@ -53,7 +53,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
 
     public HakunaJsonWriter(OutputStream out, FloatingPointFormatter formatter) {
         this.out = out;
-        this.formatter = formatter;
+        this.numberPropertyFormatter = formatter;
         this.buf = new byte[BUF_LEN];
         this.pos = 0;
         this.state = STATE_INIT;
@@ -358,10 +358,10 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             }
         case STATE_OBJ_VALUE:
             // max char length for long (21) + dot (1) + maxDecimals
-            if (pos + 22 + formatter.maxDecimalsFloat() >= BUF_LEN) {
+            if (pos + 22 + numberPropertyFormatter.maxDecimalsFloat() >= BUF_LEN) {
                 flush();
             }
-            pos = formatter.writeFloat(v, buf, pos);
+            pos = numberPropertyFormatter.writeFloat(v, buf, pos);
             comma = true;
             state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
             break;
@@ -381,10 +381,10 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             }
         case STATE_OBJ_VALUE:
             // max char length for long (21) + dot (1) + maxDecimals
-            if (pos + 22 + formatter.maxDecimalsDouble() >= BUF_LEN) {
+            if (pos + 22 + numberPropertyFormatter.maxDecimalsDouble() >= BUF_LEN) {
                 flush();
             }
-            pos = formatter.writeDouble(v, buf, pos);
+            pos = numberPropertyFormatter.writeDouble(v, buf, pos);
             comma = true;
             state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
             break;
@@ -394,57 +394,66 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     }
 
     public void writeCoordinate(double x, double y) throws IOException {
+        writeCoordinate(x, y, numberPropertyFormatter);
+    }
+    public void writeCoordinate(double x, double y, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ]
-        if (pos + 2 + 22 + 1 + 22 + 1 +  2 * formatter.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos + 2 + 22 + 1 + 22 + 1 +  2 * f.maxDecimalsOrdinate() >= BUF_LEN) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = formatter.writeOrdinate(x, buf, pos);
+        pos = f.writeOrdinate(x, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(y, buf, pos);
+        pos = f.writeOrdinate(y, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
     }
 
     public void writeCoordinate(double x, double y, double z) throws IOException {
+        writeCoordinate( x, y, z, numberPropertyFormatter);
+    }
+    public void writeCoordinate(double x, double y, double z, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ,    z]
-        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 3 * formatter.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 3 * f.maxDecimalsOrdinate() >= BUF_LEN) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = formatter.writeOrdinate(x, buf, pos);
+        pos = f.writeOrdinate(x, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(y, buf, pos);
+        pos = f.writeOrdinate(y, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(z, buf, pos);
+        pos = f.writeOrdinate(z, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
     }
 
     public void writeCoordinate(double x, double y, double z, double m) throws IOException {
+        writeCoordinate(x, y, z, m, numberPropertyFormatter);
+    }
+    public void writeCoordinate(double x, double y, double z, double m, FloatingPointFormatter f) throws IOException {
         //       ,[    x   ,    y   ,    z   ,    m]
-        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 1 + 22 + 4 * formatter.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 1 + 22 + 4 * f.maxDecimalsOrdinate() >= BUF_LEN) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = formatter.writeOrdinate(x, buf, pos);
+        pos = f.writeOrdinate(x, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(y, buf, pos);
+        pos = f.writeOrdinate(y, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(z, buf, pos);
+        pos = f.writeOrdinate(z, buf, pos);
         buf[pos++] = COMMA;
-        pos = formatter.writeOrdinate(m, buf, pos);
+        pos = numberPropertyFormatter.writeOrdinate(m, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
