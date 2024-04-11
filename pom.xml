@@ -14,6 +14,7 @@
 	<modules>
 		<module>src</module>
 		<module>webapp-javax</module>
+		<module>webapp-jakarta</module>
 	</modules>
 
 	<licenses>
@@ -52,6 +53,8 @@
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
+	    <json-path.version>2.7.0</json-path.version>
+	    <caffeine.version>2.5.5</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>

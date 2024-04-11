@@ -10,10 +10,6 @@
 	<artifactId>hakunapi-simple-webapp-test-javax</artifactId>
 	<packaging>jar</packaging>
 	
-	<properties>
-	       <json-path.version>2.7.0</json-path.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
