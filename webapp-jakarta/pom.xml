@@ -31,12 +31,12 @@
 				<artifactId>hakunapi-simple-servlet-jakarta</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<!--dependency>
+			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-simple-webapp-jakarta</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
+			<!--dependency>
 				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-simple-webapp-test-jakarta</artifactId>
 				<version>${project.version}</version>
@@ -98,5 +98,6 @@
 	<modules>
 		<module>hakunapi-simple-servlet-jakarta</module>
 		<module>hakunapi-simple-webapp-jakarta</module>
+		<module>hakunapi-simple-webapp-test-jakarta</module>
 	</modules>
 </project>
