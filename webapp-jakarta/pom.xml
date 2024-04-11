@@ -99,5 +99,7 @@
 		<module>hakunapi-simple-servlet-jakarta</module>
 		<module>hakunapi-simple-webapp-jakarta</module>
 		<module>hakunapi-simple-webapp-test-jakarta</module>
+		<module>hakunapi-oracle-webapp-jakarta</module>
+		<module>hakunapi-telemetry-webapp-jakarta</module>
 	</modules>
 </project>
