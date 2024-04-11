@@ -53,14 +53,14 @@ public class CollectionInfo extends ExtendableComponent {
             crs.setDefault(new String[] { Crs.CRS84 });
             Schema schema = new ObjectSchema()
                     .name(getComponentName())
-                    .addProperties("id", new StringSchema().description("identifier of the collection used, for example, in URIs"))
-                    .addProperties("title", new StringSchema().description("human readable title of the collection"))
-                    .addProperties("description", new StringSchema().description("a description of the features in the collection"))
-                    .addProperties("links", new ArraySchema().items(new Link().toSchema(components)))
-                    .addProperties("extent", new Extent().toSchema(components))
-                    .addProperties("itemType", new StringSchema()._default("feature").description("indicator about the type of the items in the collection"))
-                    .addProperties("crs", crs)
-                    .addProperties("storageCrs", new StringSchema().format("uri").description("the CRS identifier, from the list of supported CRS identifiers, that may be used to retrieve features from a collection without the need to apply a CRS transformation"))
+                    .addProperty("id", new StringSchema().description("identifier of the collection used, for example, in URIs"))
+                    .addProperty("title", new StringSchema().description("human readable title of the collection"))
+                    .addProperty("description", new StringSchema().description("a description of the features in the collection"))
+                    .addProperty("links", new ArraySchema().items(new Link().toSchema(components)))
+                    .addProperty("extent", new Extent().toSchema(components))
+                    .addProperty("itemType", new StringSchema()._default("feature").description("indicator about the type of the items in the collection"))
+                    .addProperty("crs", crs)
+                    .addProperty("storageCrs", new StringSchema().format("uri").description("the CRS identifier, from the list of supported CRS identifiers, that may be used to retrieve features from a collection without the need to apply a CRS transformation"))
                     ;
             addExtensionsToSchema(schema);
             schema.setRequired(Arrays.asList("id", "links"));
