@@ -1,0 +1,80 @@
+package fi.nls.hakunapi.simple.servlet.jakarta.operation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
+
+import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.MetadataFormat;
+import fi.nls.hakunapi.core.schemas.CollectionInfo;
+import fi.nls.hakunapi.core.schemas.CollectionsContent;
+import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.core.util.Links;
+import fi.nls.hakunapi.html.model.HTMLContext;
+
+@Path("/collections")
+public class CollectionsMetadataImpl {
+
+    @Inject
+    private FeatureServiceConfig service;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public CollectionsContent handleJSON(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
+        return handle(uriInfo, headers, MediaType.APPLICATION_JSON);
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public HTMLContext<CollectionsContent> handleHTML(@Context UriInfo uriInfo, @Context HttpHeaders headers) {
+        String basePath = service.getCurrentServerURL(headers::getHeaderString);
+        return new HTMLContext<>(service, basePath, handle(uriInfo, headers, MediaType.TEXT_HTML));
+    }
+
+    private CollectionsContent handle(UriInfo uriInfo, HttpHeaders headers, String contentType) {
+        Map<String, String> queryParams = OperationUtil.getQueryParams(service, uriInfo);
+
+        String path = service.getCurrentServerURL(headers::getHeaderString) + "/collections";
+        List<Link> links = new ArrayList<>();
+        links.add(Links.getSelfLink(path, queryParams, contentType));
+        links.addAll(getAlternateLinks(path, queryParams, contentType));
+
+        List<CollectionInfo> collections = new ArrayList<>();
+        for (FeatureType ft : service.getCollections()) {
+            CollectionInfo info = CollectionMetadataUtil.toCollectionInfo(headers, service, ft, queryParams);
+            collections.add(info);
+        }
+
+        return new CollectionsContent(links, collections);
+    }
+
+    private List<Link> getAlternateLinks(String path, Map<String, String> queryParams, String contentType) {
+        return service.getMetadataFormats().stream()
+                .filter(it -> !it.contentTypes.contains(contentType))
+                .map(it -> toAlternateLink(path, queryParams, it))
+                .collect(Collectors.toList());
+    }
+
+    private Link toAlternateLink(String path, Map<String, String> queryParams, MetadataFormat format) {
+        String mimeTypeHuman = format.id;
+        String mimeType;
+        if (format == MetadataFormat.JSON) {
+            mimeType = MediaType.APPLICATION_JSON;
+        } else { // if (format == MetadataFormat.JSON) {
+            mimeType = MediaType.TEXT_HTML;
+        }
+        return Links.getAlternateLink(path, queryParams, mimeType, mimeTypeHuman);
+    }
+
+}
