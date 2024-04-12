@@ -56,6 +56,7 @@ import fi.nls.hakunapi.simple.servlet.jakarta.operation.OpenAPI30ApiOperation;
 import freemarker.template.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
 
+
 @ApplicationPath("/")
 public class SimpleFeaturesApplication extends ResourceConfig {
 
