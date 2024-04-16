@@ -8,6 +8,7 @@ import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.ObjectArrayValueContainer;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
+import fi.nls.hakunapi.core.util.DToA;
 
 public final class HakunaPropertyWriters {
 
@@ -166,12 +167,19 @@ public final class HakunaPropertyWriters {
             };
         case DOUBLE:
             return (vp, i, writer) -> {
-                writeStartFeature(ft, layerName, writer, type, vp.getObject(i).toString());
-            };
+                writeStartFeature(ft, layerName, writer, type, doubleAsID(vp.getDouble(i)));
+            };  
         default:
             throw new IllegalArgumentException("Invalid type for id property");
         }
     }
+
+    protected static String doubleAsID(Double d) {      
+        byte[] b = new byte[24];
+        int len = DToA.dtoa(d, b, 0, 0, 8);
+        return new String(b, 0, len);
+    }
+
     
     private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, HakunaPropertyType type, Object value) throws Exception {
         if (writer instanceof FeatureCollectionWriter) {
