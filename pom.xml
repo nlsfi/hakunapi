@@ -13,6 +13,8 @@
 
 	<modules>
 		<module>src</module>
+		<module>webapp-javax</module>
+		<module>webapp-jakarta</module>
 	</modules>
 
 	<licenses>
@@ -38,9 +40,6 @@
 	</scm>
 
 	<properties>
-		<servlet.version>3.0.1</servlet.version>
-		<jaxrs.version>2.0.1</jaxrs.version>
-		<jersey.version>2.42</jersey.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<jackson.version>2.17.0</jackson.version>
 		<jackson-databind.version>2.17.0</jackson-databind.version>
@@ -50,9 +49,12 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>2.23.1</log4j.version>
 		<pgjdbc.version>42.7.3</pgjdbc.version>
+		<geotools.version>29.5</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
+	    <json-path.version>2.7.0</json-path.version>
+	    <caffeine.version>2.5.5</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
@@ -74,21 +76,6 @@
 				<artifactId>hakunapi-config-test</artifactId>
 				<version>${project.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-servlet-javax</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-webapp-javax</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fi.nls.hakunapi</groupId>
-				<artifactId>hakunapi-simple-webapp-test-javax</artifactId>
-				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
@@ -165,46 +152,11 @@
                 <artifactId>hakunapi-telemetry</artifactId>
                 <version>${project.version}</version>
             </dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>${servlet.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax.ws.rs</groupId>
-				<artifactId>javax.ws.rs-api</artifactId>
-				<version>${jaxrs.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.inject</groupId>
-				<artifactId>jersey-hk2</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.media</groupId>
-				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-
-			<dependency>
+            <dependency>
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>${freemarker.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-jsr310</artifactId>
@@ -225,7 +177,6 @@
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-models</artifactId>
@@ -236,13 +187,11 @@
 				<artifactId>swagger-core</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.locationtech.jts</groupId>
 				<artifactId>jts-core</artifactId>
 				<version>${jts.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
@@ -253,7 +202,6 @@
 				<artifactId>postgresql</artifactId>
 				<version>${pgjdbc.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -274,12 +222,6 @@
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-web</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>

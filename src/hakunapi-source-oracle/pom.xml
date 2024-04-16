@@ -10,7 +10,6 @@
     <artifactId>hakunapi-source-oracle</artifactId>
 
     <properties>
-        <gt.version>29.5</gt.version>
         <ojdbc8.version>19.18.0.0</ojdbc8.version>
     </properties>
 
@@ -43,7 +42,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>${gt.version}</version>
+            <version>${geotools.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.geotools</groupId>
@@ -84,7 +83,7 @@
         <dependency>
             <groupId>org.geotools.jdbc</groupId>
             <artifactId>gt-jdbc-oracle</artifactId>
-            <version>${gt.version}</version>
+            <version>${geotools.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.geotools</groupId>
