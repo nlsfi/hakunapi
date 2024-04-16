@@ -12,22 +12,30 @@ import fi.nls.hakunapi.core.util.DToA;
 
 public final class HakunaPropertyWriters {
 
-    public static final HakunaPropertyWriter HIDDEN = (vp, i, writer) -> {
-    };
+    public static final HakunaPropertyWriter HIDDEN = (vp, i, writer) -> { };
 
     public static HakunaPropertyWriter getHiddenPropertyWriter() {
         return HIDDEN;
     }
 
-    /*
-     * Not implemented public static HakunaPropertyWriter
-     * getStructPropertyWriter(String name, List<HakunaProperty> properties) {
-     * return (vp, i, writer) -> { if (vp.isNull(i)) {
-     * writer.writeNullProperty(name); } else { ValueContainer v = (ValueContainer)
-     * vp.getObject(i); writer.writeStartObject(name); i = 0; for (HakunaProperty
-     * prop : properties) { prop.write(v, i++, writer); } writer.writeCloseObject();
-     * } return i + 1; }; }
-     */
+    /* Not implemented
+    public static HakunaPropertyWriter getStructPropertyWriter(String name, List<HakunaProperty> properties) {
+        return (vp, i, writer) -> {
+            if (vp.isNull(i)) {
+                writer.writeNullProperty(name);
+            } else {
+                ValueContainer v = (ValueContainer) vp.getObject(i);
+                writer.writeStartObject(name);
+                i = 0;
+                for (HakunaProperty prop : properties) {
+                    prop.write(v, i++, writer);
+                }
+                writer.writeCloseObject();
+            }
+            return i + 1;
+        };
+    }
+    */
 
     public static HakunaPropertyWriter getArrayPropertyWriter(String name, HakunaPropertyWriter wrapped) {
         return (vp, i, writer) -> {
@@ -130,20 +138,19 @@ public final class HakunaPropertyWriters {
                 }
             };
         case JSON:
-            return (vp, i, writer) -> {
+            return (vp,i,writer) -> {
                 if (vp.isNull(i)) {
                     writer.writeNullProperty(name);
                 } else {
-                    writer.writeJsonProperty(name, vp.getJSON(i));
-                }
+                    writer.writeJsonProperty(name, vp.getJSON(i));                        
+                }                
             };
         default:
             throw new IllegalArgumentException();
         }
     }
 
-    public static HakunaPropertyWriter getIdPropertyWriter(FeatureType ft, String layerName, String name,
-            HakunaPropertyType type) {
+    public static HakunaPropertyWriter getIdPropertyWriter(FeatureType ft, String layerName, String name, HakunaPropertyType type) {
         switch (type) {
         case INT:
             return (vp, i, writer) -> {
@@ -161,7 +168,7 @@ public final class HakunaPropertyWriters {
         case DOUBLE:
             return (vp, i, writer) -> {
                 writeStartFeature(ft, layerName, writer, type, doubleAsID(vp.getDouble(i)));
-            };
+            };  
         default:
             throw new IllegalArgumentException("Invalid type for id property");
         }
@@ -173,8 +180,8 @@ public final class HakunaPropertyWriters {
         return new String(b, 0, len);
     }
 
-    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer,
-            HakunaPropertyType type, Object value) throws Exception {
+    
+    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, HakunaPropertyType type, Object value) throws Exception {
         if (writer instanceof FeatureCollectionWriter) {
             FeatureCollectionWriter fcWriter = (FeatureCollectionWriter) writer;
             if (type == HakunaPropertyType.INT) {
