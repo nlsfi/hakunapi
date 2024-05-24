@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -440,6 +441,8 @@ public class PostGISSimpleSource implements SimpleSource {
             chain.add(HakunaPropertyType.BOOLEAN);
         } else if (cls.equals(String.class)) {
             chain.add(HakunaPropertyType.STRING);
+        } else if(cls.equals(UUID.class)) {
+            chain.add(HakunaPropertyType.UUID);
         } else {
             throw new IllegalArgumentException("Unsupported array type from class!");
         }
@@ -463,6 +466,8 @@ public class PostGISSimpleSource implements SimpleSource {
         case "_varchar":
         case "_text":
             return HakunaPropertyType.STRING;
+        case "_uuid":
+            return HakunaPropertyType.UUID;
         }
         throw new IllegalArgumentException("Can not determine array type from " + typeName);
     }
