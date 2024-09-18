@@ -20,6 +20,8 @@ public enum ConformanceClass {
     CRS("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs"),
 
     //OGC API - Features - Part 3: Filtering 
+    QUERYABLES("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables"),
+    QUERYABLES_QUERY_PARAMETERS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables-query-parameters"),
     FILTER("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter"),
     FEATURES_FILTER("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter"),
     

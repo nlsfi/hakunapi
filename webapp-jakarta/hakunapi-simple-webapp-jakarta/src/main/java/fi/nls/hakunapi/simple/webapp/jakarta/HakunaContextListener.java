@@ -111,6 +111,8 @@ public class HakunaContextListener implements ServletContextListener {
             conformsTo.add(ConformanceClass.CRS);
             conformsTo.add(ConformanceClass.GPKG);
 
+            conformsTo.add(ConformanceClass.QUERYABLES);
+            conformsTo.add(ConformanceClass.QUERYABLES_QUERY_PARAMETERS);
             conformsTo.add(ConformanceClass.FILTER);
             conformsTo.add(ConformanceClass.FEATURES_FILTER);
             conformsTo.add(ConformanceClass.BASIC_CQL);
