@@ -1,8 +1,8 @@
 package fi.nls.hakunapi.proj.gt;
 
 import org.geotools.referencing.CRS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 
 import fi.nls.hakunapi.core.projection.NOPProjectionTransformer;
 import fi.nls.hakunapi.core.projection.ProjectionTransformer;
