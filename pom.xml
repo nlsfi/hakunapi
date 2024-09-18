@@ -49,7 +49,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>2.23.1</log4j.version>
 		<pgjdbc.version>42.7.3</pgjdbc.version>
-		<geotools.version>29.5</geotools.version>
+		<geotools.version>31.3</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
