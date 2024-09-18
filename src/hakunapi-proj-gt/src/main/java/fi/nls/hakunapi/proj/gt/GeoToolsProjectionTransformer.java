@@ -1,7 +1,7 @@
 package fi.nls.hakunapi.proj.gt;
 
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 
 import fi.nls.hakunapi.core.projection.ProjectionTransformer;
 
