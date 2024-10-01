@@ -25,24 +25,22 @@ public enum ConformanceClass {
     FILTER("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter"),
     FEATURES_FILTER("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter"),
     
-    TEMPORAL_OPERATORS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/temporal-operators"),
-    ARRAY_OPERATORS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/array-operators"),
-    PROPERTY_PROPERTY_COMPARISONS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/property-property"),
-    CUSTOM_FUNCTIONS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/functions"),
-    ARITHMETIC_EXPRESSIONS("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/arithmetic"),
-    
     // Common Query Language CQL 2
-    BASIC_CQL("http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2"),
+    CQL2_TEXT("http://www.opengis.net/spec/cql2/1.0/conf/cql2-text"),
+    CQL2_JSON("http://www.opengis.net/spec/cql2/1.0/conf/cql2-json"),
+    BASIC_CQL2("http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2"),
     ADVANCED_COMPARISON_OPERATORS("http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators"),
-    BASIC_SPATIAL_OPERATORS("http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-operators"),
-    SPATIAL_OPERATORS("http://www.opengis.net/spec/cql2/1.0/conf/spatial-operators"),
-    FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/functions"),
-    CQL2_TEXT_ENCODING("http://www.opengis.net/spec/cql2/1.0/conf/cql2-text"),
     CASE_INSENSITIVE_COMPARISON("http://www.opengis.net/spec/cql2/1.0/conf/case-insensitive-comparison"),
+    ACCENT_INSENSITIVE_COMPARISON("http://www.opengis.net/spec/cql2/1.0/conf/accent-insensitive-comparison"),
+    BASIC_SPATIAL_FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions"),
+    BAISC_SPATIAL_FUNCTIONS_PLUS("http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions-plus"),
+    SPATIAL_FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions"),
+    TEMPORAL_FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/temporal-functions"),
+    ARRAY_FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/array-functions"),
+    PROPERTY_PROPERTY("http://www.opengis.net/spec/cql2/1.0/conf/property-property"),
+    FUNCTIONS("http://www.opengis.net/spec/cql2/1.0/conf/functions"),
+    ARITHMETIC("http://www.opengis.net/spec/cql2/1.0/conf/arithmetic"),
 
- // ? https://confluence.nls.fi/pages/viewpage.action?pageId=117770040 punaisella conflussa?
-    CQL2_JSON_ENCODING("http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/cql2-json"),
-    
     ;
 	
 	

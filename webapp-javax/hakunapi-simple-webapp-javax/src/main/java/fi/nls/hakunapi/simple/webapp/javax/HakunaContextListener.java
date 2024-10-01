@@ -115,12 +115,16 @@ public class HakunaContextListener implements ServletContextListener {
             conformsTo.add(ConformanceClass.QUERYABLES_QUERY_PARAMETERS);
             conformsTo.add(ConformanceClass.FILTER);
             conformsTo.add(ConformanceClass.FEATURES_FILTER);
-            conformsTo.add(ConformanceClass.BASIC_CQL);
-            conformsTo.add(ConformanceClass.ADVANCED_COMPARISON_OPERATORS);
-            conformsTo.add(ConformanceClass.BASIC_SPATIAL_OPERATORS);
-            conformsTo.add(ConformanceClass.SPATIAL_OPERATORS);
-            conformsTo.add(ConformanceClass.CQL2_TEXT_ENCODING);
+
+            conformsTo.add(ConformanceClass.CQL2_TEXT);
             // conformsTo.add(ConformanceClass.CQL2_JSON_ENCODING);
+            conformsTo.add(ConformanceClass.BASIC_CQL2);
+            conformsTo.add(ConformanceClass.ADVANCED_COMPARISON_OPERATORS);
+            conformsTo.add(ConformanceClass.CASE_INSENSITIVE_COMPARISON);
+            conformsTo.add(ConformanceClass.BASIC_SPATIAL_FUNCTIONS);
+            conformsTo.add(ConformanceClass.BAISC_SPATIAL_FUNCTIONS_PLUS);
+            conformsTo.add(ConformanceClass.SPATIAL_FUNCTIONS);
+            conformsTo.add(ConformanceClass.FUNCTIONS);
 
             List<OutputFormat> outputFormats = getOutputFormats(parser);
 
