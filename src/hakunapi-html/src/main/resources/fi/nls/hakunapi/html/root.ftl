@@ -47,7 +47,7 @@
       <p><a href="conformance">OGC API conformance classes implemented by this server</a></p>
     </div>
     
-    <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi &copy; 2023</footer>
+    <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi</footer>
   </div>
 </main>
 <script>document.getElementById("json-link").href = window.location.search === "" ? "?f=json" : window.location.search + "&f=json"</script>
