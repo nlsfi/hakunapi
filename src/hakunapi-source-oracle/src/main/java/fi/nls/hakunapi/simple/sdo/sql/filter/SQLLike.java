@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.filter.LikeFilter;
-import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.simple.sdo.sql.SQLFeatureType;
 import fi.nls.hakunapi.simple.sdo.sql.SQLUtil;
 
 public class SQLLike implements SQLFilter {
@@ -17,16 +17,7 @@ public class SQLLike implements SQLFilter {
             throw new UnsupportedOperationException();
         }
 
-        LikeFilter likeFilter = (LikeFilter) filter;
-        HakunaProperty prop = filter.getProp();
-        
-        String propertyName;
-        if (likeFilter.isCaseInsensitive()) {
-            propertyName = String.format("lower(%s)", SQLUtil.toSQL(prop));
-        } else {
-            propertyName = SQLUtil.toSQL(prop);
-        }
-
+        String propertyName = SQLComparison.caseInsensitiveWrap(filter, SQLUtil.toSQL(filter.getProp()));
         return propertyName + " LIKE ?";
     }
     
@@ -39,7 +30,17 @@ public class SQLLike implements SQLFilter {
         char escape = likeFilter.getEscape();
         value = replaceWildcards(value, wild, single, escape);
         if (likeFilter.isCaseInsensitive()) {
-            value = value.toLowerCase();
+            SQLFeatureType sft = (SQLFeatureType) filter.getProp().getFeatureType();
+            switch (sft.getCaseInsensitiveStrategy()) {
+            case LOWER:
+                value = value.toLowerCase();
+                break;
+            case UPPER:
+                value = value.toUpperCase();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown caseInsensitiveStrategy " + sft.getCaseInsensitiveStrategy());
+            }
         }
         ps.setString(i, value);
         return i + 1;
