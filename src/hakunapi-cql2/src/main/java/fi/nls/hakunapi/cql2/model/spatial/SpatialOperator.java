@@ -2,13 +2,14 @@ package fi.nls.hakunapi.cql2.model.spatial;
 
 public enum SpatialOperator {
 
-    S_CONTAINS,
-    S_CROSSES,
-    S_DISJOINT,
-    S_EQUALS,
     S_INTERSECTS,
-    S_OVERLAPS,
+    S_EQUALS,
+    S_DISJOINT,
     S_TOUCHES,
-    S_WITHIN
+    S_WITHIN,
+    S_OVERLAPS,
+    S_CROSSES,
+    S_CONTAINS,
+    ;
 
 }

@@ -53,14 +53,17 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
 
     @Override
     public Object visit(BinaryComparisonPredicate p) {
-        HakunaProperty prop = visit(p.getProp());
-        String value = (String) visit(p.getValue());
+        PropertyName propertyName = p.getProp();
+        Expression e = p.getValue();
+        HakunaProperty prop = visit(propertyName);
+        String value = (String) visit(e);
+        boolean caseInsensitive = propertyName.isCasei() || e.isCasei();
 
         switch (p.getOp()) {
         case EQ:
-            return Filter.equalTo(prop, value);
+            return Filter.equalTo(prop, value, caseInsensitive);
         case NEQ:
-            return Filter.notEqualTo(prop, value);
+            return Filter.notEqualTo(prop, value, caseInsensitive);
         case LT:
             return Filter.lessThan(prop, value);
         case LTE:
@@ -76,9 +79,12 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
 
     @Override
     public Object visit(LikePredicate p) {
-        HakunaProperty prop = visit(p.getProperty());
-        String pattern = p.getPattern();
-        return Filter.like(prop, pattern, '%', '_', '\\', false);
+        PropertyName propertyName = p.getProperty();
+        StringLiteral pattern = p.getPattern();
+        HakunaProperty prop = visit(propertyName);
+        String value = pattern.getValue();
+        boolean caseInsensitive = propertyName.isCasei() || pattern.isCasei();
+        return Filter.like(prop, value, '%', '_', '\\', caseInsensitive);
     }
 
     @Override
@@ -131,10 +137,7 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
 
         Object geometry = visit(p.getValue());
         if (!(geometry instanceof Geometry)) {
-            ExpressionToString toString = new ExpressionToString();
-            toString.visit(p.getValue());
-            String str = toString.finish();
-            throw new IllegalArgumentException("Unexpected value, " + str + " could not be converted to a geometry");
+            throw new IllegalArgumentException("Expected geometry");
         }
         Geometry geom = (Geometry) geometry;
 
@@ -174,6 +177,11 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
         }
         throw new RuntimeException("Unmapped Function");
 
+    }
+
+    @Override
+    public Object visit(EmptyExpression ee) {
+        return Filter.PASS;
     }
 
 }

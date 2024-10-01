@@ -21,6 +21,8 @@ public class FilterCrsParam implements GetFeatureParam {
 
     @Override
     public Parameter toParameter(FeatureServiceConfig service) {
+        // Recommendation 3:
+        // The server SHOULD list the supported coordinate reference system URIs as enums in the schema of the filter-crs parameter
         return new QueryParameter()
                 .name(getParamName())
                 .style(StyleEnum.FORM)

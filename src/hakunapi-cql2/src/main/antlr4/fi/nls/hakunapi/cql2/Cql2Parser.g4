@@ -6,16 +6,28 @@ options {
 }
 
 cqlExpression
-    : expression EOF
+    : booleanExpression EOF
     ;
 
-expression
-    : OPEN_PAREN expression CLOSE_PAREN #NestedExpr
-    | NOT? predicate                    #PredicateExpr
-    | expression AND expression         #AndExpr
-    | expression OR expression          #OrExpr
+booleanExpression
+    : booleanTerm ((OR booleanTerm)*)?
     ;
-    
+
+booleanTerm
+    : booleanFactor ((AND booleanFactor)*)?
+    ;
+
+booleanFactor
+    : NOT? booleanPrimary
+    ;
+
+booleanPrimary
+    : OPEN_PAREN booleanExpression CLOSE_PAREN
+    | function
+    | predicate
+    | booleanLiteral
+    ;
+
 predicate
     : comparisonPredicate
     | spatialPredicate
@@ -30,114 +42,115 @@ comparisonPredicate
     ;
 
 binaryComparisonPredicate
-    : propertyName COMPARISON_OPERATOR scalarExpression
+    : maybeCaseiProperty COMPARISON_OPERATOR scalarExpression
+    ;
+
+scalarExpression
+    : function
+    | temporalLiteral
+    | booleanLiteral
+    | numericLiteral
+    | maybeCaseiValue
     ;
 
 isLikePredicate
-    : propertyName LIKE stringLiteral
+    : maybeCaseiProperty NOT? LIKE maybeCaseiValue
+    ;
+
+maybeCaseiProperty
+    : CASEI OPEN_PAREN propertyName CLOSE_PAREN
+    | propertyName
+    ;
+
+maybeCaseiValue
+    : CASEI OPEN_PAREN stringLiteral CLOSE_PAREN
+    | stringLiteral
     ;
 
 isBetweenPredicate
-    : propertyName NOT? BETWEEN numberLiteral AND numberLiteral
+    : propertyName NOT? BETWEEN numericLiteral AND numericLiteral
     ;
 
 isInListPredicate
-    : propertyName NOT? IN OPEN_PAREN scalarExpression (COMMA scalarExpression)* CLOSE_PAREN
+    : maybeCaseiProperty NOT? IN OPEN_PAREN scalarExpression (COMMA scalarExpression)* CLOSE_PAREN
     ;
 
 isNullPredicate
     : propertyName IS NOT? NULL
     ;    
 
-propertyName
-    : IDENTIFIER
-    ;
-
-scalarExpression
-    : stringLiteral
-    | numberLiteral
-    | booleanLiteral
-    | instantLiteral
-    | function
-    ;
-
 function
-    : IDENTIFIER OPEN_PAREN argument (COMMA argument)* CLOSE_PAREN
+    : Identifier OPEN_PAREN (argument (COMMA argument)*)? CLOSE_PAREN
     ;
 
 argument
-    : stringLiteral
-    | numberLiteral
-    | booleanLiteral
-    | spatialLiteral
-    | instantLiteral
+    : function
     | propertyName
-    | function
+    | spatialLiteral
+    | temporalLiteral
+    | booleanLiteral
+    | numericLiteral
+    | stringLiteral
     ;
-    
-stringLiteral
-    : STRING_LITERAL
-    ;
-
-numberLiteral
-    : NUMBER_LITERAL
-    ;
-
-booleanLiteral
-    : BOOLEAN_LITERAL
-    ;
-
-instantLiteral
-    : dateLiteral
-    | timestampLiteral
-    ;
-    
-dateLiteral
-    : DATE_LITERAL
-    ;
-
-timestampLiteral
-    : TIMESTAMP_LITERAL
-    ;    
 
 spatialPredicate
     : SPATIAL_OPERATOR OPEN_PAREN propertyName COMMA spatialExpression CLOSE_PAREN
     ;
 
 spatialExpression
-    : spatialLiteral
-    | function
+    : function
+    | spatialLiteral
     ;
 
 spatialLiteral
     : geometryLiteral
-    | envelope
+    | geometryCollection
+    | bboxLiteral
     ;
 
-geometryLiteral    
+geometryLiteral
     : point
     | lineString
     | polygon
     | multiPoint
     | multiLineString
     | multiPolygon
-    | geometryCollection 
+    ;
+
+coordinate
+    : numericLiteral numericLiteral numericLiteral?
     ;
 
 point
-    : POINT OPEN_PAREN coordinate CLOSE_PAREN
+    : POINT pointText
     ;
-    
+
+pointText
+    : OPEN_PAREN coordinate CLOSE_PAREN
+    ;
+
 lineString
     : LINESTRING lineStringText
     ;
-    
+
+lineStringText
+    : OPEN_PAREN coordinate (COMMA coordinate)+ CLOSE_PAREN
+    ;
+
 polygon
     : POLYGON polygonText
     ;
 
+polygonText
+    : OPEN_PAREN ring (COMMA ring)* CLOSE_PAREN
+    ;
+
+ring
+    : OPEN_PAREN coordinate COMMA coordinate COMMA coordinate (COMMA coordinate)+ CLOSE_PAREN
+    ;
+
 multiPoint
-    : MULTIPOINT OPEN_PAREN coordinate (COMMA coordinate)* CLOSE_PAREN
+    : MULTIPOINT OPEN_PAREN pointText (COMMA pointText)* CLOSE_PAREN
     ;
 
 multiLineString
@@ -149,25 +162,36 @@ multiPolygon
     ;
 
 geometryCollection
-    : GEOMETRYCOLLECTION OPEN_PAREN spatialLiteral (COMMA spatialLiteral)* CLOSE_PAREN
+    : GEOMETRYCOLLECTION OPEN_PAREN geometryLiteral (COMMA geometryLiteral)* CLOSE_PAREN
     ;
 
-envelope
-    : ENVELOPE OPEN_PAREN coordinate COMMA coordinate CLOSE_PAREN
+bboxLiteral
+    : BBOX OPEN_PAREN numericLiteral COMMA numericLiteral COMMA numericLiteral COMMA numericLiteral (COMMA numericLiteral COMMA numericLiteral)? CLOSE_PAREN
     ;
 
-lineStringText
-    : OPEN_PAREN coordinate (COMMA coordinate)+ CLOSE_PAREN
+temporalLiteral
+    : dateLiteral
+    | timestampLiteral
     ;
 
-polygonText
-    : OPEN_PAREN ring (COMMA ring)* CLOSE_PAREN
+dateLiteral
+    : DATE OPEN_PAREN StringLiteral CLOSE_PAREN
     ;
 
-ring
-    : OPEN_PAREN coordinate COMMA coordinate COMMA coordinate (COMMA coordinate)+ CLOSE_PAREN
+timestampLiteral
+    : TIMESTAMP OPEN_PAREN StringLiteral CLOSE_PAREN
     ;
 
-coordinate
-    : NUMBER_LITERAL NUMBER_LITERAL NUMBER_LITERAL?
+booleanLiteral
+    : Boolean;
+
+numericLiteral
+    : Number;
+
+stringLiteral
+    : StringLiteral;
+
+propertyName
+    : Identifier
+    | DOUBLE_QUOTE Identifier DOUBLE_QUOTE
     ;

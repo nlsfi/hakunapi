@@ -56,6 +56,10 @@ public class HakunaPropertyComposite extends HakunaPropertyBase {
     }
 
     public Filter toFilter(FilterOp op, String s) {
+        return toFilter(op, s, false);
+    }
+
+    public Filter toFilter(FilterOp op, String s, boolean caseInsensitive) {
         Object[] values = (Object[]) transformer.toInner(s);
         if (values == null) {
             return Filter.DENY;
@@ -69,7 +73,7 @@ public class HakunaPropertyComposite extends HakunaPropertyBase {
                     return Filter.DENY;
                 }
             } else {
-                and.add(new Filter(op, prop, value));
+                and.add(new Filter(op, prop, value, caseInsensitive));
             }
         }
         return Filter.and(and);

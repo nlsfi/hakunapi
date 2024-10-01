@@ -1,7 +1,13 @@
-package fi.nls.hakunapi.cql2.model;
+package fi.nls.hakunapi.cql2.text;
 
 import org.locationtech.jts.io.WKTWriter;
 
+import fi.nls.hakunapi.cql2.model.BinaryComparisonPredicate;
+import fi.nls.hakunapi.cql2.model.EmptyExpression;
+import fi.nls.hakunapi.cql2.model.Expression;
+import fi.nls.hakunapi.cql2.model.ExpressionVisitor;
+import fi.nls.hakunapi.cql2.model.IsNullPredicate;
+import fi.nls.hakunapi.cql2.model.LikePredicate;
 import fi.nls.hakunapi.cql2.model.function.FunctionCall;
 import fi.nls.hakunapi.cql2.model.literal.BooleanLiteral;
 import fi.nls.hakunapi.cql2.model.literal.DateLiteral;
@@ -21,6 +27,8 @@ import fi.nls.hakunapi.cql2.model.spatial.SpatialPredicate;
  * Probably not that useful
  */
 public class ExpressionToString implements ExpressionVisitor {
+
+    static final char CASEI_PREFIX = '@';
 
     private StringBuilder sb = new StringBuilder();
 
@@ -79,6 +87,9 @@ public class ExpressionToString implements ExpressionVisitor {
     public Object visit(BinaryComparisonPredicate expression) {
         visit(expression.getProp());
         sb.append(' ');
+        if (expression.getProp().isCasei() || expression.getValue().isCasei()) {
+            sb.append(CASEI_PREFIX);
+        }
         sb.append(expression.getOp().op);
         sb.append(' ');
         visit(expression.getValue());
@@ -88,8 +99,13 @@ public class ExpressionToString implements ExpressionVisitor {
     @Override
     public Object visit(LikePredicate p) {
         visit(p.getProperty());
-        sb.append(" LIKE ");
-        sb.append(p.getPattern());
+        sb.append(' ');
+        if (p.getProperty().isCasei() || p.getPattern().isCasei()) {
+            sb.append('I');
+        }
+        sb.append("LIKE");
+        sb.append(' ');
+        visit(p.getPattern());
         return null;
     }
 
@@ -102,7 +118,7 @@ public class ExpressionToString implements ExpressionVisitor {
 
     @Override
     public Object visit(PropertyName expression) {
-        sb.append("\"" + expression.getValue() + "\"");
+        sb.append(expression.getValue());
         return null;
     }
 
@@ -120,21 +136,19 @@ public class ExpressionToString implements ExpressionVisitor {
 
     @Override
     public Object visit(StringLiteral string) {
-        sb.append("'" + string.getValue().replace("'", "''") + "'");
+        sb.append(string.getValue());
         return null;
     }
 
-
-
     @Override
     public Object visit(DateLiteral p) {
-        sb.append("'" + p.getDate().toString() + "'");
+        sb.append(p.getDate().toString());
         return null;
     }
 
     @Override
     public Object visit(TimestampLiteral p) {
-        sb.append("'" + p.getTimestamp().toString() + "'");
+        sb.append(p.getTimestamp().toString());
         return null;
     }
 
@@ -169,6 +183,11 @@ public class ExpressionToString implements ExpressionVisitor {
             f = false;
         }
         sb.append(')');
+        return null;
+    }
+
+    @Override
+    public Object visit(EmptyExpression ee) {
         return null;
     }
 
