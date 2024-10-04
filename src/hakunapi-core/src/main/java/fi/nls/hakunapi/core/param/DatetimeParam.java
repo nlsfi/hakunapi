@@ -1,13 +1,15 @@
 package fi.nls.hakunapi.core.param;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import fi.nls.hakunapi.core.DatetimeProperty;
-import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.filter.Filter;
 import io.swagger.v3.oas.models.media.DateTimeSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -26,6 +28,12 @@ public class DatetimeParam extends GetFeatureFilterParam {
             "If a feature has multiple temporal properties, it is the decision of the\n" +
             "server whether only a single temporal property is used to determine\n" +
             "the extent or all relevant temporal properties.";
+
+    private static final DateTimeFormatter RFC3339ish = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            .appendOffset("+HH:MM", "Z")
+            .toFormatter();
 
     @Override
     public String getParamName() {
@@ -82,18 +90,21 @@ public class DatetimeParam extends GetFeatureFilterParam {
             from = parse(value.substring(0, i), null, paramName);
             to = parse(value.substring(i + 1), null, paramName);
             if (from == null && to == null) {
+                // This open-start + open-end is actually against the spec:
+                // interval = interval-closed / interval-open-start / interval-open-end
+                // throwing an IllegalArgumentException would also be valid, but let's be lenient and ignore it
                 return null;
             }
         }
         return new Instant[] { from, to };
     }
 
-    private static Instant parse(String str, Instant openValue, String paramName) {
+    static Instant parse(String str, Instant openValue, String paramName) {
         if (str.isEmpty() || "..".equals(str)) {
             return openValue;
         }
         try {
-            return Instant.parse(str);
+            return RFC3339ish.parse(str, Instant::from);
         } catch (DateTimeParseException e) {
             String msg = String.format("'%s' value could not be parsed", paramName);
             throw new IllegalArgumentException(msg);
