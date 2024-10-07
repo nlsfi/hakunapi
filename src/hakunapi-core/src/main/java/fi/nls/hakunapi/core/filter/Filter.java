@@ -23,12 +23,18 @@ public class Filter {
     private final FilterOp op;
     private final HakunaProperty prop;
     private final Object value;
+    private final boolean caseInsensitive;
     private String tag;
 
     public Filter(FilterOp op, HakunaProperty prop, Object value) {
+        this(op, prop, value, false);
+    }
+
+    public Filter(FilterOp op, HakunaProperty prop, Object value, boolean caseInsensitive) {
         this.op = op;
         this.prop = prop;
         this.value = value;
+        this.caseInsensitive = caseInsensitive;
     }
 
     public Filter negate() {
@@ -38,9 +44,9 @@ public class Filter {
         case DENY:
             return PASS;
         case EQUAL_TO:
-            return new Filter(FilterOp.NOT_EQUAL_TO, prop, value);
+            return new Filter(FilterOp.NOT_EQUAL_TO, prop, value, caseInsensitive);
         case NOT_EQUAL_TO:
-            return new Filter(FilterOp.EQUAL_TO, prop, value);
+            return new Filter(FilterOp.EQUAL_TO, prop, value, caseInsensitive);
         case GREATER_THAN:
             return new Filter(FilterOp.LESS_THAN_OR_EQUAL_TO, prop, value);
         case GREATER_THAN_OR_EQUAL_TO:
@@ -50,9 +56,9 @@ public class Filter {
         case LESS_THAN_OR_EQUAL_TO:
             return new Filter(FilterOp.GREATER_THAN, prop, value);
         case LIKE:
-            return new Filter(FilterOp.NOT_LIKE, prop, value);
+            return new Filter(FilterOp.NOT_LIKE, prop, value, caseInsensitive);
         case NOT_LIKE:
-            return new Filter(FilterOp.LIKE, prop, value);
+            return new Filter(FilterOp.LIKE, prop, value, caseInsensitive);
         case OR:
             return and(((List<Filter>) value).stream().map(Filter::negate).collect(Collectors.toList()));
         case AND:
@@ -122,6 +128,10 @@ public class Filter {
         return value;
     }
 
+    public boolean isCaseInsensitive() {
+        return caseInsensitive;
+    }
+
     public String getTag() {
         return tag;
     }
@@ -132,8 +142,12 @@ public class Filter {
     }
 
     public static Filter equalTo(HakunaProperty prop, String value) {
+        return equalTo(prop, value, false);
+    }
+
+    public static Filter equalTo(HakunaProperty prop, String value, boolean caseInsensitive) {
         if (prop instanceof HakunaPropertyComposite) {
-            return ((HakunaPropertyComposite) prop).toFilter(FilterOp.EQUAL_TO, value);
+            return ((HakunaPropertyComposite) prop).toFilter(FilterOp.EQUAL_TO, value, caseInsensitive);
         }
         Object v = prop.toInner(value);
         if (v == null) {
@@ -141,9 +155,9 @@ public class Filter {
         } else if (v == HakunaProperty.UNKNOWN) {
             return DENY;
         } else if (v instanceof Collection) {
-            return collectionToFilter(prop, (Collection<Object>) v, it -> new Filter(FilterOp.EQUAL_TO, prop, it));
+            return collectionToFilter(prop, (Collection<Object>) v, it -> new Filter(FilterOp.EQUAL_TO, prop, it, caseInsensitive));
         } else {
-            return new Filter(FilterOp.EQUAL_TO, prop, v);
+            return new Filter(FilterOp.EQUAL_TO, prop, v, caseInsensitive);
         }
     }
     
@@ -164,8 +178,12 @@ public class Filter {
     }
 
     public static Filter notEqualTo(HakunaProperty prop, String value) {
+        return notEqualTo(prop, value, false);
+    }
+
+    public static Filter notEqualTo(HakunaProperty prop, String value, boolean caseInsensitive) {
         if (prop instanceof HakunaPropertyComposite) {
-            return ((HakunaPropertyComposite) prop).toFilter(FilterOp.NOT_EQUAL_TO, value);
+            return ((HakunaPropertyComposite) prop).toFilter(FilterOp.NOT_EQUAL_TO, value, caseInsensitive);
         }
         Object v = prop.toInner(value);
         if (v == null) {
@@ -173,7 +191,7 @@ public class Filter {
         } else if (v == HakunaProperty.UNKNOWN) {
             return PASS;
         } else {
-            return new Filter(FilterOp.NOT_EQUAL_TO, prop, v);
+            return new Filter(FilterOp.NOT_EQUAL_TO, prop, v, caseInsensitive);
         }
     }
 
@@ -427,6 +445,8 @@ public class Filter {
             if (other.value != null)
                 return false;
         } else if (!value.equals(other.value))
+            return false;
+        if (caseInsensitive != other.caseInsensitive)
             return false;
         return true;
     }

@@ -53,7 +53,7 @@
     <h3>Queryable properties</h3>
     <p><a href="collections/${model.id}/queryables">Find out properties usable in filters</a></p>
 
-    <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi &copy; 2023</footer>
+    <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi</footer>
   </div>
 </main>
 <script>document.getElementById("json-link").href = window.location.search === "" ? "?f=json" : window.location.search + "&f=json"</script>

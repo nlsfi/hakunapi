@@ -16,7 +16,7 @@ import io.swagger.v3.oas.models.media.Schema;
 @JsonPropertyOrder({ "$schema", "$id", "title", "description", "type", "properties" })
 public class SchemaDefinition implements Component {
 
-    private final String schema = "https://json-schema.org/draft/2019-09/schema";
+    private final String schema = "https://json-schema.org/draft/2020-12/schema";
     private final String id;
     private final String title;
     private final String description;

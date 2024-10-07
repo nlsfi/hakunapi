@@ -1,13 +1,14 @@
 package fi.nls.hakunapi.cql2.model;
 
 import fi.nls.hakunapi.cql2.model.literal.PropertyName;
+import fi.nls.hakunapi.cql2.model.literal.StringLiteral;
 
 public class LikePredicate implements Expression {
 
     private final PropertyName property;
-    private final String pattern;
+    private final StringLiteral pattern;
 
-    public LikePredicate(PropertyName property, String pattern) {
+    public LikePredicate(PropertyName property, StringLiteral pattern) {
         this.property = property;
         this.pattern = pattern;
     }
@@ -16,7 +17,7 @@ public class LikePredicate implements Expression {
         return property;
     }
 
-    public String getPattern() {
+    public StringLiteral getPattern() {
         return pattern;
     }
 

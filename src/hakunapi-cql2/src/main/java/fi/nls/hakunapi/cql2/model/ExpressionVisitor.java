@@ -46,6 +46,8 @@ public interface ExpressionVisitor {
             return visit((SpatialLiteral) e);
         } else if (e instanceof FunctionCall) {
             return visit((FunctionCall) e);
+        } else if (e instanceof EmptyExpression) {
+            return visit((EmptyExpression) e);
         }
 
         throw new IllegalStateException("Unknown Expression " + e.getClass());
@@ -71,5 +73,6 @@ public interface ExpressionVisitor {
     public Object visit(TimestampLiteral p);
 
     public Object visit(FunctionCall fn);
+    public Object visit(EmptyExpression ee);
 
 }

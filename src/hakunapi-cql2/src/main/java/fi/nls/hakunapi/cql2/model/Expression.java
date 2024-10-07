@@ -6,4 +6,8 @@ public interface Expression {
         return visitor.visit(this);
     }
 
+    default public boolean isCasei() {
+        return false;
+    }
+
 }

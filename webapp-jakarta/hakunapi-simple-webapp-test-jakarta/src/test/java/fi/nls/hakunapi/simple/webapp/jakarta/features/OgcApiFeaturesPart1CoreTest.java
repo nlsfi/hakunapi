@@ -146,7 +146,7 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 
 		with(response)
 				//
-				.assertThat("$['$schema']", equalTo("https://json-schema.org/draft/2019-09/schema"))
+				.assertThat("$['$schema']", equalTo("https://json-schema.org/draft/2020-12/schema"))
 				//
 				.assertThat("$['$id']", equalTo("https://localhost/hakuna/collections/aallonmurtaja/queryables"))
 				//

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import fi.nls.hakunapi.core.CaseInsensitiveStrategy;
 import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.join.Join;
@@ -14,6 +15,7 @@ public class SQLFeatureType extends SimpleFeatureType {
     private String primaryTable;
     private List<Join> joins;
     private DataSource ds;
+    private CaseInsensitiveStrategy caseInsensitiveStrategy;
 
     public String getDbSchema() {
         return dbSchema;
@@ -50,6 +52,14 @@ public class SQLFeatureType extends SimpleFeatureType {
     @Override
     public FeatureProducer getFeatureProducer() {
         return new SimplePostGIS(ds);
+    }
+
+    public CaseInsensitiveStrategy getCaseInsensitiveStrategy() {
+        return caseInsensitiveStrategy;
+    }
+
+    public void setCaseInsensitiveStrategy(CaseInsensitiveStrategy caseInsensitiveStrategy) {
+        this.caseInsensitiveStrategy = caseInsensitiveStrategy;
     }
 
 }

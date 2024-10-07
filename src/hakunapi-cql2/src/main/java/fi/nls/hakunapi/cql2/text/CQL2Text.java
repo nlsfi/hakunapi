@@ -12,6 +12,7 @@ import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.cql2.Cql2Lexer;
 import fi.nls.hakunapi.cql2.Cql2Parser;
+import fi.nls.hakunapi.cql2.model.EmptyExpression;
 import fi.nls.hakunapi.cql2.model.Expression;
 import fi.nls.hakunapi.cql2.model.ExpressionToHakunaFilter;
 
@@ -44,6 +45,10 @@ public class CQL2Text implements FilterParser {
     }
 
     public static Expression parse(String filter, GeometryFactory gf) {
+        if (filter.isBlank()) {
+            return EmptyExpression.INSTANCE;
+        }
+
         CharStream charStream = new CaseChangingCharStream(CharStreams.fromString(filter), true);
 
         Cql2Lexer lexer = new Cql2Lexer(charStream);

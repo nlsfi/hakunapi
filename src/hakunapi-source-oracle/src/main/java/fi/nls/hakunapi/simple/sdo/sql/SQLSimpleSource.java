@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import fi.nls.hakunapi.core.CaseInsensitiveStrategy;
 import fi.nls.hakunapi.core.HakunapiPlaceholder;
 import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyCursor;
@@ -487,6 +488,17 @@ public abstract class SQLSimpleSource implements SimpleSource {
         default:
             throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
         }
+    }
+
+    protected CaseInsensitiveStrategy getCaseInsensitiveStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
+        String caseiStrategy = cfg.get(p + "casei");
+        if (caseiStrategy == null) {
+            return CaseInsensitiveStrategy.LOWER;
+        }
+        return Arrays.stream(CaseInsensitiveStrategy.values())
+                .filter(x -> x.name().equalsIgnoreCase(caseiStrategy))
+                .findAny()
+                .get();
     }
 
     protected PaginationStrategyCursor getPaginationCursor(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
