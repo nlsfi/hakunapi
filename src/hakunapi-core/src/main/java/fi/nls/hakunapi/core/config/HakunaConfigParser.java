@@ -320,6 +320,7 @@ public class HakunaConfigParser {
             HakunaProperty hakunaProperty = getProperty(ft, prop);
             if (!queryablePropertyNames.contains(hakunaProperty.getName())) {
                 queryableProperties.add(hakunaProperty);
+                queryablePropertyNames.add(hakunaProperty.getName());
             }
             getFeatureParams.add(parseParameter(hakunaProperty, cfgPrefix));
         }
