@@ -42,6 +42,9 @@ public interface FeatureType {
     public List<Filter> getStaticFilters();
     
     public ProjectionTransformerFactory getProjectionTransformerFactory();
+    public default boolean isSourceWillProject() {
+        return false;
+    }
 
     public HakunaGeometryDimension getGeomDimension();
     public PaginationStrategy getPaginationStrategy();

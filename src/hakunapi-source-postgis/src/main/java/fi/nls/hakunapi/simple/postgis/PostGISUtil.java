@@ -17,6 +17,8 @@ import fi.nls.hakunapi.core.join.Join;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyComposite;
 import fi.nls.hakunapi.core.property.HakunaPropertyType;
+import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
+import fi.nls.hakunapi.core.schemas.Crs;
 import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.simple.postgis.filter.PostGISContains;
 import fi.nls.hakunapi.simple.postgis.filter.PostGISCrosses;
@@ -81,7 +83,7 @@ public class PostGISUtil {
 
         Map<StringPair, Integer> columnToIndex = new HashMap<>();
         for (HakunaProperty property : properties) {
-            addToSelect(query, columnToIndex, property);
+            addToSelect(query, columnToIndex, property, ctx);
         }
         // Remove trailing comma
         query.setLength(query.length() - 1);
@@ -94,11 +96,11 @@ public class PostGISUtil {
         return mappers;
     }
 
-    private static void addToSelect(StringBuilder query, Map<StringPair, Integer> columnToIndex, HakunaProperty property) {
+    private static void addToSelect(StringBuilder query, Map<StringPair, Integer> columnToIndex, HakunaProperty property, QueryContext ctx) {
         if (property instanceof HakunaPropertyComposite) {
             HakunaPropertyComposite composite = (HakunaPropertyComposite) property;
             for (HakunaProperty part : composite.getParts()) {
-                addToSelect(query, columnToIndex, part);
+                addToSelect(query, columnToIndex, part, ctx);
             }
         } else {
             String table = property.getTable();
@@ -109,7 +111,13 @@ public class PostGISUtil {
                     columnToIndex.put(key, i);
                     String s = SQLUtil.toSQL(table, column);
                     if (property.getType() == HakunaPropertyType.GEOMETRY) {
-                        s = String.format("ST_AsEWKB(%s)", s);
+                        HakunaPropertyGeometry g = (HakunaPropertyGeometry) property;
+                        if (ctx.isSourceShouldProjectToSrid() && ctx.getSRID() != g.getStorageSRID()) {
+                            int srid = ctx.getSRID() == Crs.CRS84_SRID ? 4326 : ctx.getSRID();
+                            s = String.format("ST_AsEWKB(ST_Transform(%s, %d))", s, srid);
+                        } else {
+                            s = String.format("ST_AsEWKB(%s)", s);
+                        }
                     }
                     query.append(s);
                     query.append(',');

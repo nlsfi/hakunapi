@@ -16,6 +16,7 @@ public class SQLFeatureType extends SimpleFeatureType {
     private List<Join> joins;
     private DataSource ds;
     private CaseInsensitiveStrategy caseInsensitiveStrategy;
+    private boolean sourceWillProject;
 
     public String getDbSchema() {
         return dbSchema;
@@ -60,6 +61,15 @@ public class SQLFeatureType extends SimpleFeatureType {
 
     public void setCaseInsensitiveStrategy(CaseInsensitiveStrategy caseInsensitiveStrategy) {
         this.caseInsensitiveStrategy = caseInsensitiveStrategy;
+    }
+
+    @Override
+    public boolean isSourceWillProject() {
+        return sourceWillProject;
+    }
+
+    public void setSourceShouldProject(boolean sourceWillProject) {
+        this.sourceWillProject = sourceWillProject;
     }
 
 }

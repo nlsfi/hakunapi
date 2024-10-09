@@ -389,6 +389,8 @@ public class PostGISSimpleSource implements SimpleSource {
 
         ft.setCaseInsensitiveStrategy(getCaseInsensitiveStrategy(cfg, p, ft));
 
+        ft.setSourceShouldProject(getSourceShouldProject(cfg, p));
+
         return ft;
     }
 
@@ -496,6 +498,10 @@ public class PostGISSimpleSource implements SimpleSource {
                 .filter(x -> x.name().equalsIgnoreCase(caseiStrategy))
                 .findAny()
                 .get();
+    }
+
+    private boolean getSourceShouldProject(HakunaConfigParser cfg, String p) {
+        return Boolean.parseBoolean(cfg.get(p + "sourceproj", "false"));
     }
 
     private PaginationStrategyCursor getPaginationCursor(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {

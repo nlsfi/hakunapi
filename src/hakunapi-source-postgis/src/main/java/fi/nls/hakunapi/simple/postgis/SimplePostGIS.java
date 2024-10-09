@@ -64,6 +64,7 @@ public class SimplePostGIS implements FeatureProducer {
         
         QueryContext ctx = new QueryContext();
         ctx.setSRID(request.getSRID());
+        ctx.setSourceShouldProjectToSrid(ft.isSourceWillProject());
 
         StringBuilder q = new StringBuilder();
         List<ValueMapper> mappers = PostGISUtil.select(q, col.getProperties(), ctx);
