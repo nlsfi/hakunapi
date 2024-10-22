@@ -106,6 +106,10 @@ public class HakunaPropertyGeometry extends HakunaPropertyDynamic {
 
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
+        if (ctx.isSourceShouldProjectToSrid()) {
+            return (vp, vc) -> vc.setObject(iValueContainer, vp.getHakunaGeometry(iValueProvider));
+        }
+
         ProjectionTransformer t;
         try {
             t = getFeatureType().getProjectionTransformerFactory().getTransformer(getStorageSRID(), ctx.getSRID());
