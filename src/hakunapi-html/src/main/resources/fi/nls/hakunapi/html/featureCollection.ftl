@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<#list links as link>
+ <#if links??> 
+  <#list links as link>
   <link rel="${link.rel}" type="${link.type}" title="${link.title}" href="${link.href}"/>
 </#list>
+ </#if>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
@@ -80,7 +82,15 @@
           <tr>
             <td><a id="feature-link-${feature.id}" class="text-decoration-none">${feature.id}</a></td>
             <#list feature.properties?values as value>
-            <td>${value!""}</td>
+              <#if value??>
+              <#if value?is_enumerable>
+              <td><table><#list value as vv><tr><td>${vv}</td></tr></#list></table></td>
+              <#else>
+              <td>${value!""}</td>
+              </#if>
+              <#else>
+              <td/>
+              </#if>
             </#list>
           </tr>
           </#list>
@@ -92,6 +102,7 @@
     </#if>
     
     <nav aria-label="Pagination">
+      <#if links??>
       <ul class="pagination">
         <#list links as link>
         <#if link.rel == "prev" && link.type == "text/html">
@@ -104,6 +115,7 @@
         </#if>
         </#list>
       </ul>
+       </#if>
     </nav>
 
     <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi</footer>
@@ -125,14 +137,24 @@ var data = [
   "id": "${feature.id}",
   "geometry": ${feature.geometry}
 },
+<#else>
+{
+  "type": "Feature",
+  "id": "${feature.id}",
+  "geometry": null
+},
 </#if>
 </#list>
 ];
 
 const singleFeatureLinkParams = new URLSearchParams(window.location.search);
+// todo: refactor 
 singleFeatureLinkParams.delete("bbox");
 singleFeatureLinkParams.delete("bbox-crs");
 singleFeatureLinkParams.delete("filter");
+singleFeatureLinkParams.delete("filter-crs");
+singleFeatureLinkParams.delete("next");
+singleFeatureLinkParams.delete("limit");
 const singleFeatureLinkQuery = singleFeatureLinkParams.size === 0 ? "" : "?" + singleFeatureLinkParams.toString();
 
 data.forEach(f => document.getElementById("feature-link-" + f.id).href = "items/" + f.id + singleFeatureLinkQuery);

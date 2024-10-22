@@ -198,14 +198,14 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
 
         String collectionId = request.getPathParam("collectionId");
         String featureId = request.getPathParam("featureId");
-        String mimeType = writer.getMimeType();
+        String mimeType = request.getFormat().getMimeType();
 
         String itemsPath = Links.getItemsPath(service.getCurrentServerURL(queryHeaders::get), collectionId);
         String featurePath = itemsPath + "/" + featureId;
 
         List<Link> links = new ArrayList<>();
 
-        links.add(Links.getSelfLink(featurePath, null, mimeType));
+        links.add(Links.getSelfLink(featurePath, queryParams, mimeType));
 
         String fParamOriginalValue = queryParams.get(FParam.QUERY_PARAM_NAME);
         for (OutputFormat f : service.getOutputFormats()) {
