@@ -135,6 +135,10 @@ public final class JSONFG {
 
     public static HakunaGeometry getFootprintGeometry(HakunaGeometry placeGeometry,
             ProjectionTransformer outputCrs84Proj) {
+        
+        if(placeGeometry==null) {
+            return null;
+        }
 
         Geometry src = placeGeometry.toJTSGeometry();
 

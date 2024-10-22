@@ -82,7 +82,15 @@
           <tr>
             <td><a href="./items/${feature.id}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3067" class="text-decoration-none">${feature.id}</a></td>
             <#list feature.properties?values as value>
-            <td>${value!""}</td>
+              <#if value??>
+              <#if value?is_enumerable>
+              <td><table><#list value as vv><tr><td>${vv}</td></tr></#list></table></td>
+              <#else>
+              <td>${value!""}</td>
+              </#if>
+              <#else>
+              <td/>
+              </#if>
             </#list>
           </tr>
           </#list>
@@ -94,6 +102,7 @@
     </#if>
     
     <nav aria-label="Pagination">
+      <#if links??>
       <ul class="pagination">
         <#list links as link>
         <#if link.rel == "prev" && link.type == "text/html">
@@ -106,6 +115,7 @@
         </#if>
         </#list>
       </ul>
+      </#if>
     </nav>
 
     <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi</footer>
@@ -139,6 +149,12 @@ var data = [
   "type": "Feature",
   "id": "${feature.id}",
   "geometry": ${feature.geometry}
+},
+<#else>
+{
+  "type": "Feature",
+  "id": "${feature.id}",
+  "geometry": null
 },
 </#if>
 </#list>

@@ -53,7 +53,15 @@
         <#list properties as key, value>
         <tr>
           <td>${key}</td>
-          <td>${value!""}</td>
+              <#if value??>
+              <#if value?is_enumerable>
+              <td><table><#list value as vv><tr><td>${vv}</td></tr></#list></table></td>
+              <#else>
+              <td>${value!""}</td>
+              </#if>
+              <#else>
+              <td/>
+              </#if>
         </tr>
         </#list>
       </tbody>

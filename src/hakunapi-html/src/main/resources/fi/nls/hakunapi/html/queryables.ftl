@@ -37,7 +37,7 @@
     <h2>Queryables</h2>
     <ul>
       <#list model.props as prop, propType>
-      <li>${prop} : ${propType}</li>
+      <li>${prop} <#if propType??>: ${propType}</#if></li>
       </#list>
     </ul>
 

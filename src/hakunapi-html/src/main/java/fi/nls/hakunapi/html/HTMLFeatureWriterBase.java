@@ -83,10 +83,14 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
 
     @Override
     public void writeGeometry(String name, HakunaGeometry geometry) throws Exception {
-        geojsonBuffer.reset();
-        geometry.write(geometryWriter);
-        jsonWriter.flush();
-        feature.setGeometry(geojsonBuffer.toString(StandardCharsets.UTF_8.name()));
+        if(geometry==null) {
+            feature.setGeometry(null);
+        } else {
+            geojsonBuffer.reset();
+            geometry.write(geometryWriter);
+            jsonWriter.flush();
+            feature.setGeometry(geojsonBuffer.toString(StandardCharsets.UTF_8.name()));
+        }
     }
 
     @Override
@@ -108,6 +112,14 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
     public void writeProperty(String name, String value) {
         properties.add(name, value);
     }
+    
+    @Override
+    public void  writeJsonProperty(String name, byte[] bytes) throws Exception {
+        if(bytes!=null) {
+            properties.add(name, new String(bytes));
+        }
+    }
+
 
     @Override
     public void writeProperty(String name, Instant value) throws Exception {
