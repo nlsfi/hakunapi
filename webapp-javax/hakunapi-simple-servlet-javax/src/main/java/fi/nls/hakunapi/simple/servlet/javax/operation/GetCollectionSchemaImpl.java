@@ -69,7 +69,8 @@ public class GetCollectionSchemaImpl {
             } else {
                 Schema<?> schema = p.getSchema();
                 if (schema != null) {
-                    properties.addProperties(p.getName(), OAS30toJsonSchema.toJsonSchema(schema));
+                    schema = OAS30toJsonSchema.toJsonSchema(schema).nullable(p.nullable());
+                    properties.addProperty(p.getName(), schema);
                 }
             }
         }
