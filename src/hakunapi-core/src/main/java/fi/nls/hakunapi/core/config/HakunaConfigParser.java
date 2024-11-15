@@ -282,11 +282,16 @@ public class HakunaConfigParser {
         int[] srids = getSRIDs(get(p + "srid", get("default.collections.srid")));
         HakunaGeometryDimension dim = getGeometryDims(collectionId, get(p + "geometryDimension"));
 
-        String defaultType = get("default.collections.type", "pg");
-        String type = get(p + "type", defaultType);
-        SimpleSource source = sourcesByType.get(type);
-        if (source == null) {
-            throw new IllegalArgumentException("Unknown type: " + type + ", collection: " + collectionId);
+        SimpleSource source;
+        if (sourcesByType.size() == 1) {
+            source = sourcesByType.values().stream().findAny().get();
+        } else {
+            String defaultType = get("default.collections.type", "pg");
+            String type = get(p + "type", defaultType);
+            source = sourcesByType.get(type);
+            if (source == null) {
+                throw new IllegalArgumentException("Unknown type: " + type + ", collection: " + collectionId);
+            }
         }
         SimpleFeatureType ft = source.parse(this, path, collectionId, srids);
 

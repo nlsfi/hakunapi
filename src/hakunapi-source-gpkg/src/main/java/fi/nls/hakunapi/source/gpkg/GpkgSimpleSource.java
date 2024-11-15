@@ -30,6 +30,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.JDBC;
 import org.sqlite.SQLiteConnection;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -71,6 +72,7 @@ import fi.nls.hakunapi.gpkg.function.ST_MinY;
 public class GpkgSimpleSource implements SimpleSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(GpkgSimpleSource.class);
+    private static final String DEFAULT_DRIVER_CLASS = JDBC.class.getName();
 
     private List<HikariDataSource> dataSourcesToClose = new ArrayList<>();
     private Map<String, DataSource> dataSources = new HashMap<>();
@@ -100,25 +102,55 @@ public class GpkgSimpleSource implements SimpleSource {
     }
 
     private HikariDataSource readDataSource(HakunaConfigParser cfg, Path path, String name) {
-        final Properties props;
+        HikariConfig config;
 
-        if (Arrays.stream(cfg.getMultiple("db", new String[0])).anyMatch(name::equals)) {
-            // if name appears in db=a,b,c,d listing then consider it's configuration to be inlined
-            props = getInlinedDBProperties(cfg, name);
+        File file = getFile(name, path);
+        if (file.exists()) {
+            if (!file.canRead()) {
+                throw new IllegalArgumentException("Can not read file " + file.getAbsolutePath());
+            }
+            config = new HikariConfig();
+            config.setPoolName(getPoolName(file.getName()));
+            config.setDriverClassName(DEFAULT_DRIVER_CLASS);
+            config.setJdbcUrl("jdbc:sqlite:" + file.getAbsolutePath());
+            config.setConnectionTestQuery("SELECT 1");
+            config.setMaxLifetime(60_000);
+            config.setIdleTimeout(45_000);
+            config.setMaximumPoolSize(50);
         } else {
-            // Not inlined, check separate file $name.properties
-            String dataSourcePath = getDataSourcePath(path, name);
-            props = loadProperties(dataSourcePath);
+            final Properties props;
+            if (Arrays.stream(cfg.getMultiple("db", new String[0])).anyMatch(name::equals)) {
+                // if name appears in db=a,b,c,d listing then consider it's configuration to be inlined
+                props = getInlinedDBProperties(cfg, name);
+            } else {
+                // Not inlined, check separate file $name.properties
+                String dataSourcePath = getDataSourcePath(path, name);
+                props = loadProperties(dataSourcePath);
+                props.putIfAbsent("driverClassName", DEFAULT_DRIVER_CLASS);
+            }
+            config = new HikariConfig(props);
         }
 
-        HikariConfig config = new HikariConfig(props);
-        HikariDataSource ds = new HikariDataSource(config);
-        return ds;
+        return new HikariDataSource(config);
+    }
+
+    private File getFile(String name, Path configPath) {
+        File file = new File(name);
+        return file.isAbsolute() ? file : new File(configPath.getParent().toFile(), name);
+    }
+
+    private String getPoolName(String name) {
+        int i = name.lastIndexOf('.');
+        if (i > 0) {
+            name = name.substring(0, i);
+        }
+        return name + "SQLitePool";
     }
 
     protected static Properties getInlinedDBProperties(HakunaConfigParser cfg, String name) {
         Properties props = new Properties();
         cfg.getAllStartingWith("db." + name + ".").forEach(props::setProperty);
+        props.putIfAbsent("driverClassName", DEFAULT_DRIVER_CLASS);
         return props;
     }
 
@@ -173,7 +205,7 @@ public class GpkgSimpleSource implements SimpleSource {
         }
         ft.setDatabase(ds);
 
-        String cfgTable = cfg.get(p + "table");
+        String cfgTable = cfg.get(p + "table", collectionId);
         if (cfgTable == null || cfgTable.isEmpty()) {
             throw new IllegalArgumentException("Missing required property " + (p + "table"));
         }

@@ -144,3 +144,13 @@ If you have large servers consider feel free to increase the pool size to core_c
 In general, hakunapi isn't that resource hungry and adding more resources to hakunapi usually isn't too beneficial if the database (or the connection to the database) can't keep up. This is due to the way hakunapi works: Instead of the usual way of mapping the db result set to a list of model objects and then serializing them hakunapi relies more on "fully streaming" the response from the db result set. This creates very shortly lived objects which the current GC algorithms seem to handle with little trouble. hakunapi is able to generate up to 200MB/s of GeoJSON per thread from a local PostGIS server so the outbound network connection is usually the first true limiting factor.
 
 Heap size of 256M-1GB is usually plenty for an installation. Feel free to play with other GC options, currently there isn't any suggestions which would be preferable.
+
+## Using GeoPackage instead of PostGIS for data
+
+First extract our data from PostGIS to a local GeoPackage file with ogr2ogr
+
+```
+ogr2ogr -f "GPKG" simple_addresses.gpkg PG:"dbname='address_fin' host='localhost' user='address_reader' password='test'" simple_addresses
+```
+
+And switch to `address_gpkg.properties` as our configuration file by changing the system property value to `-Dfeatures.hakuna.config.path=/app/features_addresses/addresses_gpkg.properties`
