@@ -101,7 +101,7 @@ public class GpkgSimpleSource implements SimpleSource {
         return ds;
     }
 
-    private HikariDataSource readDataSource(HakunaConfigParser cfg, Path path, String name) {
+    protected HikariDataSource readDataSource(HakunaConfigParser cfg, Path path, String name) {
         HikariConfig config;
 
         File file = getFile(name, path);
@@ -541,14 +541,12 @@ public class GpkgSimpleSource implements SimpleSource {
         case java.sql.Types.NVARCHAR:
             return HakunaPropertyType.STRING;
         case java.sql.Types.DATE:
+            if (columnTypeName.equalsIgnoreCase("datetime")) {
+                return HakunaPropertyType.TIMESTAMPTZ;
+            }
             return HakunaPropertyType.DATE;
         case java.sql.Types.TIMESTAMP:
-            switch (columnTypeName) {
-            case "timestamptz":
-                return HakunaPropertyType.TIMESTAMPTZ;
-            default:
-                return HakunaPropertyType.TIMESTAMP;
-            }
+            return HakunaPropertyType.TIMESTAMPTZ;
         default:
             return null;
         }

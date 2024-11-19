@@ -20,5 +20,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-proj-gt</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

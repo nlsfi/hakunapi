@@ -29,7 +29,7 @@ public class DatetimeParam extends GetFeatureFilterParam {
             "server whether only a single temporal property is used to determine\n" +
             "the extent or all relevant temporal properties.";
 
-    private static final DateTimeFormatter RFC3339ish = new DateTimeFormatterBuilder()
+    public static final DateTimeFormatter RFC3339ish = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             .appendOffset("+HH:MM", "Z")

@@ -4,14 +4,15 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.param.DatetimeParam;
 
 public class ResultSetValueProvider implements ValueProvider {
 
@@ -103,19 +104,31 @@ public class ResultSetValueProvider implements ValueProvider {
     @Override
     public Instant getInstant(int i) {
         try {
-            OffsetDateTime odt = rs.getObject(i + 1, OffsetDateTime.class);
-            return odt == null ? null : odt.toInstant();
+            Timestamp ts = rs.getTimestamp(i + 1);
+            return ts == null ? null : ts.toInstant();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            try {
+                String str = rs.getString(i + 1);
+                return DatetimeParam.RFC3339ish.parse(str, Instant::from);
+            } catch (Exception e1) {
+                throw new RuntimeException(e1);
+            }
         }
     }
 
     @Override
     public LocalDateTime getLocalDateTime(int i) {
+        // GpkgSimpleSource should only ever create properties of type TIMESTAMPTZ
+        // which should call getInstant() instead
         try {
             return rs.getObject(i + 1, LocalDateTime.class);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            try {
+                String str = rs.getString(i + 1);
+                return DatetimeParam.RFC3339ish.parse(str, LocalDateTime::from);
+            } catch (Exception e1) {
+                throw new RuntimeException(e1);
+            }
         }
     }
 
