@@ -54,7 +54,7 @@
 		<mockito.version>4.11.0</mockito.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
 	    <json-path.version>2.9.0</json-path.version>
-	    <caffeine.version>2.5.5</caffeine.version>
+	    <caffeine.version>2.9.3</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
