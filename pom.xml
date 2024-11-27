@@ -41,8 +41,8 @@
 
 	<properties>
 		<freemarker.version>2.3.33</freemarker.version>
-		<jackson.version>2.17.0</jackson.version>
-		<jackson-databind.version>2.17.0</jackson-databind.version>
+		<jackson.version>2.17.1</jackson.version>
+		<jackson-databind.version>2.17.1</jackson-databind.version>
 		<swagger.version>2.2.21</swagger.version>
 		<jts.version>1.20.0</jts.version>
 		<hikari.version>4.0.3</hikari.version>
@@ -245,11 +245,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.3.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.tomcat.maven</groupId>
-					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
