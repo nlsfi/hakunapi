@@ -11,7 +11,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<jersey.version>2.42</jersey.version>
+		<jersey.version>2.45</jersey.version>
 		<servlet.version>3.0.1</servlet.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
 	</properties>

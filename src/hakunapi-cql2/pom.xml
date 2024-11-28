@@ -10,7 +10,7 @@
     <artifactId>hakunapi-cql2</artifactId>
 
     <properties>
-        <antrl.version>4.9.2</antrl.version>
+        <antrl.version>4.13.2</antrl.version>
         <mojo.version>3.0.0</mojo.version>
     </properties>
 
