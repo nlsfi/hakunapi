@@ -279,18 +279,24 @@ public class HakunaConfigParser {
         // Current prefix for properties
         String p = "collections." + collectionId + ".";
 
-        String title = get(p + "title", collectionId);
-        String description = get(p + "description", title);
         int[] srids = getSRIDs(get(p + "srid", get("default.collections.srid")));
         HakunaGeometryDimension dim = getGeometryDims(collectionId, get(p + "geometryDimension"));
 
-        String defaultType = get("default.collections.type", "pg");
-        String type = get(p + "type", defaultType);
-        SimpleSource source = sourcesByType.get(type);
-        if (source == null) {
-            throw new IllegalArgumentException("Unknown type: " + type + ", collection: " + collectionId);
+        SimpleSource source;
+        if (sourcesByType.size() == 1) {
+            source = sourcesByType.values().stream().findAny().get();
+        } else {
+            String defaultType = get("default.collections.type", "pg");
+            String type = get(p + "type", defaultType);
+            source = sourcesByType.get(type);
+            if (source == null) {
+                throw new IllegalArgumentException("Unknown type: " + type + ", collection: " + collectionId);
+            }
         }
         SimpleFeatureType ft = source.parse(this, path, collectionId, srids);
+
+        String title = get(p + "title", ft.getTitle() != null ? ft.getTitle() : collectionId);
+        String description = get(p + "description", ft.getDescription() != null ? ft.getDescription() : title);
 
         ft.setTitle(title);
         ft.setDescription(description);

@@ -210,6 +210,7 @@ public class HakunaContextListener implements ServletContextListener {
         List<OutputFormat> outputFormats = new ArrayList<>();
         for (String format : config.getMultiple("formats")) {
             Map<String, String> formatConfig = config.getAllStartingWith("formats." + format + ".");
+            formatConfig.putIfAbsent("type", format);
             OutputFormat f = OutputFormatProvider.getOutputFormat(formatConfig);
             if (f == null) {
                 // LOG?

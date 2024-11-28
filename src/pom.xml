@@ -28,5 +28,6 @@
 		<module>hakunapi-cql2-functions</module>
         <module>hakunapi-telemetry</module>
         <module>hakunapi-telemetry-opentelemetry</module>
+		<module>hakunapi-source-gpkg</module>
 	</modules>
 </project>
