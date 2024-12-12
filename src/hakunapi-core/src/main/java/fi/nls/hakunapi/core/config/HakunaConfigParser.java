@@ -86,6 +86,7 @@ public class HakunaConfigParser {
         info.setTitle(cfg.getProperty("api.title", "hakunapi OGC API Features Server"));
         info.setVersion(cfg.getProperty("api.version", "0.0.1"));
         info.setDescription(cfg.getProperty("api.description", "hakunapi OGC API Features Server"));
+        info.setTermsOfService(cfg.getProperty("api.termsOfService"));
 
         Contact contact = new Contact();
         contact.setName(cfg.getProperty("api.contact.name"));
