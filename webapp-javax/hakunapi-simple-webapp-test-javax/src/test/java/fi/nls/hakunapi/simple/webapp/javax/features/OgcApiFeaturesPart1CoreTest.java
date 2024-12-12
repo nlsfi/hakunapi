@@ -76,7 +76,9 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 
 		with(response)
 				//
-				.assertThat("$.openapi", equalTo("3.0.1"));
+				.assertThat("$.openapi", equalTo("3.0.1"))
+				.and()
+		        .assertThat("$.info.termsOfService", equalTo("Terms of Service"));
 		assertFalse(response.contains("exampleSetFlag"));
 	}
 
