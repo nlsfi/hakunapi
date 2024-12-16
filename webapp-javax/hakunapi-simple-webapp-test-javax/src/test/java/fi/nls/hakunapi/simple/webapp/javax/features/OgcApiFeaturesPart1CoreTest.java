@@ -93,6 +93,17 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 				.assertThat("$.collections[?(@.id == 'should_not_exist')]", is(collectionWithSize(equalTo(0))));
 	}
 
+    @Test
+    public void testCollectionsOrder() {
+        final String response = target("/collections").request().get(String.class);
+        LOG.info(response);
+
+        with(response)
+                //
+                .assertThat("$.collections[0].id", equalTo("test_collection"))
+                .assertThat("$.collections[1].id", equalTo("aallonmurtaja"));
+    }
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCollectionsAallonmurtaja() {
