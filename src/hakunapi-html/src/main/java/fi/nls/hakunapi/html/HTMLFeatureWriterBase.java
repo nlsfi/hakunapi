@@ -23,6 +23,7 @@ import fi.nls.hakunapi.html.model.PropertiesContext;
 public abstract class HTMLFeatureWriterBase implements FeatureWriter {
 
     protected final Configuration configuration;
+    protected final OutputFormatHTMLSettings settings;
 
     protected OutputStream out;
 
@@ -38,9 +39,15 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
     protected PropertiesContext properties;
 
     protected int srid;
-    
+
+    @Deprecated
     public HTMLFeatureWriterBase(Configuration configuration) {
+        this(configuration, new OutputFormatHTMLSettings());
+    }
+
+    public HTMLFeatureWriterBase(Configuration configuration, OutputFormatHTMLSettings settings) {
         this.configuration = configuration;
+        this.settings = settings;
     }
 
     @Override

@@ -74,8 +74,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 <script>
 var map = L.map('map');
-L.tileLayer('https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/taustakartta/default/WGS84_Pseudo-Mercator/{z}/{y}/{x}.png?api-key=7cd2ddae-9f2e-481c-99d0-404e7bc7a0b2', {
-    attribution: '&copy; <a href="https://www.nls.fi">National Land Survey of Finland</a>'
+L.tileLayer('${settings.tileUrl}', {
+    <#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
 }).addTo(map);
 
 <#if geometry??>
