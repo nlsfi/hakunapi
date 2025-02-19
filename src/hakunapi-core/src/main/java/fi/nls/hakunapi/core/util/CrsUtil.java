@@ -58,7 +58,7 @@ public class CrsUtil {
     }
 
     // FIXME: Use some sane logic, for example unit of measure
-    public static int getMaxDecimalCoordinates(int srid) {
+    public static int getDefaultMaxDecimalCoordinates(int srid) {
         switch (srid) {
         case Crs.CRS84_SRID:
         case 4326:
@@ -69,8 +69,5 @@ public class CrsUtil {
         }
     }
 
-    public static HakunaGeometryDimension getGeomDimensionForSrid(HakunaGeometryDimension geomDimension, int srid) {
-        return geomDimension;
-    }
 
 }
