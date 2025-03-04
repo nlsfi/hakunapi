@@ -39,7 +39,7 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
             ValueProvider feat = fs.next();
 
             int srid =data.PLACE_SRID;
-            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
 
             fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);
@@ -88,7 +88,7 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
             ValueProvider feat = fs.next();
 
             int srid =data.PLACE_SRID;
-            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
+            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
 
             fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
             fw.initGeometryWriter(HakunaGeometryDimension.XY);

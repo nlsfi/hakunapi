@@ -37,7 +37,7 @@ public class JSONFGSingleFeatureWriter extends HakunaGeoJSONSingleFeatureWriter 
         FloatingPointFormatter fCrs84 = JSONFG.createCrs84GeometryFormatter();
 
         geometryJson = new JSONFGGeometryWriter(json, fCrs84, HakunaGeoJSON.GEOMETRY, true, CRS84_DIM);
-        placeJson = new JSONFGGeometryWriter(json,  decimalFormatter, JSONFG.PLACE, forceLonLat || !crsIsLatLon, CRS84_DIM);
+        placeJson = new JSONFGGeometryWriter(json,  decimalFormatter, JSONFG.PLACE, forceLonLat || !crsIsLatLon, dims);
         propertyGeometryJson.clear();
     }
 

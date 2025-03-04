@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -30,9 +31,11 @@ import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.filter.Filter;
+import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.APIParam;
@@ -159,17 +162,20 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
             }
 
             int srid = request.getSRID();
-
-            int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
             boolean crsIsLatLon = service.isCrsLatLon(srid);
-
+            Optional<SRIDCode> sridCode = service.getSridCode(srid);
+            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
+            HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
+            if(sridCode.isPresent()) {
+                geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
+            }
 
             // Feature response rarely needs 8kb of memory
             // Let's allocate a little less
             ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
             writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
             if (c.getFt().getGeom() != null) {
-                writer.initGeometryWriter(CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
+                writer.initGeometryWriter(geomDimension);
             }
 
             int i = 0;
