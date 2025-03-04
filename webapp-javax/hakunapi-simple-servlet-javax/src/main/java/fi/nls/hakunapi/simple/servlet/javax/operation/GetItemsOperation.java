@@ -100,7 +100,7 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
                     WriteReport report = null;
                     int srid = request.getSRID();
                     
-                    writer.init(out, CrsUtil.getMaxDecimalCoordinates(srid), srid);
+                    writer.init(out, CrsUtil.getDefaultMaxDecimalCoordinates(srid), srid);
 
                     List<GetFeatureCollection> collections = request.getCollections();
 

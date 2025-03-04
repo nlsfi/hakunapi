@@ -148,7 +148,7 @@ public final class JSONFG {
     }
 
     public static FloatingPointFormatter createCrs84GeometryFormatter() {
-        int crs84maxDecimalsCoordinate = CrsUtil.getMaxDecimalCoordinates(CRS84_SRID);
+        int crs84maxDecimalsCoordinate = CrsUtil.getDefaultMaxDecimalCoordinates(CRS84_SRID);
         int minDecimalsFloat = 0;
         int maxDecimalsFloat = 5;
         int minDecimalsDouble = 0;
