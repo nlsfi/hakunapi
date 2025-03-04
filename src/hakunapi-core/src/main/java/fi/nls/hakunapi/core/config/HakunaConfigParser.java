@@ -159,7 +159,9 @@ public class HakunaConfigParser {
             int srid = Integer.parseInt(sridCode);
             String latLonAttr = get("srid." + sridCode + ".latLon", "false");
             boolean latLon = "true".equalsIgnoreCase(latLonAttr);
-            knownSrids.add(new SRIDCode(srid, latLon));
+            HakunaGeometryDimension geomDimension = getGeometryDims(get("srid."+sridCode+".geometryDimension"));
+            
+            knownSrids.add(new SRIDCode(srid, latLon, geomDimension));
         }
         return knownSrids;
     }
@@ -281,7 +283,7 @@ public class HakunaConfigParser {
         String p = "collections." + collectionId + ".";
 
         int[] srids = getSRIDs(get(p + "srid", get("default.collections.srid")));
-        HakunaGeometryDimension dim = getGeometryDims(collectionId, get(p + "geometryDimension"));
+        HakunaGeometryDimension dim = getGeometryDims(get(p + "geometryDimension"));
 
         SimpleSource source;
         if (sourcesByType.size() == 1) {
@@ -439,16 +441,14 @@ public class HakunaConfigParser {
         }
     }
 
-    private HakunaGeometryDimension getGeometryDims(String collectionId,String dimmode ) {
+    private HakunaGeometryDimension getGeometryDims(String dimmode ) {
         if( dimmode == null ) {
             return HakunaGeometryDimension.DEFAULT;
         }
         try {
             HakunaGeometryDimension dim = HakunaGeometryDimension.valueOf(dimmode);
-            LOG.info("using "+dim+" dimension for "+collectionId);
             return dim;
         } catch (IllegalArgumentException e) {
-            LOG.warn("using default dimension for "+collectionId + " invalid config value "+dimmode);
             return HakunaGeometryDimension.DEFAULT;
         }
     }

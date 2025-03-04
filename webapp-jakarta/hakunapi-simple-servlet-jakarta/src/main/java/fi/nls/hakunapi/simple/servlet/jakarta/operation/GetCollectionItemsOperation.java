@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.SRIDCode;
+import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
@@ -225,15 +228,19 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
         int srid = request.getSRID();
 
-        int maxDecimalCoordinates = CrsUtil.getMaxDecimalCoordinates(srid);
         boolean crsIsLatLon = service.isCrsLatLon(srid);
+        Optional<SRIDCode> sridCode = service.getSridCode(srid);
+        int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
+        HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
+        if(sridCode.isPresent()) {
+            geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
+        }
 
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
                 TelemetrySpan span = ftt.span()) {
             writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
-            writer.initGeometryWriter(
-                    CrsUtil.getGeomDimensionForSrid(c.getFt().getGeomDimension(), srid));
+            writer.initGeometryWriter(geomDimension);
             writer.startFeatureCollection(ft, c.getName());
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request.getOffset(), request.getLimit());
             writer.endFeatureCollection();

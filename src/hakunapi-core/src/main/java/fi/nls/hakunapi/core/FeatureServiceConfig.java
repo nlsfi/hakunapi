@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -179,6 +180,13 @@ public abstract class FeatureServiceConfig {
 
     public void setKnownSrids(List<SRIDCode> knownSrids) {
         this.knownSrids = knownSrids;
+    }
+    
+    public Optional<SRIDCode> getSridCode(int srid) {
+        return knownSrids.stream()
+                .filter(it -> it.getSrid() == srid)
+                .findAny();
+        
     }
 
     public boolean isCrsLatLon(int srid) {
