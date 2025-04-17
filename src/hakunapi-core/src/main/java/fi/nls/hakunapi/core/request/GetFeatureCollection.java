@@ -2,6 +2,7 @@ package fi.nls.hakunapi.core.request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OrderBy;
@@ -77,7 +78,7 @@ public class GetFeatureCollection {
     public List<HakunaProperty> getPropertiesBase(FeatureType ft) {
         List<HakunaProperty> properties = new ArrayList<>();
         if (orderBy != null) {
-            properties.addAll(orderBy.stream().map(o -> o.getProperty()).toList());
+            properties.addAll(orderBy.stream().map(o -> o.getProperty()).collect(Collectors.toList()));
         }
         properties.add(ft.getId());
         if (ft.getGeom() != null) {
