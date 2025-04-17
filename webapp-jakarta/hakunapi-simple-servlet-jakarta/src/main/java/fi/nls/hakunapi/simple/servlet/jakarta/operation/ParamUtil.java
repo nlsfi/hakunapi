@@ -25,7 +25,9 @@ import fi.nls.hakunapi.core.param.FilterParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.param.LimitParam;
 import fi.nls.hakunapi.core.param.NextParam;
+import fi.nls.hakunapi.core.param.OffsetParam;
 import fi.nls.hakunapi.core.param.PropertiesParam;
+import fi.nls.hakunapi.core.param.SortbyParam;
 
 public class ParamUtil {
 
@@ -36,6 +38,7 @@ public class ParamUtil {
             new BboxParam(),
             new DatetimeParam(),
             new NextParam(),
+            new SortbyParam(),
             new CrsParam(),
             new BboxCrsParam(),
             new PropertiesParam(),
@@ -51,12 +54,14 @@ public class ParamUtil {
     protected static final Map<ConformanceClass, List<GetFeatureParam>> COLLECTION_ITEMS_CONFORMANCE_PARAMS = new HashMap<>();
     static {
         COLLECTION_ITEMS_CONFORMANCE_PARAMS.put(ConformanceClass.Core,
-                Arrays.asList(new FParam(), new LimitParam(), new NextParam(), new BboxParam(), new DatetimeParam(), new PropertiesParam())); // PropertiesParam isn't actually part of Core
+                Arrays.asList(new FParam(), new LimitParam(), new NextParam(), new BboxParam(), new DatetimeParam(), new PropertiesParam(), new SortbyParam())); // PropertiesParam and SortbyParam aren't actually part of Core
         COLLECTION_ITEMS_CONFORMANCE_PARAMS.put(ConformanceClass.CRS,
                 Arrays.asList(new CrsParam(), new BboxCrsParam()));
         COLLECTION_ITEMS_CONFORMANCE_PARAMS.put(ConformanceClass.FILTER,
                 Arrays.asList(new FilterParam(), new FilterLangParam(), new FilterCrsParam()));
     }
+    
+    protected static final OffsetParam OFFSET_PARAM = new OffsetParam(); 
 
     protected static List<GetFeatureParam> getParameters(FeatureType ft, FeatureServiceConfig service) {
         List<GetFeatureParam> collectionSpecific = ft.getParameters();
@@ -67,6 +72,10 @@ public class ParamUtil {
                     .map(c -> COLLECTION_ITEMS_CONFORMANCE_PARAMS.get(c))
                     .filter(Objects::nonNull)
                     .flatMap(Collection::stream).collect(Collectors.toList());
+
+            if (ft.getPaginationStrategy().isOffsetParamSupported()) {
+                conformanceSpecificParams.add(OFFSET_PARAM);
+            }
 
             final List<GetFeatureParam> collectionSpecificConformanceParams = ft
                     .getConformanceParams(conformanceSpecificParams);

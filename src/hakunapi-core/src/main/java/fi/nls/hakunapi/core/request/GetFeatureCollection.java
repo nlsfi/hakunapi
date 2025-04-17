@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.OrderBy;
+import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 
@@ -13,6 +15,8 @@ public class GetFeatureCollection {
     private List<HakunaProperty> properties;
     private List<Filter> filters;
     private String layername;
+    private List<OrderBy> orderBy;
+    private PaginationStrategy paginationStrategy;
 
     public GetFeatureCollection(FeatureType ft) {
         this.ft = ft;
@@ -54,9 +58,27 @@ public class GetFeatureCollection {
         }
     }
 
-    public static List<HakunaProperty> getPropertiesBase(FeatureType ft) {
+    public List<OrderBy> getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(List<OrderBy> orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public PaginationStrategy getPaginationStrategy() {
+        return paginationStrategy != null ? paginationStrategy : ft.getPaginationStrategy();
+    }
+
+    public void setPaginationStrategy(PaginationStrategy paginationStrategy) {
+        this.paginationStrategy = paginationStrategy;
+    }
+
+    public List<HakunaProperty> getPropertiesBase(FeatureType ft) {
         List<HakunaProperty> properties = new ArrayList<>();
-        properties.addAll(ft.getPaginationStrategy().getProperties());
+        if (orderBy != null) {
+            properties.addAll(orderBy.stream().map(o -> o.getProperty()).toList());
+        }
         properties.add(ft.getId());
         if (ft.getGeom() != null) {
             properties.add(ft.getGeom());

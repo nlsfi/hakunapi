@@ -8,44 +8,31 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.nls.hakunapi.core.filter.Filter;
+import fi.nls.hakunapi.core.param.NextParam;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
+import fi.nls.hakunapi.core.util.StringPair;
 
 public class PaginationStrategyCursor implements PaginationStrategy {
 
     private static final ObjectMapper om = new ObjectMapper();
 
-    private final List<HakunaProperty> properties;
-    private final List<Boolean> ascending;
+    public static final PaginationStrategyCursor INSTANCE = new PaginationStrategyCursor();
+    public static final String NAME = "cursor";
 
-    public PaginationStrategyCursor(List<HakunaProperty> properties, List<Boolean> ascending) {
-        this.properties = properties;
-        this.ascending = ascending;
-    }
-
-    @Override
-    public List<HakunaProperty> getProperties() {
-        return properties;
-    }
-
-    @Override
-    public List<Boolean> getAscending() {
-        return ascending;
-    }
-
-    @Override
-    public int getMaxGroupSize() {
-        return 1;
+    private PaginationStrategyCursor() {
+        // Use INSTANCE
     }
 
     @Override
     public void apply(GetFeatureRequest request, NextCursor cursor) {
         GetFeatureCollection c = request.getCollections().get(0);
-        int n = properties.size();
+        List<OrderBy> orderBy = c.getOrderBy();
+        int n = orderBy.size();
         if (n == 1) {
-            HakunaProperty prop = getProperties().get(0);
-            boolean ascending = getAscending().get(0);
+            HakunaProperty prop = orderBy.get(0).getProperty();
+            boolean ascending = orderBy.get(0).isAscending();
             String next = cursor.getNext();
             Filter f = ascending ? Filter.greaterThanOrEqualTo(prop, next) : Filter.lessThanThanOrEqualTo(prop, next);
             c.addFilter(f);
@@ -54,8 +41,8 @@ public class PaginationStrategyCursor implements PaginationStrategy {
             List<String> values = fromJsonArray(json);
             List<Filter> subFilters = new ArrayList<>();
             for (int i = 0; i < n; i++) {
-                HakunaProperty prop = getProperties().get(i);
-                boolean ascending = getAscending().get(i);
+                HakunaProperty prop = orderBy.get(i).getProperty();
+                boolean ascending = orderBy.get(i).isAscending();
                 String next = values.get(i);
                 subFilters.add(ascending
                         ? Filter.greaterThanOrEqualTo(prop, next)
@@ -63,13 +50,16 @@ public class PaginationStrategyCursor implements PaginationStrategy {
             }
             c.addFilter(Filter.and(subFilters));
         }
+
         request.setFirstPage(false);
         request.setOffset(cursor.getOffset());
+        request.getCollections().forEach(col -> col.setPaginationStrategy(this));
     }
 
     @Override
-    public NextCursor getNextCursor(int offset, int limit, ValueProvider next) {
-        int n = properties.size();
+    public NextCursor getNextCursor(GetFeatureRequest request, GetFeatureCollection c, ValueProvider next) {
+        List<OrderBy> orderBy = c.getOrderBy();
+        int n = orderBy.size();
         if (n == 1) {
             return new NextCursor(next.getObject(0).toString(), 0);
         } else {
@@ -99,13 +89,13 @@ public class PaginationStrategyCursor implements PaginationStrategy {
     }
 
     @Override
-    public boolean shouldOffset() {
+    public boolean isOffsetParamSupported() {
         return false;
     }
 
     @Override
-    public boolean shouldSortBy() {
-        return true;
+    public StringPair getNextQueryParam(NextCursor next) {
+        return new StringPair(NextParam.PARAM_NAME, next.toWireFormat());
     }
 
 }
