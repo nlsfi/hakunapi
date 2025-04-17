@@ -4,18 +4,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
 
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.FeatureProducer;
+import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.PaginationStrategyCursor;
 import fi.nls.hakunapi.core.SimpleFeatureType;
-import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
-import fi.nls.hakunapi.simple.servlet.javax.operation.ParamUtil;
 
 public class ParamUtilTest {
 
@@ -55,6 +56,7 @@ public class ParamUtilTest {
                 return null;
             }
         };
+        sft.setPaginationStrategy(PaginationStrategyCursor.INSTANCE);
         List<GetFeatureParam> params = ParamUtil.getParameters(sft, service);
 
         assertTrue(params.isEmpty());
@@ -77,8 +79,10 @@ public class ParamUtilTest {
                 return null;
             }
         };
+        sft.setPaginationStrategy(PaginationStrategyCursor.INSTANCE);
 
         List<GetFeatureParam> expected = ParamUtil.COLLECTION_ITEMS_CONFORMANCE_PARAMS.get(ConformanceClass.Core);
+        expected.sort(Comparator.comparing(GetFeatureParam::priority));
         List<GetFeatureParam> params = ParamUtil.getParameters(sft, service);
 
         assertTrue(expected.size() == params.size());
@@ -105,10 +109,12 @@ public class ParamUtilTest {
                 return null;
             }
         };
+        sft.setPaginationStrategy(PaginationStrategyCursor.INSTANCE);
 
         List<GetFeatureParam> expected = new ArrayList<>();
         expected.addAll(ParamUtil.COLLECTION_ITEMS_CONFORMANCE_PARAMS.get(ConformanceClass.Core));
         expected.addAll(ParamUtil.COLLECTION_ITEMS_CONFORMANCE_PARAMS.get(ConformanceClass.CRS));
+        expected.sort(Comparator.comparing(GetFeatureParam::priority));
         List<GetFeatureParam> params = ParamUtil.getParameters(sft, service);
 
         assertTrue(expected.size() == params.size());
@@ -137,6 +143,7 @@ public class ParamUtilTest {
                 return null;
             }
         };
+        sft.setPaginationStrategy(PaginationStrategyCursor.INSTANCE);
 
         List<GetFeatureParam> expected = new ArrayList<>();
         expected.addAll(ParamUtil.COLLECTION_ITEMS_CONFORMANCE_PARAMS.get(ConformanceClass.Core));
