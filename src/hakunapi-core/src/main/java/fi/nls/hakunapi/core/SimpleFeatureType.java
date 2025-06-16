@@ -24,6 +24,7 @@ public abstract class SimpleFeatureType implements FeatureType {
     private List<HakunaProperty> queryableProperties;
     private List<DatetimeProperty> datetimeProperties;
     private PaginationStrategy paginationStrategy;
+    private List<OrderBy> defaultOrderBy;
     private CacheSettings cacheSettings;
 
     private double[] spatialExtent;
@@ -116,6 +117,15 @@ public abstract class SimpleFeatureType implements FeatureType {
 
     public void setPaginationStrategy(PaginationStrategy paginationStrategy) {
         this.paginationStrategy = paginationStrategy;
+    }
+
+    @Override
+    public List<OrderBy> getDefaultOrderBy() {
+        return defaultOrderBy;
+    }
+
+    public void setDefaultOrderBy(List<OrderBy> defaultOrderBy) {
+        this.defaultOrderBy = defaultOrderBy;
     }
 
     @Override

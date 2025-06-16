@@ -1,6 +1,5 @@
 package fi.nls.hakunapi.simple.servlet.javax;
 
-import java.util.Iterator;
 import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
@@ -11,12 +10,15 @@ import fi.nls.hakunapi.core.NextCursor;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.param.LimitParam;
 import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.core.request.GetFeatureCollection;
+import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 
 public class SimpleFeatureWriter {
 
     public static WriteReport writeFeatureCollection(FeatureCollectionWriter writer,
-            FeatureType ft, List<HakunaProperty> properties, FeatureStream features, int offset, int limit) throws Exception {
+            FeatureType ft, List<HakunaProperty> properties, FeatureStream features, GetFeatureRequest request, GetFeatureCollection col) throws Exception {
+        int limit = request.getLimit();
         if (limit == LimitParam.UNLIMITED) {
             return writeFeatureCollectionFully(writer, ft, properties, features);
         }
@@ -32,7 +34,7 @@ public class SimpleFeatureWriter {
         
         NextCursor next = null;
         if (numberReturned == limit && features.hasNext()) {
-            next = ft.getPaginationStrategy().getNextCursor(offset, limit, features.next());
+            next = col.getPaginationStrategy().getNextCursor(request, col, features.next());
         }
         
         features.close();

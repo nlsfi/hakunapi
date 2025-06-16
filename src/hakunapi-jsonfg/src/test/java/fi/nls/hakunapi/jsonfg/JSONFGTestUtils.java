@@ -41,6 +41,8 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyTimestamptz;
+import fi.nls.hakunapi.core.request.GetFeatureCollection;
+import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Crs;
 import fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory;
@@ -208,7 +210,8 @@ public class JSONFGTestUtils {
     }
 
     public static WriteReport writeFeatureCollection(FeatureCollectionWriter writer, FeatureType ft,
-            List<HakunaProperty> properties, FeatureStream features, int offset, int limit) throws Exception {
+            List<HakunaProperty> properties, FeatureStream features, GetFeatureRequest request, GetFeatureCollection col) throws Exception {
+        int limit = request.getLimit();
         if (limit == LimitParam.UNLIMITED) {
             return writeFeatureCollectionFully(writer, ft, properties, features);
         }
@@ -224,7 +227,7 @@ public class JSONFGTestUtils {
 
         NextCursor next = null;
         if (numberReturned == limit && features.hasNext()) {
-            next = ft.getPaginationStrategy().getNextCursor(offset, limit, features.next());
+            next = ft.getPaginationStrategy().getNextCursor(request, col, features.next());
         }
 
         features.close();

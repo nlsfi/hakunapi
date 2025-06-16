@@ -39,13 +39,13 @@ import fi.nls.hakunapi.core.param.CollectionsParam;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.param.LimitParam;
-import fi.nls.hakunapi.core.param.NextParam;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
+import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
 import fi.nls.hakunapi.simple.servlet.jakarta.ResponseUtil;
 import fi.nls.hakunapi.simple.servlet.jakarta.SimpleFeatureWriter;
@@ -111,7 +111,7 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
                         FeatureProducer source = ft.getFeatureProducer();
                         try (FeatureStream features = source.getFeatures(request, c)) {
                             writer.startFeatureCollection(ft, c.getName());                            
-                            report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request.getOffset(), request.getLimit());
+                            report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
                             written += report.numberReturned;
                             if (totalLimit != LimitParam.UNLIMITED) {
                                 request.setLimit(totalLimit - written);
@@ -167,7 +167,8 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
             String collections = remainingCollections.stream()
                     .map(c -> c.getFt().getName())
                     .collect(Collectors.joining(","));
-            queryParams.put(NextParam.PARAM_NAME, cursor.toWireFormat());
+            StringPair paramNameAndValue = remainingCollections.get(0).getPaginationStrategy().getNextQueryParam(cursor);
+            queryParams.put(paramNameAndValue.getLeft(), paramNameAndValue.getRight());
             queryParams.put(CollectionsParam.PARAM_NAME, collections);
             Link next = Links.getNextLink(path, queryParams, mimeType);
             links.add(next);

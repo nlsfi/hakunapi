@@ -1,6 +1,7 @@
 package fi.nls.hakunapi.core;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,9 @@ public interface FeatureType {
 
     public HakunaGeometryDimension getGeomDimension();
     public PaginationStrategy getPaginationStrategy();
+    public default List<OrderBy> getDefaultOrderBy() {
+        return Collections.emptyList();
+    }
 
     public FeatureProducer getFeatureProducer();
 

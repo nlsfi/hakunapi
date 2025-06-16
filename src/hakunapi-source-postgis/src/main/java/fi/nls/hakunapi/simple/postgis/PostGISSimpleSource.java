@@ -40,9 +40,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fi.nls.hakunapi.core.CaseInsensitiveStrategy;
 import fi.nls.hakunapi.core.HakunapiPlaceholder;
-import fi.nls.hakunapi.core.PaginationStrategy;
-import fi.nls.hakunapi.core.PaginationStrategyCursor;
-import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
@@ -54,7 +51,6 @@ import fi.nls.hakunapi.core.join.OneToManyJoin;
 import fi.nls.hakunapi.core.join.OneToOneJoin;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyComposite;
-import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyNumberEnum;
 import fi.nls.hakunapi.core.property.HakunaPropertyStatic;
 import fi.nls.hakunapi.core.property.HakunaPropertyStringEnum;
@@ -385,8 +381,6 @@ public class PostGISSimpleSource implements SimpleSource {
         }
         ft.setProperties(hakunaProps);
 
-        ft.setPaginationStrategy(getPaginationStrategy(cfg, p, ft));
-
         ft.setCaseInsensitiveStrategy(getCaseInsensitiveStrategy(cfg, p, ft));
 
         ft.setSourceShouldProject(getSourceShouldProject(cfg, p));
@@ -477,18 +471,6 @@ public class PostGISSimpleSource implements SimpleSource {
         throw new IllegalArgumentException("Can not determine array type from " + typeName);
     }
 
-    private PaginationStrategy getPaginationStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String paginationStrategy = cfg.get(p + "pagination.strategy", "cursor").toLowerCase();
-        switch (paginationStrategy) {
-        case "cursor":
-            return getPaginationCursor(cfg, p, sft);
-        case "offset":
-            return PaginationStrategyOffset.INSTANCE;
-        default:
-            throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
-        }
-    }
-
     private CaseInsensitiveStrategy getCaseInsensitiveStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
         String caseiStrategy = cfg.get(p + "casei");
         if (caseiStrategy == null) {
@@ -502,32 +484,6 @@ public class PostGISSimpleSource implements SimpleSource {
 
     private boolean getSourceShouldProject(HakunaConfigParser cfg, String p) {
         return Boolean.parseBoolean(cfg.get(p + "sourceproj", "false"));
-    }
-
-    private PaginationStrategyCursor getPaginationCursor(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String[] pagination = cfg.getMultiple(p + "pagination");
-        String[] paginationOrder = cfg.getMultiple(p + "pagination.order");
-        // int maxGroupSize = Integer.parseInt(get(p + "pagination.maxGroupSize", "1"));
-
-        if (pagination.length == 0) {
-            HakunaProperty id = new HakunaPropertyHidden(sft.getId());
-            boolean asc = true;
-            return new PaginationStrategyCursor(
-                    Collections.singletonList(id),
-                    Collections.singletonList(asc)
-                    );
-        } else {
-            List<HakunaProperty> props = new ArrayList<>(pagination.length);
-            List<Boolean> ascending = new ArrayList<>(pagination.length);
-            for (int i = 0; i < pagination.length; i++) {
-                HakunaProperty prop = cfg.getProperty(sft, pagination[i]);
-                HakunaProperty hidden = new HakunaPropertyHidden(prop);
-                Boolean asc = paginationOrder.length > i ? !"DESC".equalsIgnoreCase(paginationOrder[i]) : true;
-                props.add(hidden);
-                ascending.add(asc);
-            }
-            return new PaginationStrategyCursor(props, ascending);
-        }
     }
 
     public static Map<String, List<HakunaPropertyType>> getPropertyTypes(DataSource ds, String select) throws SQLException {

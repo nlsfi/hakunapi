@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.nls.hakunapi.core.OrderBy;
 import fi.nls.hakunapi.core.QueryContext;
 import fi.nls.hakunapi.core.ValueMapper;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -130,14 +131,14 @@ public class GpkgQueryUtil {
         queryBuilder.append(asc ? " ASC" : " DESC");
     }
 
-    public static void orderBy(StringBuilder queryBuilder, List<HakunaProperty> props, List<Boolean> ascending) {
-        if (props == null || props.isEmpty()) {
+    public static void orderBy(StringBuilder queryBuilder, List<OrderBy> orderBy) {
+        if (orderBy == null || orderBy.isEmpty()) {
             return;
         }
         queryBuilder.append(" ORDER BY ");
-        for (int i = 0; i < props.size(); i++) {
-            HakunaProperty prop = props.get(i);
-            boolean asc = ascending.get(i);
+        for (int i = 0; i < orderBy.size(); i++) {
+            HakunaProperty prop = orderBy.get(i).getProperty();
+            boolean asc = orderBy.get(i).isAscending();
             if (i > 0) {
                 queryBuilder.append(',');
             }

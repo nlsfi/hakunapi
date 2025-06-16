@@ -1,53 +1,39 @@
 package fi.nls.hakunapi.core;
 
-import java.util.Collections;
-import java.util.List;
-
-import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.core.param.OffsetParam;
+import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
+import fi.nls.hakunapi.core.util.StringPair;
 
 public class PaginationStrategyOffset implements PaginationStrategy {
-    
+
     public static final PaginationStrategyOffset INSTANCE = new PaginationStrategyOffset();
-    
+    public static final String NAME = "offset";
+
     private PaginationStrategyOffset() {
         // Use INSTANCE
     }
 
     @Override
-    public void apply(GetFeatureRequest request, NextCursor cursor) {
-        request.setFirstPage(cursor.getOffset() == 0);
-        request.setOffset(cursor.getOffset());
+    public void apply(GetFeatureRequest request, int offset) {
+        request.setFirstPage(offset == 0);
+        request.setOffset(offset);
+        request.getCollections().forEach(c -> c.setPaginationStrategy(this));
     }
 
     @Override
-    public List<HakunaProperty> getProperties() {
-        return Collections.emptyList();
+    public NextCursor getNextCursor(GetFeatureRequest request, GetFeatureCollection col, ValueProvider last) {
+        return new NextCursor("", request.getOffset() + request.getLimit());
     }
 
     @Override
-    public List<Boolean> getAscending() {
-        return Collections.emptyList();
+    public StringPair getNextQueryParam(NextCursor next) {
+        return new StringPair(OffsetParam.PARAM_NAME, Integer.toString(next.getOffset()));
     }
 
     @Override
-    public int getMaxGroupSize() {
-        return 1;
-    }
-
-    @Override
-    public NextCursor getNextCursor(int offset, int limit, ValueProvider last) {
-        return new NextCursor("", offset + limit);
-    }
-
-    @Override
-    public boolean shouldOffset() {
+    public boolean isOffsetParamSupported() {
         return true;
-    }
-
-    @Override
-    public boolean shouldSortBy() {
-        return false;
     }
 
 }

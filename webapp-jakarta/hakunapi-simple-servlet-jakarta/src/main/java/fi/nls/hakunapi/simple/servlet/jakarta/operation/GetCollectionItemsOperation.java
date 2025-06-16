@@ -49,6 +49,7 @@ import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.param.NextParam;
+import fi.nls.hakunapi.core.param.OffsetParam;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
@@ -58,6 +59,7 @@ import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
 import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
+import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
 import fi.nls.hakunapi.simple.servlet.jakarta.CacheManager;
 import fi.nls.hakunapi.simple.servlet.jakarta.ResponseUtil;
@@ -242,7 +244,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
             writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
             writer.initGeometryWriter(geomDimension);
             writer.startFeatureCollection(ft, c.getName());
-            WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request.getOffset(), request.getLimit());
+            WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
             writer.endFeatureCollection();
             writer.end(true, getLinks(service, request, report), report.numberReturned);
 
@@ -302,7 +304,8 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         queryParams.put(FParam.QUERY_PARAM_NAME, fParamOriginalValue);
 
         if (report.next != null) {
-            queryParams.put(NextParam.PARAM_NAME, report.next.toWireFormat());
+            StringPair paramNameAndValue = c.getPaginationStrategy().getNextQueryParam(report.next);
+            queryParams.put(paramNameAndValue.getLeft(), paramNameAndValue.getRight());
             Link next = Links.getNextLink(path, queryParams, mimeType);
             links.add(next);
         }

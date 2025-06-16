@@ -12,12 +12,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.util.CrsUtil;
-import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
 public class JSONFGFeatureCollectionWriterTest {
 
@@ -31,6 +29,7 @@ public class JSONFGFeatureCollectionWriterTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
+        request.setLimit(-1);
         GetFeatureCollection coll = new GetFeatureCollection(ft);
         request.addCollection(coll);
 
@@ -45,7 +44,7 @@ public class JSONFGFeatureCollectionWriterTest {
 
             fw.startFeatureCollection(ft, null);
 
-            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
+            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, request, coll).numberReturned;
 
             fw.endFeatureCollection();
             fw.end(false, Collections.emptyList(), numberReturned);
@@ -74,6 +73,7 @@ public class JSONFGFeatureCollectionWriterTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         GetFeatureRequest request = new GetFeatureRequest();
+        request.setLimit(-1);
         GetFeatureCollection coll = new GetFeatureCollection(ft);
         request.addCollection(coll);
 
@@ -88,7 +88,7 @@ public class JSONFGFeatureCollectionWriterTest {
 
             fw.startFeatureCollection(ft, null);
 
-            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, 0, -1).numberReturned;
+            int numberReturned = JSONFGTestUtils.writeFeatureCollection(fw, ft, coll.getProperties(), fs, request, coll).numberReturned;
 
             fw.endFeatureCollection();
             fw.end(false, Collections.emptyList(), numberReturned);

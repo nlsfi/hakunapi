@@ -13,7 +13,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -38,15 +37,11 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.HakunapiPlaceholder;
-import fi.nls.hakunapi.core.PaginationStrategy;
-import fi.nls.hakunapi.core.PaginationStrategyCursor;
-import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.core.property.HakunaProperty;
-import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyNumberEnum;
 import fi.nls.hakunapi.core.property.HakunaPropertyStatic;
 import fi.nls.hakunapi.core.property.HakunaPropertyStringEnum;
@@ -273,8 +268,6 @@ public class GpkgSimpleSource implements SimpleSource {
             hakunaProperties.add(getProperty(cfg, ft, p, table, property, propertyTypes, propertyNullability));
         }
         ft.setProperties(hakunaProperties);
-
-        ft.setPaginationStrategy(getPaginationStrategy(cfg, p, ft));
 
         return ft;
     }
@@ -567,44 +560,6 @@ public class GpkgSimpleSource implements SimpleSource {
                 }
             }
             return labelToNullable;
-        }
-    }
-
-    private PaginationStrategy getPaginationStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String paginationStrategy = cfg.get(p + "pagination.strategy", "cursor").toLowerCase();
-        switch (paginationStrategy) {
-        case "cursor":
-            return getPaginationCursor(cfg, p, sft);
-        case "offset":
-            return PaginationStrategyOffset.INSTANCE;
-        default:
-            throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
-        }
-    }
-
-    private PaginationStrategyCursor getPaginationCursor(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String[] pagination = cfg.getMultiple(p + "pagination");
-        String[] paginationOrder = cfg.getMultiple(p + "pagination.order");
-        // int maxGroupSize = Integer.parseInt(get(p + "pagination.maxGroupSize", "1"));
-
-        if (pagination.length == 0) {
-            HakunaProperty id = new HakunaPropertyHidden(sft.getId());
-            boolean asc = true;
-            return new PaginationStrategyCursor(
-                    Collections.singletonList(id),
-                    Collections.singletonList(asc)
-                    );
-        } else {
-            List<HakunaProperty> props = new ArrayList<>(pagination.length);
-            List<Boolean> ascending = new ArrayList<>(pagination.length);
-            for (int i = 0; i < pagination.length; i++) {
-                HakunaProperty prop = cfg.getProperty(sft, pagination[i]);
-                HakunaProperty hidden = new HakunaPropertyHidden(prop);
-                Boolean asc = paginationOrder.length > i ? !"DESC".equalsIgnoreCase(paginationOrder[i]) : true;
-                props.add(hidden);
-                ascending.add(asc);
-            }
-            return new PaginationStrategyCursor(props, ascending);
         }
     }
 
