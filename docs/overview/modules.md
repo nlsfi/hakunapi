@@ -45,6 +45,115 @@ See also [issues](https://github.com/nlsfi/hakunapi/issues/139) and the latest [
 * uses Finnish addresses of the buildings as geospatial data
 * both PostGIS and GeoPackage data sources demonstrated
 
+## Dependencies
+
+This section introduces Hakunapi modules (named with prefix "hakunapi") by simplified dependency graphs with dependencies also to key external packages. 
+
+Graphs do not visualize all dependencies, for example `junit`, `log4j` and `slf4j-api` for logging were omitted. Also some output format modules are not visible in this graph.
+
+The first graph shows modules related to ouput data formats and core API capabilities:
+
+```mermaid
+graph TD
+    core[hakunapi-core]
+    core --> jts[jts-core]
+    core --> jackson[jackson-databind]
+    core --> swagger[swagger-models]
+
+    %% Format modules
+    geojson[hakunapi-geojson] --> core  
+    html[hakunapi-html] --> core
+    html --> geojson  
+    html --> freemarker[freemarker]
+    gpkg[hakunapi-gpkg] --> core
+    gpkg --> sqlite[sqlite-jdbc]
+    csv[hakunapi-csv] --> core
+    gml[hakunapi-gml] --> core
+    jsonfg[hakunapi-jsonfg] --> core 
+    jsonfg --> jackson
+    jsonfg --> validator[json-schema-validator]
+
+    %% Query modules
+    cql2[hakunapi-cql2] --> core
+    cql2 --> antlr[antlr4-runtime]
+    cql2f[hakunapi-cql2-functions] --> cql2
+    cql2f --> core
+    
+    %% Projection modules
+    proj_jhe[hakunapi-proj-jhe] --> core
+```
+
+The second graph shows underlaying data stores, telemetry capabilities and key server functionality:
+
+```mermaid
+graph TD
+    core[hakunapi-core]
+
+    %% Projection modules
+    proj_jhe[hakunapi-proj-jhe] --> core
+    proj_gt[hakunapi-proj-gt] --> core
+    proj_gt --> epsg[gt-epsg-hsql]
+    
+    %% Source modules
+    postgis[hakunapi-source-postgis] --> core
+    postgis --> hikari[HikariCP]
+    postgis --> pg[postgresql]
+    gpkg_source[hakunapi-source-gpkg] --> core
+    gpkg_source --> gpkg[hakunapi-gpkg]
+    gpkg_source --> hikari
+    gpkg_source -.-> proj_gt
+    
+    %% Telemetry
+    telemetry[hakunapi-telemetry] --> core
+    opentelemetry[hakunapi-telemetry-opentelemetry] --> core
+    opentelemetry --> telemetry
+    opentelemetry --> opentelemetry-api[opentelemetry-api]
+
+    %% Oracle 
+    oracle[hakunapi-source-oracle] --> core
+    oracle --> jts[jts-core]
+    oracle --> ojdbc8[ojdbc8]
+    oracle --> gt-main[gt-main]
+    oracle --> gt-jdbc-oracle[gt-jdbc-oracle]
+    oracle --> hikari
+```
+
+And the last graph introduces some parts of servlet webapp implementation dependencies, but omits some of the internal dependencies on Hakunapi modules shown in previous graphs (just to keep the visualization simple) and exteranal packages are shown by combining artifacts.
+
+```mermaid
+graph TD
+    core[hakunapi-core]
+
+    servlet[hakunapi-simple-servlet-jakarta] --> core
+    servlet --> jakarta[jakarta]
+    servlet --> jersey[jersey]
+    servlet --> jackson[jackson]
+    servlet --> swagger[swagger-core]
+    servlet --> caffeine[caffeine]
+    servlet --> geojson[hakunapi-geojson]
+    servlet --> html[hakunapi-html]
+
+    webapp[hakunapi-simple-webapp-jakarta] --> core
+    webapp --> servlet
+    webapp --> jakarta
+    webapp --> html
+    webapp --> gpkg[hakunapi-gpkg]
+    webapp --> cql2[hakunapi-cql2]
+    webapp --> postgis[hakunapi-source-postgis]
+    webapp --> gpkg_source[hakunapi-source-gpkg]
+    webapp --> proj_gt[hakunapi-proj-gt]
+    webapp --> proj_jhe[hakunapi-proj-jhe]
+    webapp --> telemetry[hakunapi-telemetry]
+
+    telemetry-webapp[hakunapi-telemetry-webapp-jakarta] --> core
+    telemetry-webapp --> webapp
+    telemetry-webapp --> telemetry
+    telemetry-webapp --> opentelemetry-api[opentelemetry-api]
+    telemetry-webapp --> log4j-jakarta-web[log4j-jakarta-web]
+```    
+
+The following sections describe Hakunapi modules introduced on the graph above in more details.
+
 ## Core features
 
 ### Hakunapi-core
