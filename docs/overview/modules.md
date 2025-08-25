@@ -217,7 +217,15 @@ The two modules implementing this interface are shortly described below.
 
 ### Telemetry
 
-See modules `hakunapi-telemetry` and `hakunapi-telemetry-opentelemetry`.
+Telemetry functionality in Hakunapi is meant for usage analysis. The logged data can be used also for billing on paid API usage. However Hakunapi provides only usage analysis and logging, but no any billing related business-specific features.
+
+The core telemetry abstraction is defined in the `hakunapi-core` module through several key interfaces like `ServiceTelemetry`, `RequestTelemetry` and `TelemetryFactory`. 
+
+Hakunapi provides two different telemetry implementations, on separate modules, that can be configured using the `telemetry.mode` configuration property. When no configuration is set then the `ServiceTelemetry.NOP` implementation is used (that do not log anything).
+
+The `hakunapi-telemetry` module (use `log-json` for the mode in configuration) provides a simple JSON-based logging implementation that writes telemetry data to log files.
+
+The `hakunapi-telemetry-opentelemetry` module (use `opentelemetry` for the mode in configuration) provides integration with the OpenTelemetry ecosystem for distributed tracing and metrics based on OpenTelemetry SDK. See [opentelemetry.io](https://opentelemetry.io/) for more information.
 
 ## Webapps and servlets
 
