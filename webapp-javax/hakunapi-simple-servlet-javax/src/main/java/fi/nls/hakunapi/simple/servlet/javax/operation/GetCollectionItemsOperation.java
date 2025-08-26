@@ -239,6 +239,9 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
                 TelemetrySpan span = ftt.span()) {
+            // Buffer some features here so there's higher chance of not being committed to 200 OK response if something goes wrong
+            features.hasNext();
+
             writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
             writer.initGeometryWriter(geomDimension);
             writer.startFeatureCollection(ft, c.getName());
