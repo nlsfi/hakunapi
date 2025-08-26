@@ -185,16 +185,16 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
                 prop.write(feature, i++, writer);
             }
 
+            List<Link> links = getLinks(request, writer);
             writer.endFeature();
-            writer.end(true, getLinks(request, writer), 1);
+            writer.end(true, links, 1);
             writer.close();
 
             span.counts(1);
 
-
             ResponseBuilder builder = Response.ok();
             request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-            request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+            request.getFormat().getResponseHeaders(request, links).forEach((k, v) -> builder.header(k, v));
             builder.entity(baos.toByteArray());
             return builder.build();
         }
