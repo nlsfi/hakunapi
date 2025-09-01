@@ -6,6 +6,8 @@ import fi.nls.hakunapi.core.SingleFeatureWriter;
 
 public class OutputFormatGeoJSONTextSeq implements OutputFormat {
 
+    public static final String MIME_TYPE = "application/geo+json-seq";
+
     public static final OutputFormat INSTANCE = new OutputFormatGeoJSONTextSeq();
     
     private OutputFormatGeoJSONTextSeq() {}
@@ -17,7 +19,7 @@ public class OutputFormatGeoJSONTextSeq implements OutputFormat {
     
     @Override
     public String getMimeType() {
-        return HakunaGeoJSONFeatureCollectionWriterTextSeq.MIME_TYPE;
+        return MIME_TYPE;
     }
 
     @Override

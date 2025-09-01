@@ -1,6 +1,7 @@
 package fi.nls.hakunapi.proj.gt;
 
 import org.geotools.referencing.CRS;
+import org.geotools.api.referencing.crs.CompoundCRS;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
 
@@ -34,28 +35,17 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
         if (sridTo == Crs.CRS84_SRID) {
             return toCRS84(sridFrom);
         }
-        CoordinateReferenceSystem from = getCRS(sridFrom);
-        CoordinateReferenceSystem to = getCRS(sridTo);
-        if (equals2D(from, to)) {
-            // Double check if they are the same even without forcing lon,lat order
-            CoordinateReferenceSystem fromAuthority = getCRSForce(sridFrom, false);
-            CoordinateReferenceSystem toAuthority = getCRSForce(sridTo, false);
-            if (equals2D(fromAuthority, toAuthority)) {
-                return NOPProjectionTransformer.INSTANCE;
-            }
+        CoordinateReferenceSystem from = getHorizontalCRS(sridFrom);
+        CoordinateReferenceSystem to = getHorizontalCRS(sridTo);
+        if (CRS.equalsIgnoreMetadata(from, to)) {
+            return NOPProjectionTransformer.INSTANCE;
         }
         return getProjectionTransformer(sridFrom, from, sridTo, to);
     }
 
-    private boolean equals2D(CoordinateReferenceSystem from, CoordinateReferenceSystem to) {
-        CoordinateReferenceSystem from2d = CRS.getHorizontalCRS(from);
-        CoordinateReferenceSystem to2d = CRS.getHorizontalCRS(to);
-        return CRS.equalsIgnoreMetadata(from2d, to2d);
-    }
-
     @Override
     public ProjectionTransformer toCRS84(int sridFrom) throws Exception {
-        CoordinateReferenceSystem from = getCRS(sridFrom);
+        CoordinateReferenceSystem from = getHorizontalCRS(sridFrom);
         CoordinateReferenceSystem to;
         if (CRS.getEllipsoid(from).equals(CRS.getEllipsoid(ETRS89_LON_LAT))) {
             // This is a hack for performance
@@ -71,24 +61,21 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
 
     @Override
     public ProjectionTransformer fromCRS84(int sridTo) throws Exception {
-        CoordinateReferenceSystem from = CRS.decode("EPSG:4326", true);
-        CoordinateReferenceSystem to = getCRS(sridTo);
-        return getProjectionTransformer(Crs.CRS84_SRID, from, sridTo, to);
+        return getProjectionTransformer(Crs.CRS84_SRID, CRS84, sridTo, getHorizontalCRS(sridTo));
     }
 
-    private CoordinateReferenceSystem getCRS(int srid) throws Exception {
-        if (srid == 3903) {
-            // TODO: Figure out if this is causes more errors than it fixes
-            srid = 3067;
+    private static CoordinateReferenceSystem getHorizontalCRS(int srid) throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:" + srid, true);
+        if (crs instanceof CompoundCRS) {
+            // CompoundCRS doesn't seem to honor forceLonLat for the GeographicCRS inside ProjectedCRS
+            String code2d = CRS.toSRS(CRS.getHorizontalCRS(crs));
+            return CRS.decode(code2d, true);
         }
-        return getCRSForce(srid, true);
+        return crs;
     }
 
-    private CoordinateReferenceSystem getCRSForce(int srid, boolean forceLonLat) throws Exception {
-        return CRS.decode("EPSG:" + srid, forceLonLat);
-    }
-
-    private GeoToolsProjectionTransformer getProjectionTransformer(int fromSRID,
+    private GeoToolsProjectionTransformer getProjectionTransformer(
+            int fromSRID,
             CoordinateReferenceSystem fromCRS,
             int toSRID,
             CoordinateReferenceSystem toCRS) throws Exception {

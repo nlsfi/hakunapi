@@ -189,17 +189,13 @@ public class HakunaTestSourceSchemaParser {
 
 	protected static int dimFromGeomDimension(HakunaGeometryDimension dim) {
 		switch (dim) {
-		case DEFAULT:
 		case XYZ:
 			return 3;
 		case XYZM:
 			return 4;
-		case EPSG:
-		case GEOMETRY:
 		case XY:
 		default:
 			return 2;
-
 		}
 	}
 

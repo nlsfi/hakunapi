@@ -6,8 +6,11 @@ import java.util.Map;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
+import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
 public class OutputFormatGML implements OutputFormat {
+    
+    public static final String MIME_TYPE = "text/xml; subtype=3.1.1";
 
     public static final OutputFormat INSTANCE = new OutputFormatGML();
 
@@ -21,17 +24,21 @@ public class OutputFormatGML implements OutputFormat {
 
     @Override
     public String getMimeType() {
-        return WFS110FeatureCollectionWriter.MIME_TYPE;
+        return MIME_TYPE;
     }
 
     @Override
     public FeatureCollectionWriter getFeatureCollectionWriter() {
-        return new WFS110FeatureCollectionWriter();
+        WFS110FeatureCollectionWriter w = new WFS110FeatureCollectionWriter();
+        w.setFormatter(new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 8));
+        return w;
     }
 
     @Override
     public SingleFeatureWriter getSingleFeatureWriter() {
-        return new WFS110SingleFeatureWriter();
+        WFS110SingleFeatureWriter w = new WFS110SingleFeatureWriter();
+        w.setFormatter(new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 8));
+        return w;        
     }
 
     @Override

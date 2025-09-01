@@ -19,7 +19,7 @@ public abstract class SimpleFeatureType implements FeatureType {
     private String description;
     private HakunaProperty id;
     private HakunaPropertyGeometry geom;
-    private HakunaGeometryDimension geomDimension = HakunaGeometryDimension.DEFAULT;
+    private HakunaGeometryDimension geomDimension;
     private List<HakunaProperty> properties;
     private List<HakunaProperty> queryableProperties;
     private List<DatetimeProperty> datetimeProperties;
@@ -196,10 +196,6 @@ public abstract class SimpleFeatureType implements FeatureType {
 
     public HakunaGeometryDimension getGeomDimension() {
         return geomDimension;
-    }
-
-    public void setGeomDimension(HakunaGeometryDimension geomDimension) {
-        this.geomDimension = geomDimension;
     }
 
     public void setMetadata(Map<String, Object> metadata) {

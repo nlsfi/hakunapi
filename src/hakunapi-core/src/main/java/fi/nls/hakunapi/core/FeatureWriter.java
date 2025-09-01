@@ -7,46 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.schemas.Link;
-import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 
 public interface FeatureWriter extends AutoCloseable {
 
-    public String getMimeType();
-    public int getSrid();
-
-    @Deprecated
-    /**
-     * @deprecated use init(OutputStream, int, int, boolean) instead
-     */
-    public default void init(OutputStream out, int maxDecimalsCoordinate, int srid) throws Exception {
-        init(out, maxDecimalsCoordinate, srid, false);
-    }
-
-    public default void init(OutputStream out, int maxDecimalsCoordinate, int srid, boolean crsIsLatLon) throws Exception {
-        int minDecimalsFloat = 0;
-        int maxDecimalsFloat = 5;
-        int minDecimalsDouble = 0;
-        int maxDecimalsDouble = 8;
-        int minDecimalsOrdinate = 0;
-        FloatingPointFormatter f = new DefaultFloatingPointFormatter(
-                minDecimalsFloat,
-                maxDecimalsFloat,
-                minDecimalsDouble,
-                maxDecimalsDouble,
-                minDecimalsOrdinate,
-                maxDecimalsCoordinate);
-        init(out, f, srid, crsIsLatLon);
-    };
-
-    public default void init(OutputStream out, FloatingPointFormatter formatter, int srid, boolean crsIsLatLon) throws Exception {
-        init(out, formatter, srid);
-    }
-
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception;
-
-    public default void initGeometryWriter(HakunaGeometryDimension dims) {};
+    public void init(OutputStream out, SRIDCode srid) throws Exception;
     
     public void end(boolean timeStamp, List<Link> links, int numberReturned) throws Exception;
 

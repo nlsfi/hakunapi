@@ -9,23 +9,14 @@ import javax.xml.stream.XMLStreamException;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.schemas.Link;
 
 public class WFS110FeatureCollectionWriter extends WFS110FeatureWriterBase implements FeatureCollectionWriter {
 
-    public static final String MIME_TYPE = WFS110FeatureWriterBase.MIME_TYPE;
-    
     @Override
-    public String getMimeType() {
-        return MIME_TYPE;
-    }
-    
-    
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws XMLStreamException {
-        super.init(out, formatter, srid);
+    public void init(OutputStream out, SRIDCode srid) throws XMLStreamException {
+        super.init(out, srid);
 
         xml.writeStartElement(Namespaces.WFS_110.ns.uri, "FeatureCollection"); // <gml:FeatureCollection>
         List<Namespace> namespaces = Arrays.stream(Namespaces.values())

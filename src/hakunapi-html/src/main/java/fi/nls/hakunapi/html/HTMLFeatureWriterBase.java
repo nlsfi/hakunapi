@@ -8,17 +8,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-import freemarker.core.Environment;
-import freemarker.template.Configuration;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 import fi.nls.hakunapi.geojson.hakuna.HakunaJsonWriter;
 import fi.nls.hakunapi.html.model.HTMLFeature;
 import fi.nls.hakunapi.html.model.HakunaGeoJSONGeometryWriterNoField;
 import fi.nls.hakunapi.html.model.PropertiesContext;
+import freemarker.core.Environment;
+import freemarker.template.Configuration;
 
 public abstract class HTMLFeatureWriterBase implements FeatureWriter {
 
@@ -44,20 +46,10 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
     }
 
     @Override
-    public String getMimeType() {
-        return OutputFormatHTML.MIME_TYPE;
-    }
-
-    @Override
-    public int getSrid() {
-        return srid;
-    }
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) {
-        this.srid = srid;
+    public void init(OutputStream out, SRIDCode srid) {
+        this.srid = srid.getSrid();
         this.out = out;
-        this.formatter = formatter;
+        this.formatter = srid.isDegrees() ? DefaultFloatingPointFormatter.DEFAULT_DEGREES : DefaultFloatingPointFormatter.DEFAULT_METERS;
         this.geojsonBuffer = new ByteArrayOutputStream();
         this.jsonWriter = new HakunaJsonWriter(geojsonBuffer, formatter);
         this.geometryWriter = new HakunaGeoJSONGeometryWriterNoField(jsonWriter, formatter);
