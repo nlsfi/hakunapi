@@ -140,7 +140,7 @@ public class HakunaTestSourceSchemaParser {
 			mapping = name;
 			int[] srid = ft.getSrid();
 			int storageSRID = ft.getStorageSrid();
-			int dimension = dimFromGeomDimension(ft.getGeomDimension());
+			int dimension = 2;
 
 			boolean isDefault = false;
 			HakunaPropertyWriter propWriter = hidden ? HakunaPropertyWriters.HIDDEN
@@ -182,9 +182,10 @@ public class HakunaTestSourceSchemaParser {
 		boolean nullable = false;
 		int storageSRID = ft.getStorageSrid();
 		boolean isDefault = true;
+		int dimension = 2;
 		HakunaPropertyWriter propWriter = HakunaPropertyWriters.getGeometryPropertyWriter(mapping, isDefault);
 		return new HakunaPropertyGeometry("geometry", table, mapping, nullable, geometryType, srid, storageSRID,
-				dimFromGeomDimension(ft.getGeomDimension()), propWriter);
+				dimension, propWriter);
 	}
 
 	protected static int dimFromGeomDimension(HakunaGeometryDimension dim) {
