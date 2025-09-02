@@ -20,13 +20,13 @@ import fi.nls.hakunapi.geojson.hakuna.HakunaGeoJSONFeatureCollectionWriter;
 
 public class JSONFGFeatureCollectionWriter extends HakunaGeoJSONFeatureCollectionWriter {
 
-    private GeometryWriter placeJson;
+    protected GeometryWriter placeJson;
 
-    private DatetimeProperty dateTimeProperty;
-    private String dateTimePropertyName;
+    DatetimeProperty dateTimeProperty;
+    String dateTimePropertyName;
 
-    private ProjectionTransformer outputCrs84Proj;
-    private boolean isCrs84;
+    ProjectionTransformer outputCrs84Proj;
+    boolean isCrs84;
 
     private Instant timestamp;
     private LocalDate date;
