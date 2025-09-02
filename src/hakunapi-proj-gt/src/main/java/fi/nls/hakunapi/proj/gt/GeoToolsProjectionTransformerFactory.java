@@ -3,6 +3,8 @@ package fi.nls.hakunapi.proj.gt;
 import org.geotools.referencing.CRS;
 import org.geotools.api.referencing.crs.CompoundCRS;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.crs.ProjectedCRS;
 import org.geotools.api.referencing.operation.MathTransform;
 
 import fi.nls.hakunapi.core.projection.NOPProjectionTransformer;
@@ -52,9 +54,16 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
             // for example TM35 (east,north) -> WGS84 (lon,lat) takes about twice as long
             // compared to TM35 (east,north) -> ETRS89 (lat,lon) (same reference system)
             // TM35 (east,north) -> ETRS89 (lon,lat) takes even less time (no axis order swap?)
-            to = ETRS89_LON_LAT;
+            if (from instanceof ProjectedCRS) {
+                to = ((ProjectedCRS) from).getBaseCRS();
+            } else {
+                to = ETRS89_LON_LAT;
+            }
         } else {
             to = CRS84;
+        }
+        if (CRS.equalsIgnoreMetadata(from, to)) {
+            return NOPProjectionTransformer.INSTANCE;
         }
         return getProjectionTransformer(sridFrom, from, Crs.CRS84_SRID, to);
     }

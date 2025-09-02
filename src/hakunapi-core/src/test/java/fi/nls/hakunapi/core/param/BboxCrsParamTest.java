@@ -17,6 +17,7 @@ import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
@@ -66,6 +67,8 @@ public class BboxCrsParamTest {
                 return myCollection.getName().equals(name) ? myCollection : null;
             }
         };
+
+        service.setKnownSrids(Arrays.asList(SRIDCode.CRS84, SRIDCode.WGS84));
     }
 
     @Test
