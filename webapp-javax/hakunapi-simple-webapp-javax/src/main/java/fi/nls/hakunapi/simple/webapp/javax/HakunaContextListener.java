@@ -29,6 +29,7 @@ import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.nls.hakunapi.core.CRSRegistryProvider;
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
@@ -96,7 +97,7 @@ public class HakunaContextListener implements ServletContextListener {
                 securityRequirements = securitySchemes.keySet().stream()
                         .map(name -> new SecurityRequirement().addList(name)).collect(Collectors.toList());
             }
-            List<SRIDCode> knownSrids = parser.getKnownSrids();
+            List<SRIDCode> knownSrids = getKnownSrids(config, parser);
 
             Map<String, FeatureType> collections = new LinkedHashMap<>();
             for (String collectionId : parser.readCollectionIds()) {
@@ -205,8 +206,14 @@ public class HakunaContextListener implements ServletContextListener {
 
 		return sources;
 	}
-    
-    
+
+	private static List<SRIDCode> getKnownSrids(Properties p, HakunaConfigParser config) {
+        List<Integer> codes = config.getKnownSrids();
+        return CRSRegistryProvider.getCRSRegistry()
+                .map(reg -> reg.detect(p, codes))
+                .orElseThrow(() -> new RuntimeException("Could not find any CRS registry!"));
+    }
+
     private List<OutputFormat> getOutputFormats(HakunaConfigParser config) {
         List<OutputFormat> outputFormats = new ArrayList<>();
         for (String format : config.getMultiple("formats")) {

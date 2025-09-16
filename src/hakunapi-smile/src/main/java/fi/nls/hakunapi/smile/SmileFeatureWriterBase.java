@@ -14,8 +14,8 @@ import com.fasterxml.jackson.core.io.SerializedString;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
 import fi.nls.hakunapi.core.FeatureWriter;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
 
@@ -34,23 +34,8 @@ public abstract class SmileFeatureWriterBase implements FeatureWriter {
     protected Map<String, SerializableString> propertyNameCache = new HashMap<>();
     protected Map<String, GeometryWriter> propertyGeometryWriterCache = new HashMap<>();
     
-    protected int srid;
-
     @Override
-    public String getMimeType() {
-        return OutputFormatSmile.MIME_TYPE;
-    }
-
-    
-    @Override
-    public int getSrid() {
-        return srid;
-    }
-
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception {
-        this.srid = srid;
+    public void init(OutputStream out, SRIDCode srid) throws Exception {
         this.out = out;
         this.w = FACTORY.createGenerator(out);
         this.mainGeometryWriter = new SmileGeometryWriter(w, GeoJSONStrings.GEOMETRY);

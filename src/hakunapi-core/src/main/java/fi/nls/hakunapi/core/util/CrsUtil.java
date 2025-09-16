@@ -1,6 +1,5 @@
 package fi.nls.hakunapi.core.util;
 
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.schemas.Crs;
 
 public class CrsUtil {
@@ -56,18 +55,5 @@ public class CrsUtil {
         }
         return "http://www.opengis.net/def/crs/EPSG/0/" + srid;
     }
-
-    // FIXME: Use some sane logic, for example unit of measure
-    public static int getDefaultMaxDecimalCoordinates(int srid) {
-        switch (srid) {
-        case Crs.CRS84_SRID:
-        case 4326:
-        case 4258:
-            return 7;
-        default:
-            return 3;
-        }
-    }
-
 
 }

@@ -29,5 +29,6 @@
         <module>hakunapi-telemetry</module>
         <module>hakunapi-telemetry-opentelemetry</module>
 		<module>hakunapi-source-gpkg</module>
+		<module>hakunapi-crs-properties</module>
 	</modules>
 </project>

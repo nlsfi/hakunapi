@@ -14,14 +14,13 @@ import javax.xml.stream.XMLStreamWriter;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.util.HakunaBufferedOutputStream;
 import fi.nls.hakunapi.gml.geom.GMLGeometryWriter;
 
 public abstract class WFS110FeatureWriterBase implements FeatureWriter {
-
-    public static final String MIME_TYPE = "text/xml; subtype=3.1.1";
 
     protected static final XMLOutputFactory XOF = XMLOutputFactory.newInstance();
     
@@ -37,24 +36,19 @@ public abstract class WFS110FeatureWriterBase implements FeatureWriter {
     protected String currentFID;
 
     protected Queue<String> attributeBuffer = new ArrayDeque<>();
-    private int srid;
     
     protected void addNamespace(MapNamespaceContext ctx, Namespace ns) {
         ctx.add(ns.prefix, ns.uri);
     }
     
-
-    @Override
-    public int getSrid() {
-        return srid;
+    public void setFormatter(FloatingPointFormatter formatter) {
+        this.formatter = formatter;
     }
-
+    
     @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws XMLStreamException {
-        this.srid = srid;
+    public void init(OutputStream out, SRIDCode srid) throws XMLStreamException {
         this.xml = XOF.createXMLStreamWriter(new HakunaBufferedOutputStream(out), "UTF-8");
         this.nsCtx = new MapNamespaceContext();
-        this.formatter = formatter;
         
         addNamespace(nsCtx, Namespaces.GML_311.ns);
         addNamespace(nsCtx, Namespaces.WFS_110.ns);

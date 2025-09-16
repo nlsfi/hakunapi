@@ -6,14 +6,14 @@ import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.schemas.Link;
 
 public class HakunaGeoJSONFeatureCollectionWriter extends HakunaGeoJSONWriter implements FeatureCollectionWriter {
 
     @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid, boolean crsIsLatLon) throws IOException {
-        super.init(out, formatter, srid, crsIsLatLon);
+    public void init(OutputStream out, SRIDCode srid) throws IOException {
+        super.init(out, srid);
         writeFeatureCollection();
     }
     

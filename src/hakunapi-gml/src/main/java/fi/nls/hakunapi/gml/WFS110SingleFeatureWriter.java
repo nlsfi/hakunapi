@@ -10,11 +10,6 @@ import fi.nls.hakunapi.core.SingleFeatureWriter;
 public class WFS110SingleFeatureWriter extends WFS110FeatureWriterBase implements SingleFeatureWriter {
 
     @Override
-    public String getMimeType() {
-        return WFS110FeatureCollectionWriter.MIME_TYPE;
-    }
-
-    @Override
     public void startFeature(FeatureType ft, String layername, long fid) throws Exception {
         startFeature(ft, layername, String.valueOf(fid));
     }
