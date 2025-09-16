@@ -68,6 +68,10 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
+            <artifactId>hakunapi-crs-properties</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-telemetry</artifactId>
         </dependency>
         <dependency>

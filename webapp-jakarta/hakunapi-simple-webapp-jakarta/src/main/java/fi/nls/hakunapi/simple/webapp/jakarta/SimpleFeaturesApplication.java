@@ -121,6 +121,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         });
 
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
+        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, Integer.parseInt(parser.get("hakuna.content-length-buffer", "8192")));
 
         // Use Jackson as POJO provider
         register(ObjectMapperProvider.class);

@@ -6,6 +6,8 @@ import fi.nls.hakunapi.core.SingleFeatureWriter;
 
 public class OutputFormatNDGeoJSON implements OutputFormat {
 
+    public static final String MIME_TYPE = "application/geo+json-ndjson";
+
     public static final OutputFormat INSTANCE = new OutputFormatNDGeoJSON();
     
     private OutputFormatNDGeoJSON() {}
@@ -17,7 +19,7 @@ public class OutputFormatNDGeoJSON implements OutputFormat {
 
     @Override
     public String getMimeType() {
-        return HakunaGeoJSONFeatureCollectionWriterNDJSON.MIME_TYPE;
+        return MIME_TYPE;
     }
 
     @Override

@@ -1,18 +1,22 @@
 package fi.nls.hakunapi.core;
 
-import java.util.List;
-
-import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
+import fi.nls.hakunapi.core.util.StringPair;
 
 public interface PaginationStrategy {
 
-    public void apply(GetFeatureRequest request, NextCursor cursor);
-    public boolean shouldOffset();
-    public boolean shouldSortBy();
-    public List<HakunaProperty> getProperties();
-    public List<Boolean> getAscending();
-    public int getMaxGroupSize();
-    public NextCursor getNextCursor(int offset, int limit, ValueProvider last);
+    public default void apply(GetFeatureRequest request, NextCursor cursor) {
+        throw new UnsupportedOperationException();
+    }
+
+    public default void apply(GetFeatureRequest request, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    public NextCursor getNextCursor(GetFeatureRequest request, GetFeatureCollection col, ValueProvider last);
+    public StringPair getNextQueryParam(NextCursor next);
+
+    public boolean isOffsetParamSupported();
 
 }

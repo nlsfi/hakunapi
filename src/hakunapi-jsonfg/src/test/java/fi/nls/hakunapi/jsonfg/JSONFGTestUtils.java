@@ -26,6 +26,7 @@ import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.NextCursor;
 import fi.nls.hakunapi.core.ObjectArrayValueContainer;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
@@ -41,6 +42,8 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyTimestamptz;
+import fi.nls.hakunapi.core.request.GetFeatureCollection;
+import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Crs;
 import fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory;
@@ -50,8 +53,7 @@ public class JSONFGTestUtils {
     JsonSchemaFactory factory = JsonSchemaFactory.getInstance(VersionFlag.V202012);
 
     protected final int SRID = Crs.CRS84_SRID;
-    protected final int PLACE_SRID = 3067;
-    protected final boolean PLACE_SRID_IS_LATLON = false;
+    protected final SRIDCode PLACE_SRID = new SRIDCode(3067, false, false, HakunaGeometryDimension.XY);
 
     static final GeometryFactory geomFac = new GeometryFactory();
     static final GeoToolsProjectionTransformerFactory projFac = new GeoToolsProjectionTransformerFactory();
@@ -61,7 +63,7 @@ public class JSONFGTestUtils {
             new HakunaGeometryJTS(geomFac.createPoint(new Coordinate(385022.231, 6674022.222))));
 
     final HakunaPropertyGeometry geomProp = new HakunaPropertyGeometry("geometry", "table", "geometry", true,
-            HakunaGeometryType.POINT, new int[] { SRID }, PLACE_SRID, 2,
+            HakunaGeometryType.POINT, new int[] { SRID }, PLACE_SRID.getSrid(), 2,
             HakunaPropertyWriters.getGeometryPropertyWriter("geometry", true));
 
     final HakunaPropertyString stringProp = new HakunaPropertyString("prop", "table", "prop", true, false,
@@ -89,8 +91,6 @@ public class JSONFGTestUtils {
                         HakunaPropertyWriters.getIdPropertyWriter(this, getName(), "id", HakunaPropertyType.LONG));
                 setId(idProp);
                 setGeom(geomProp);
-
-                setGeomDimension(HakunaGeometryDimension.XY);
 
                 final List<HakunaProperty> properties = Arrays.asList(stringProp, timestampzProp);
                 setProperties(properties);
@@ -131,8 +131,6 @@ public class JSONFGTestUtils {
                         HakunaPropertyWriters.getIdPropertyWriter(this, getName(), "id", HakunaPropertyType.LONG));
                 setId(idProp);
                 setGeom(geomProp);
-
-                setGeomDimension(HakunaGeometryDimension.XY);
 
                 final List<HakunaProperty> properties = Arrays.asList(stringProp, dateProp);
                 setProperties(properties);
@@ -181,9 +179,11 @@ public class JSONFGTestUtils {
                 .getSchema(JSONFGTestUtils.class.getResourceAsStream("featurecollection.min.json"));
 
         Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        /* Debug
         for (ValidationMessage err : errors) {
             System.err.println(err);
         }
+        */
         assertTrue(errors.isEmpty());
     }
 
@@ -192,9 +192,11 @@ public class JSONFGTestUtils {
                 .getSchema(JSONFGTestUtils.class.getResourceAsStream("feature-with-date-schema.json"));
 
         Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        /* Debug
         for (ValidationMessage err : errors) {
             System.err.println(err);
         }
+        */
         assertTrue(errors.isEmpty());
     }
 
@@ -208,7 +210,8 @@ public class JSONFGTestUtils {
     }
 
     public static WriteReport writeFeatureCollection(FeatureCollectionWriter writer, FeatureType ft,
-            List<HakunaProperty> properties, FeatureStream features, int offset, int limit) throws Exception {
+            List<HakunaProperty> properties, FeatureStream features, GetFeatureRequest request, GetFeatureCollection col) throws Exception {
+        int limit = request.getLimit();
         if (limit == LimitParam.UNLIMITED) {
             return writeFeatureCollectionFully(writer, ft, properties, features);
         }
@@ -224,7 +227,7 @@ public class JSONFGTestUtils {
 
         NextCursor next = null;
         if (numberReturned == limit && features.hasNext()) {
-            next = ft.getPaginationStrategy().getNextCursor(offset, limit, features.next());
+            next = ft.getPaginationStrategy().getNextCursor(request, col, features.next());
         }
 
         features.close();

@@ -10,13 +10,13 @@ import org.junit.Test;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.core.geom.HakunaPoint2D;
 import fi.nls.hakunapi.core.property.HakunaPropertyWriters;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
-import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
 import fi.nls.hakunapi.esbulk.ESbulkFeatureCollectionWriter;
 
 public class ESbulkFeatureCollectionWriterTest {
@@ -26,7 +26,7 @@ public class ESbulkFeatureCollectionWriterTest {
         HakunaPropertyGeometry geomProp = new HakunaPropertyGeometry("geometry", "foo", "bar", false, HakunaGeometryType.POINT, new int[] { 84 }, 84, 2, HakunaPropertyWriters.getGeometryPropertyWriter("bar", true));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (FeatureCollectionWriter fw = new ESbulkFeatureCollectionWriter()) {
-            fw.init(baos, new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 5),84);
+            fw.init(baos, SRIDCode.CRS84);
             fw.startFeatureCollection(getFeatureType(geomProp), "mylayer");
 
             fw.startFeature(1);

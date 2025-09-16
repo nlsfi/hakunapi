@@ -275,8 +275,6 @@ public class SDOSimpleSource extends SQLSimpleSource implements SimpleSource {
 		}
 		ft.setProperties(hakunaProps);
 
-		ft.setPaginationStrategy(getPaginationStrategy(cfg, p, ft));
-
 		ft.setCaseInsensitiveStrategy(getCaseInsensitiveStrategy(cfg, p, ft));
 
 		return ft;

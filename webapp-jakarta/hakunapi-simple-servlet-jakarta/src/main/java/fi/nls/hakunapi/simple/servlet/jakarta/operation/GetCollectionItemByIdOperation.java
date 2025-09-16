@@ -161,38 +161,30 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
                 feature = features.next();
             }
 
-            int srid = request.getSRID();
-            boolean crsIsLatLon = service.isCrsLatLon(srid);
-            Optional<SRIDCode> sridCode = service.getSridCode(srid);
-            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-            HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
-            if(sridCode.isPresent()) {
-                geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
-            }
+            SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
 
             // Feature response rarely needs 8kb of memory
             // Let's allocate a little less
             ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-            writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
-            if (c.getFt().getGeom() != null) {
-                writer.initGeometryWriter(geomDimension);
-            }
+
+            writer.init(baos, srid);
 
             int i = 0;
             for (HakunaProperty prop : c.getProperties()) {
                 prop.write(feature, i++, writer);
             }
 
+            List<Link> links = getLinks(request, writer);
+
             writer.endFeature();
-            writer.end(true, getLinks(request, writer), 1);
+            writer.end(true, links, 1);
             writer.close();
 
             span.counts(1);
 
-
             ResponseBuilder builder = Response.ok();
             request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-            request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+            request.getFormat().getResponseHeaders(request, links).forEach((k, v) -> builder.header(k, v));
             builder.entity(baos.toByteArray());
             return builder.build();
         }

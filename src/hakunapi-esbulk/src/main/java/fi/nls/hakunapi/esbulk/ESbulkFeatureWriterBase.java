@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.io.SerializedString;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureWriter;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.core.schemas.Link;
@@ -33,23 +33,9 @@ public abstract class ESbulkFeatureWriterBase implements FeatureWriter {
     private ESbulkGeometryWriter cachedGeometryWriter;
 
     private Map<String, SerializableString> propertyNameCache = new HashMap<>();
-    private int srid;
-    
-    
-    
-    @Override
-    public int getSrid() {
-        return srid;
-    }
 
     @Override
-    public String getMimeType() {
-        return OutputFormatESbulk.MIME_TYPE;
-    }
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception {
-        this.srid = srid;
+    public void init(OutputStream out, SRIDCode srid) throws Exception {
         if (out instanceof BufferedOutputStream || out instanceof ByteArrayOutputStream) {
             this.out = out;
         } else {

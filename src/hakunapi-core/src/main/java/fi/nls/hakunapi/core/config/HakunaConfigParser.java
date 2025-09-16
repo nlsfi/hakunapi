@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +29,19 @@ import fi.nls.hakunapi.core.CacheSettings;
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.HakunapiPlaceholder;
-import fi.nls.hakunapi.core.SRIDCode;
+import fi.nls.hakunapi.core.OrderBy;
+import fi.nls.hakunapi.core.PaginationStrategy;
+import fi.nls.hakunapi.core.PaginationStrategyCursor;
+import fi.nls.hakunapi.core.PaginationStrategyHybrid;
+import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyArray;
+import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyJSON;
 import fi.nls.hakunapi.core.property.HakunaPropertyNumberEnum;
 import fi.nls.hakunapi.core.property.HakunaPropertyStringEnum;
@@ -153,17 +158,11 @@ public class HakunaConfigParser {
         return Optional.of(securitySchemes);
     }
 
-    public List<SRIDCode> getKnownSrids() {
-        List<SRIDCode> knownSrids = new ArrayList<>();
-        for (String sridCode : getMultiple("srid")) {
-            int srid = Integer.parseInt(sridCode);
-            String latLonAttr = get("srid." + sridCode + ".latLon", "false");
-            boolean latLon = "true".equalsIgnoreCase(latLonAttr);
-            HakunaGeometryDimension geomDimension = getGeometryDims(get("srid."+sridCode+".geometryDimension"));
-            
-            knownSrids.add(new SRIDCode(srid, latLon, geomDimension));
-        }
-        return knownSrids;
+    public List<Integer> getKnownSrids() {
+        String[] srid = getMultiple("srid");
+        return Stream.concat(Stream.of(84, 4326), Arrays.stream(srid).map(Integer::parseInt))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public List<HakunaProperty> parseTimeProperties(List<HakunaProperty> properties, String[] timePropertyNames)
@@ -283,7 +282,6 @@ public class HakunaConfigParser {
         String p = "collections." + collectionId + ".";
 
         int[] srids = getSRIDs(get(p + "srid", get("default.collections.srid")));
-        HakunaGeometryDimension dim = getGeometryDims(get(p + "geometryDimension"));
 
         SimpleSource source;
         if (sourcesByType.size() == 1) {
@@ -303,10 +301,16 @@ public class HakunaConfigParser {
 
         ft.setTitle(title);
         ft.setDescription(description);
-        ft.setGeomDimension(dim);
         ft.setMetadata(parseMetadata(p, path));
         ft.setProjectionTransformerFactory(getProjection(p));
         ft.setCacheSettings(parseCacheConfig(collectionId));
+
+        if (ft.getPaginationStrategy() == null) {
+            ft.setPaginationStrategy(getPaginationStrategy(p, ft));
+        }
+        if (ft.getDefaultOrderBy() == null) {
+            ft.setDefaultOrderBy(getDefaultOrderBy(p, ft));
+        }
 
         String[] timeProps = getMultiple(p + "time");
         Set<String> timeExclusiveProps = Arrays.stream(getMultiple(p + "time.exclusive")).collect(Collectors.toSet());
@@ -350,12 +354,6 @@ public class HakunaConfigParser {
                 throw new IllegalArgumentException("Collection " + collectionId
                         + " failed: extent.spatial set but no (main) geometry property set!");
             }
-            int expectedExtentSize = ft.getGeom().getDimension() * 2;
-            if (spatialExtent.length != expectedExtentSize) {
-                throw new IllegalArgumentException("Collection " + collectionId + " failed:"
-                        + " extent.spatial contained " + spatialExtent.length + " elements, expected value was "
-                        + expectedExtentSize + " (geometry dimension times two)");
-            }
             ft.setSpatialExtent(Arrays.stream(spatialExtent).mapToDouble(Double::parseDouble).toArray());
         }
         
@@ -393,6 +391,43 @@ public class HakunaConfigParser {
         }
 
         return ft;
+    }
+
+    private PaginationStrategy getPaginationStrategy(String p, SimpleFeatureType sft) {
+        String paginationStrategy = get(p + "pagination.strategy", "cursor").toLowerCase();
+        switch (paginationStrategy) {
+        case PaginationStrategyCursor.NAME:
+            return PaginationStrategyCursor.INSTANCE;
+        case PaginationStrategyOffset.NAME:
+            return PaginationStrategyOffset.INSTANCE;
+        case PaginationStrategyHybrid.NAME:
+            return PaginationStrategyHybrid.INSTANCE;
+        default:
+            throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
+        }
+    }
+
+    private List<OrderBy> getDefaultOrderBy(String p, SimpleFeatureType sft) {
+        String[] pagination = getMultiple(p + "pagination");
+        String[] paginationOrder = getMultiple(p + "pagination.order");
+
+        if (pagination.length == 0) {
+            if (Boolean.parseBoolean(get(p + "pagination.unordered", "false"))) {
+                return Collections.emptyList();
+            }
+            // Default to id property
+            HakunaProperty prop = new HakunaPropertyHidden(sft.getId());
+            boolean asc = true;
+            return Collections.singletonList(new OrderBy(prop, asc));
+        } else {
+            List<OrderBy> orderBy = new ArrayList<>(pagination.length);
+            for (int i = 0; i < pagination.length; i++) {
+                HakunaProperty prop = new HakunaPropertyHidden(getProperty(sft, pagination[i]));
+                boolean asc = paginationOrder.length > i ? !"DESC".equalsIgnoreCase(paginationOrder[i]) : true;
+                orderBy.add(new OrderBy(prop, asc));
+            }
+            return Collections.unmodifiableList(orderBy);
+        }
     }
 
     private void validateSpatialExtent(double[] spatialExtent) {
@@ -438,18 +473,6 @@ public class HakunaConfigParser {
         } catch (Exception e) {
             LOG.warn("Failed to init projection transformer", e.getMessage());
             return null;
-        }
-    }
-
-    private HakunaGeometryDimension getGeometryDims(String dimmode ) {
-        if( dimmode == null ) {
-            return HakunaGeometryDimension.DEFAULT;
-        }
-        try {
-            HakunaGeometryDimension dim = HakunaGeometryDimension.valueOf(dimmode);
-            return dim;
-        } catch (IllegalArgumentException e) {
-            return HakunaGeometryDimension.DEFAULT;
         }
     }
 

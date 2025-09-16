@@ -2,16 +2,18 @@ package fi.nls.hakunapi.html;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
+import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.OutputFormatFactorySpi;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
-import fi.nls.hakunapi.core.OutputFormat;
-import fi.nls.hakunapi.core.OutputFormatFactorySpi;
 
 public class OutputFormatFactoryHTML implements OutputFormatFactorySpi {
 
@@ -43,7 +45,7 @@ public class OutputFormatFactoryHTML implements OutputFormatFactorySpi {
     @Override
     public OutputFormat create(Map<String, String> params) {
         TemplateLoader loader = new ClassTemplateLoader(getClass(), "");
-        
+
         if (params.containsKey(PARAM_DIR)) {
             try {
                 TemplateLoader fallback = loader;
@@ -53,12 +55,31 @@ public class OutputFormatFactoryHTML implements OutputFormatFactorySpi {
                 throw new RuntimeException(e);
             }
         }
-        
+
         Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setLocale(Locale.US);
         cfg.setTemplateLoader(loader);
-        return new OutputFormatHTML(cfg);
+
+        OutputFormatHTMLSettings settings;
+        Field[] fields = OutputFormatHTMLSettings.class.getDeclaredFields();
+        if (Arrays.stream(fields).allMatch(f -> !params.containsKey(f.getName()))) {
+            settings = OutputFormatHTMLSettings.OSM;
+        } else {
+            settings = new OutputFormatHTMLSettings();
+            for (Field f : OutputFormatHTMLSettings.class.getDeclaredFields()) {
+                String v = params.get(f.getName());
+                if (v != null) {
+                    try {
+                        f.set(settings, v);
+                    } catch (Exception ignore) {
+                        // It's okay
+                    }
+                }
+            }
+        }
+
+        return new OutputFormatHTML(cfg, settings);
     }
 
 }

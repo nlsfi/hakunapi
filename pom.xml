@@ -49,7 +49,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>2.23.1</log4j.version>
 		<pgjdbc.version>42.7.7</pgjdbc.version>
-		<geotools.version>32.1</geotools.version>
+		<geotools.version>33.1</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
 		<cyclonedx.version>2.7.3</cyclonedx.version>
@@ -155,6 +155,11 @@
             <dependency>
                 <groupId>fi.nls.hakunapi</groupId>
                 <artifactId>hakunapi-telemetry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fi.nls.hakunapi</groupId>
+                <artifactId>hakunapi-crs-properties</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

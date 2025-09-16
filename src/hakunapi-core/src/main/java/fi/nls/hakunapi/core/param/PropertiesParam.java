@@ -39,7 +39,7 @@ public class PropertiesParam implements GetFeatureParam {
         }
         for (GetFeatureCollection c : request.getCollections()) {
             FeatureType ft = c.getFt();
-            List<HakunaProperty> properties = GetFeatureCollection.getPropertiesBase(ft);
+            List<HakunaProperty> properties = c.getPropertiesBase(ft);
             List<HakunaProperty> original = ft.getProperties();
             for (String propertyName : value.split(",")) {
                 for (HakunaProperty o : original) {

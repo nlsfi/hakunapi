@@ -1,11 +1,11 @@
 package fi.nls.hakunapi.core;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
@@ -46,8 +46,10 @@ public interface FeatureType {
         return false;
     }
 
-    public HakunaGeometryDimension getGeomDimension();
     public PaginationStrategy getPaginationStrategy();
+    public default List<OrderBy> getDefaultOrderBy() {
+        return Collections.emptyList();
+    }
 
     public FeatureProducer getFeatureProducer();
 

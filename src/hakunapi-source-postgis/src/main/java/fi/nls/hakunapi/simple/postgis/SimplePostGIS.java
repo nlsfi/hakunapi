@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
-import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.QueryContext;
 import fi.nls.hakunapi.core.ValueMapper;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -50,7 +49,6 @@ public class SimplePostGIS implements FeatureProducer {
         SQLFeatureType ft = (SQLFeatureType) col.getFt();
         List<Filter> filters = col.getFilters();
         int limit = request.getLimit();
-        PaginationStrategy pagination = ft.getPaginationStrategy();
 
         if (filters.stream().anyMatch(it -> it == Filter.DENY)) {
             return new EmptyFeatureStream();
@@ -74,14 +72,10 @@ public class SimplePostGIS implements FeatureProducer {
         }
         PostGISUtil.where(q, filters);
         if (limit != LimitParam.UNLIMITED) {
-            if (pagination.shouldSortBy()) {
-                PostGISUtil.orderBy(q, pagination.getProperties(), pagination.getAscending());
-            }
-            if (pagination.shouldOffset()) {
-                PostGISUtil.offset(q, request.getOffset());
-            }
-            // Limit by n + maxGroupSize for pagination purposes
-            PostGISUtil.limit(q, limit + pagination.getMaxGroupSize());
+            PostGISUtil.orderBy(q, col.getOrderBy());
+            PostGISUtil.offset(q, request.getOffset());
+            // Limit by n + 1 so that we know if there's next
+            PostGISUtil.limit(q, limit + 1);
         }
         String query = q.toString();
 

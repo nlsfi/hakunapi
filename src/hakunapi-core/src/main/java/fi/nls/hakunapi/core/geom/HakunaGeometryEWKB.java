@@ -124,10 +124,16 @@ public class HakunaGeometryEWKB implements HakunaGeometry {
     }
 
     public void writePoint(GeometryWriter writer) throws Exception {
-        if (dimension == 2) {
+        switch (dimension) {
+        case 2:
             writer.writeCoordinate(bb.getDouble(), bb.getDouble());
-        } else {
+            break;
+        case 3:
             writer.writeCoordinate(bb.getDouble(), bb.getDouble(), bb.getDouble());
+            break;
+        case 4:
+            writer.writeCoordinate(bb.getDouble(), bb.getDouble(), bb.getDouble(), bb.getDouble());
+            break;
         }
     }
 
@@ -135,14 +141,16 @@ public class HakunaGeometryEWKB implements HakunaGeometry {
         writer.startRing();
         final int n = bb.getInt();
         for (int i = 0; i < n; i++) {
-            if (dimension == 2) {
+            switch (dimension) {
+            case 2:
                 writer.writeCoordinate(bb.getDouble(), bb.getDouble());
-            } 
-            if (dimension == 3) {
+                break;
+            case 3:
                 writer.writeCoordinate(bb.getDouble(), bb.getDouble(), bb.getDouble());
-            }
-            if (dimension == 4) {
+                break;
+            case 4:
                 writer.writeCoordinate(bb.getDouble(), bb.getDouble(), bb.getDouble(), bb.getDouble());
+                break;
             }
         }
         writer.endRing();

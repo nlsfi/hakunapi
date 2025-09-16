@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
-import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.QueryContext;
 import fi.nls.hakunapi.core.ValueMapper;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -36,7 +35,6 @@ public class GpkgSimpleFeatureProducer implements FeatureProducer {
         GpkgFeatureType ft = (GpkgFeatureType) col.getFt();
         List<Filter> filters = col.getFilters();
         int limit = request.getLimit();
-        PaginationStrategy pagination = ft.getPaginationStrategy();
 
         if (filters.stream().anyMatch(it -> it == Filter.DENY)) {
             return new EmptyFeatureStream();
@@ -50,14 +48,11 @@ public class GpkgSimpleFeatureProducer implements FeatureProducer {
         GpkgQueryUtil.from(q, ft.getTable());
         GpkgQueryUtil.where(q, filters);
         if (limit != LimitParam.UNLIMITED) {
-            if (pagination.shouldSortBy()) {
-                GpkgQueryUtil.orderBy(q, pagination.getProperties(), pagination.getAscending());
-            }
-            if (pagination.shouldOffset()) {
-                GpkgQueryUtil.offset(q, request.getOffset());
-            }
-            // Limit by n + maxGroupSize for pagination purposes
-            GpkgQueryUtil.limit(q, limit + pagination.getMaxGroupSize());
+            GpkgQueryUtil.orderBy(q, col.getOrderBy());
+            // Limit by n + 1 so that we know if there's next
+            GpkgQueryUtil.limit(q, limit + 1);
+            // In SQLite OFFSET must come after LIMIT
+            GpkgQueryUtil.offset(q, request.getOffset());
         }
         String query = q.toString();
 

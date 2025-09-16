@@ -9,7 +9,10 @@ public class HakunaGeoJSONGeometryXYZMWriter extends HakunaGeoJSONGeometryWriter
 
     private final HakunaGeometryDimension mode;
 
-    public HakunaGeoJSONGeometryXYZMWriter(HakunaJsonWriter json, FloatingPointFormatter formatter, byte[] fieldName,
+    public HakunaGeoJSONGeometryXYZMWriter(
+            HakunaJsonWriter json,
+            FloatingPointFormatter formatter,
+            byte[] fieldName,
             boolean lonLat,
             HakunaGeometryDimension mode) {
         super(json, formatter, fieldName, lonLat);
@@ -25,7 +28,6 @@ public class HakunaGeoJSONGeometryXYZMWriter extends HakunaGeoJSONGeometryWriter
         default:
             super.writeCoordinate(x, y, z);
             break;
-        
         }
     }
 

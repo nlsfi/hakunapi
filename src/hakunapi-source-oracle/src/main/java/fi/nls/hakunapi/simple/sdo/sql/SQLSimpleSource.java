@@ -39,9 +39,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fi.nls.hakunapi.core.CaseInsensitiveStrategy;
 import fi.nls.hakunapi.core.HakunapiPlaceholder;
-import fi.nls.hakunapi.core.PaginationStrategy;
-import fi.nls.hakunapi.core.PaginationStrategyCursor;
-import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
@@ -53,7 +50,6 @@ import fi.nls.hakunapi.core.join.OneToManyJoin;
 import fi.nls.hakunapi.core.join.OneToOneJoin;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyComposite;
-import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyNumberEnum;
 import fi.nls.hakunapi.core.property.HakunaPropertyStatic;
 import fi.nls.hakunapi.core.property.HakunaPropertyStringEnum;
@@ -67,7 +63,6 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyLong;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyString;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyUUID;
 import fi.nls.hakunapi.core.transformer.ValueTransformer;
-import fi.nls.hakunapi.simple.sdo.SDOPaginationStrategy;
 
 public abstract class SQLSimpleSource implements SimpleSource {
 
@@ -390,8 +385,6 @@ public abstract class SQLSimpleSource implements SimpleSource {
         }
         ft.setProperties(hakunaProps);
 
-        ft.setPaginationStrategy(getPaginationStrategy(cfg, p, ft));
-
         return ft;
     }
 
@@ -475,21 +468,6 @@ public abstract class SQLSimpleSource implements SimpleSource {
         throw new IllegalArgumentException("Can not determine array type from " + typeName);
     }
 
-    protected PaginationStrategy getPaginationStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-
-        String paginationStrategy = cfg.get(p + "pagination.strategy", "offset").toLowerCase();
-        switch (paginationStrategy) {
-        case "cursor":
-            LOG.warn("cursor pagination IS SLOW atm");
-            return getPaginationCursor(cfg, p, sft);
-        case "offset":
-            LOG.warn("offset pagination WITH sort used");
-            return SDOPaginationStrategy.INSTANCE;
-        default:
-            throw new IllegalArgumentException("Unknown pagination strategy " + paginationStrategy);
-        }
-    }
-
     protected CaseInsensitiveStrategy getCaseInsensitiveStrategy(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
         String caseiStrategy = cfg.get(p + "casei");
         if (caseiStrategy == null) {
@@ -499,29 +477,6 @@ public abstract class SQLSimpleSource implements SimpleSource {
                 .filter(x -> x.name().equalsIgnoreCase(caseiStrategy))
                 .findAny()
                 .get();
-    }
-
-    protected PaginationStrategyCursor getPaginationCursor(HakunaConfigParser cfg, String p, SimpleFeatureType sft) {
-        String[] pagination = cfg.getMultiple(p + "pagination");
-        String[] paginationOrder = cfg.getMultiple(p + "pagination.order");
-        // int maxGroupSize = Integer.parseInt(get(p + "pagination.maxGroupSize", "1"));
-
-        if (pagination.length == 0) {
-            HakunaProperty id = new HakunaPropertyHidden(sft.getId());
-            boolean asc = true;
-            return new PaginationStrategyCursor(Collections.singletonList(id), Collections.singletonList(asc));
-        } else {
-            List<HakunaProperty> props = new ArrayList<>(pagination.length);
-            List<Boolean> ascending = new ArrayList<>(pagination.length);
-            for (int i = 0; i < pagination.length; i++) {
-                HakunaProperty prop = cfg.getProperty(sft, pagination[i]);
-                HakunaProperty hidden = new HakunaPropertyHidden(prop);
-                Boolean asc = paginationOrder.length > i ? !"DESC".equalsIgnoreCase(paginationOrder[i]) : true;
-                props.add(hidden);
-                ascending.add(asc);
-            }
-            return new PaginationStrategyCursor(props, ascending);
-        }
     }
 
     public Map<String, List<HakunaPropertyType>> getPropertyTypes(DataSource ds, String select) throws SQLException {

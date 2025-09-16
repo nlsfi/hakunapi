@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -35,7 +34,6 @@ import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.APIParam;
@@ -49,7 +47,6 @@ import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
-import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.geojson.FeatureGeoJSON;
 import fi.nls.hakunapi.simple.servlet.javax.ResponseUtil;
@@ -162,39 +159,29 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
             }
 
             int srid = request.getSRID();
-
-            boolean crsIsLatLon = service.isCrsLatLon(srid);
-            Optional<SRIDCode> sridCode = service.getSridCode(srid);
-            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-            HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
-            if(sridCode.isPresent()) {
-                geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
-            }
-
+            
+            SRIDCode sridCode = service.getSridCode(srid).get();
 
             // Feature response rarely needs 8kb of memory
             // Let's allocate a little less
             ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-            writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
-            if (c.getFt().getGeom() != null) {
-                writer.initGeometryWriter(geomDimension);
-            }
+            writer.init(baos, sridCode);
 
             int i = 0;
             for (HakunaProperty prop : c.getProperties()) {
                 prop.write(feature, i++, writer);
             }
 
+            List<Link> links = getLinks(request, writer);
             writer.endFeature();
-            writer.end(true, getLinks(request, writer), 1);
+            writer.end(true, links, 1);
             writer.close();
 
             span.counts(1);
 
-
             ResponseBuilder builder = Response.ok();
             request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-            request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+            request.getFormat().getResponseHeaders(request, links).forEach((k, v) -> builder.header(k, v));
             builder.entity(baos.toByteArray());
             return builder.build();
         }

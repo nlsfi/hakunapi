@@ -1,12 +1,19 @@
 package fi.nls.hakunapi.jsonfg;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
+import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
 
 public class JSONFGOutputFormat implements OutputFormat {
 
-    public static final OutputFormat INSTANCE = new JSONFGOutputFormat();
+    private final FloatingPointFormatter formatterDegrees;
+    private final FloatingPointFormatter formatterMeters;
+
+    JSONFGOutputFormat(FloatingPointFormatter formatterDegrees, FloatingPointFormatter formatterMeters) {
+        this.formatterDegrees = formatterDegrees;
+        this.formatterMeters = formatterMeters;
+    }
 
     @Override
     public String getId() {
@@ -30,12 +37,16 @@ public class JSONFGOutputFormat implements OutputFormat {
 
     @Override
     public FeatureCollectionWriter getFeatureCollectionWriter() {
-        return new JSONFGFeatureCollectionWriter();
+        JSONFGFeatureCollectionWriter w = new JSONFGFeatureCollectionWriter();
+        w.setFormatterFactory(isDegrees -> isDegrees ? formatterDegrees : formatterMeters);
+        return w;
     }
 
     @Override
     public SingleFeatureWriter getSingleFeatureWriter() {
-        return new JSONFGSingleFeatureWriter();
+        JSONFGSingleFeatureWriter w = new JSONFGSingleFeatureWriter();
+        w.setFormatterFactory(isDegrees -> isDegrees ? formatterDegrees : formatterMeters);
+        return w;
     }
 
 }
