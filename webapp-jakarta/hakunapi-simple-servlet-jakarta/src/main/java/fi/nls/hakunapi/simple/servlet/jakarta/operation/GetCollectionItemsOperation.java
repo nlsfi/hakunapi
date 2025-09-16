@@ -46,8 +46,6 @@ import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
-import fi.nls.hakunapi.core.param.NextParam;
-import fi.nls.hakunapi.core.param.OffsetParam;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
@@ -230,8 +228,11 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
                 TelemetrySpan span = ftt.span()) {
+            // Buffer some features here so there's higher chance of not being committed to 200 OK response if something goes wrong
+            features.hasNext();
+
             writer.init(out, srid);
-            // writer.initGeometryWriter(geomDimension);
+
             writer.startFeatureCollection(ft, c.getName());
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
             writer.endFeatureCollection();
