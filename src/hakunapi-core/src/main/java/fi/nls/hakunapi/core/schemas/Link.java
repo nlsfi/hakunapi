@@ -1,5 +1,8 @@
 package fi.nls.hakunapi.core.schemas;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -83,6 +86,65 @@ public class Link implements Component {
 
     public String getTitle() {
         return title;
+    }
+
+    @JsonIgnore
+    public String toLinkHeader() {
+        StringBuilder sb = new StringBuilder(64);
+        appendURI(sb, href);
+        sb.append("; rel=").append(rel).append('"');
+        sb.append("; type=").append(type).append('"');
+        if (title != null && !title.isBlank()) {
+            sb.append("; title=").append(title).append('"');
+        }
+        if (hreflang != null && !hreflang.isBlank()) {
+            sb.append("; hreflang=").append(hreflang).append('"');
+        }
+        return sb.toString();
+    }
+
+    private static StringBuilder appendURI(StringBuilder sb, String uri) {
+        final int n = uri.length();
+        final char[] arr = new char[2];
+        final CharBuffer buf = CharBuffer.wrap(arr);
+
+        sb.append('<');
+        for (int i = 0; i < n;) {
+            int c = uri.charAt(i);
+            if (c <= 255) {
+                sb.append((char) c);
+                i++;
+            } else {
+                arr[0] = (char) c;
+                if (c >= 0xD800 && c <= 0xDBFF) {
+                    if (i + 1 < n) {
+                        int d = uri.charAt(i + 1);
+                        if (d >= 0xDC00 && d <= 0xDFFF) {
+                            arr[1] = (char) d;
+                            i++;
+                        }
+                    }
+                }
+                i++;
+                ByteBuffer bb = StandardCharsets.UTF_8.encode(buf);
+                while (bb.hasRemaining()) {
+                    byte b = bb.get();
+                    sb.append('%');
+                    char ch = Character.forDigit((b >> 4) & 0xF, 16);
+                    if (Character.isLetter(ch)) {
+                        ch -= 32;
+                    }
+                    sb.append(ch);
+                    ch = Character.forDigit(b & 0xF, 16);
+                    if (Character.isLetter(ch)) {
+                        ch -= 32;
+                    }
+                    sb.append(ch);
+                }
+            }
+        }
+        sb.append('>');
+        return sb;
     }
 
 }
