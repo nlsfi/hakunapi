@@ -8,7 +8,7 @@ import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
 
@@ -23,17 +23,7 @@ public class InMemoryFeatureWriter implements FeatureCollectionWriter {
     }
 
     @Override
-    public String getMimeType() {
-        return "test";
-    }
-
-    @Override
-    public int getSrid() {
-        return 0;
-    }
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception {
+    public void init(OutputStream out, SRIDCode srid) throws Exception {
         // NOP
     }
 

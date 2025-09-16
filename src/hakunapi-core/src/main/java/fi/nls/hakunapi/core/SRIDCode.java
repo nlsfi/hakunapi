@@ -1,17 +1,31 @@
 package fi.nls.hakunapi.core;
 
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
+import fi.nls.hakunapi.core.schemas.Crs;
 
 public class SRIDCode {
 
+    public static final SRIDCode CRS84 = new SRIDCode(Crs.CRS84_SRID, false, true, HakunaGeometryDimension.XY);
+    public static final SRIDCode WGS84 = new SRIDCode(4326, true, true, HakunaGeometryDimension.XY);
+
+    public static boolean isKnown(int srid) {
+        return srid == CRS84.srid || srid == WGS84.srid;
+    }
+
+    public static SRIDCode getKnown(int srid) {
+        return srid == CRS84.srid ? CRS84 : srid == WGS84.srid ? WGS84 : null;
+    }
+
     private final int srid;
     private final boolean latLon;
-    private final HakunaGeometryDimension sridDefaultDimension;
+    private final boolean degrees;
+    private final HakunaGeometryDimension dimension;
 
-    public SRIDCode(int srid, boolean latLon, HakunaGeometryDimension dim) {
+    public SRIDCode(int srid, boolean latLon, boolean degrees, HakunaGeometryDimension dimension) {
         this.srid = srid;
         this.latLon = latLon;
-        this.sridDefaultDimension = dim;
+        this.degrees = degrees;
+        this.dimension = dimension;
     }
 
     public int getSrid() {
@@ -22,20 +36,16 @@ public class SRIDCode {
         return latLon;
     }
 
-    public HakunaGeometryDimension getOrDefaultDimension(HakunaGeometryDimension ftDefaultDimension) {
-        switch(ftDefaultDimension) {
-        case EPSG: // if configured .geometryDimension=EPSG, let's return sridDefaultDimension when available
-            return sridDefaultDimension != null ? sridDefaultDimension : ftDefaultDimension;
-        case GEOMETRY: 
-        case XY:
-        case XYZ:
-        case XYZM:
-        case DEFAULT:
-        default:
-            return ftDefaultDimension;
-        }
+    public boolean isDegrees() {
+        return degrees;
     }
-    
-    
+
+    public HakunaGeometryDimension getDimension() {
+        return dimension;
+    }
+
+    public SRIDCode withDimension(HakunaGeometryDimension d) {
+        return new SRIDCode(this.srid, this.latLon, this.degrees, d);
+    }
 
 }

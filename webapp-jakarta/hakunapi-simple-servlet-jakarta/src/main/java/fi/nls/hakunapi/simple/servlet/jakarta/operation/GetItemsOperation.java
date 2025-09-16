@@ -32,6 +32,7 @@ import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.NextCursor;
 import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.operation.ParametrizedOperation;
@@ -43,7 +44,6 @@ import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Link;
-import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
@@ -90,6 +90,8 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
         } catch (NotAcceptableException e) {
             return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
+        
+        SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
 
         StreamingOutput output = new StreamingOutput() {
             @Override
@@ -98,9 +100,8 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
                     final int totalLimit = request.getLimit();
                     int written = 0;
                     WriteReport report = null;
-                    int srid = request.getSRID();
                     
-                    writer.init(out, CrsUtil.getDefaultMaxDecimalCoordinates(srid), srid);
+                    writer.init(out, srid);
 
                     List<GetFeatureCollection> collections = request.getCollections();
 
@@ -146,7 +147,7 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
         Map<String, String> queryHeaders = request.getQueryHeaders();
 
         String path = service.getCurrentServerURL(queryHeaders::get) + "/items";
-        String mimeType = writer.getMimeType();
+        String mimeType = request.getFormat().getMimeType();
 
         List<Link> links = new ArrayList<>();
 

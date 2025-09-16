@@ -56,6 +56,7 @@ public class HakunaPropertyGeometry extends HakunaPropertyDynamic {
         return srid;
     }
 
+    @Deprecated
     public int getDimension() {
         return dimension;
     }
