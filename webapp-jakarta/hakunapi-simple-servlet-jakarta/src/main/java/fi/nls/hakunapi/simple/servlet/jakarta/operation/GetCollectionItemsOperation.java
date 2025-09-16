@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -42,7 +41,6 @@ import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SRIDCode;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
@@ -55,7 +53,6 @@ import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
-import fi.nls.hakunapi.core.util.CrsUtil;
 import fi.nls.hakunapi.core.util.GetCollectionItemsUtil;
 import fi.nls.hakunapi.core.util.Links;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
@@ -227,21 +224,16 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         FeatureType ft = c.getFt();
         FeatureProducer producer = c.getFt().getFeatureProducer();
 
-        int srid = request.getSRID();
-
-        boolean crsIsLatLon = service.isCrsLatLon(srid);
-        Optional<SRIDCode> sridCode = service.getSridCode(srid);
-        int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-        HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
-        if(sridCode.isPresent()) {
-            geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
-        }
+        SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
 
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
                 TelemetrySpan span = ftt.span()) {
-            writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
-            writer.initGeometryWriter(geomDimension);
+            // Buffer some features here so there's higher chance of not being committed to 200 OK response if something goes wrong
+            features.hasNext();
+
+            writer.init(out, srid);
+
             writer.startFeatureCollection(ft, c.getName());
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
             writer.endFeatureCollection();

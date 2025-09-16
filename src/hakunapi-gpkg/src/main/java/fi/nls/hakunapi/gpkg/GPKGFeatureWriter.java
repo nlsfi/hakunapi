@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureWriter;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
 
@@ -20,32 +20,21 @@ public abstract class GPKGFeatureWriter implements FeatureWriter {
     protected File file;
     protected Connection c;
     protected OutputStream out;
-    protected int srid;
+    protected SRIDCode srid;
     
     public GPKGFeatureWriter(File dir) {
         this.dir = dir;
     }
 
     @Override
-    public String getMimeType() {
-        return OutputFormatGPKG.MEDIA_TYPE;
-    }
-
-    
-    @Override
-    public int getSrid() {
-        return srid;
-    }
-
-    @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception {
-        this.srid = srid;
+    public void init(OutputStream out, SRIDCode srid) throws Exception {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException eString) {
             throw new RuntimeException("Could not init JDBC driver - driver not found");
         }
         this.out = out;
+        this.srid = srid;
         this.file = File.createTempFile("temporary", ".gpkg", dir);
         this.file.deleteOnExit();
         this.c = DriverManager.getConnection("jdbc:sqlite:" + file.toPath().toString());

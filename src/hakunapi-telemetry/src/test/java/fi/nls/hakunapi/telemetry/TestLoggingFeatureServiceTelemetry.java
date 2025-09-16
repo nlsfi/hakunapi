@@ -17,7 +17,6 @@ import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
@@ -155,12 +154,6 @@ public class TestLoggingFeatureServiceTelemetry {
 
         @Override
         public ProjectionTransformerFactory getProjectionTransformerFactory() {
-
-            return null;
-        }
-
-        @Override
-        public HakunaGeometryDimension getGeomDimension() {
 
             return null;
         }

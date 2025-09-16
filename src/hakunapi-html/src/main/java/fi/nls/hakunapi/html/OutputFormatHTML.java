@@ -11,9 +11,11 @@ public class OutputFormatHTML implements OutputFormat {
     public static final String MIME_TYPE = "text/html";
 
     private final Configuration configuration;
+    private final OutputFormatHTMLSettings settings;
 
-    public OutputFormatHTML(Configuration configuration) {
+    public OutputFormatHTML(Configuration configuration, OutputFormatHTMLSettings settings) {
         this.configuration = configuration;
+        this.settings = settings;
     }
     
     public Configuration getConfiguration() {
@@ -42,12 +44,12 @@ public class OutputFormatHTML implements OutputFormat {
 
     @Override
     public FeatureCollectionWriter getFeatureCollectionWriter() {
-        return new HTMLFeatureCollectionWriter(configuration);
+        return new HTMLFeatureCollectionWriter(configuration, settings);
     }
 
     @Override
     public SingleFeatureWriter getSingleFeatureWriter() {
-        return new HTMLSingleFeatureWriter(configuration);
+        return new HTMLSingleFeatureWriter(configuration, settings);
     }
 
 }

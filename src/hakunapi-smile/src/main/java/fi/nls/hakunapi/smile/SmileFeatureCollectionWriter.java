@@ -6,14 +6,14 @@ import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.schemas.Link;
 
 public class SmileFeatureCollectionWriter extends SmileFeatureWriterBase implements FeatureCollectionWriter {
 
     @Override
-    public void init(OutputStream out, FloatingPointFormatter formatter, int srid) throws Exception {
-        super.init(out, formatter, srid);
+    public void init(OutputStream out, SRIDCode srid) throws Exception {
+        super.init(out, srid);
         w.writeStartObject();
         w.writeFieldName(GeoJSONStrings.TYPE);
         w.writeString(GeoJSONStrings.FEATURE_COLLECTION);

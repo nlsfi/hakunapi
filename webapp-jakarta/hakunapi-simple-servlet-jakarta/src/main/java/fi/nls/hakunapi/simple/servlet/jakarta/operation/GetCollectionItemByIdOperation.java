@@ -161,22 +161,13 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
                 feature = features.next();
             }
 
-            int srid = request.getSRID();
-            boolean crsIsLatLon = service.isCrsLatLon(srid);
-            Optional<SRIDCode> sridCode = service.getSridCode(srid);
-            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-            HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
-            if(sridCode.isPresent()) {
-                geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
-            }
+            SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
 
             // Feature response rarely needs 8kb of memory
             // Let's allocate a little less
             ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-            writer.init(baos, maxDecimalCoordinates, srid, crsIsLatLon);
-            if (c.getFt().getGeom() != null) {
-                writer.initGeometryWriter(geomDimension);
-            }
+
+            writer.init(baos, srid);
 
             int i = 0;
             for (HakunaProperty prop : c.getProperties()) {

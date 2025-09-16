@@ -6,6 +6,7 @@ import java.util.Map;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.html.OutputFormatHTMLSettings;
 
 public class HTMLFeature {
     
@@ -14,9 +15,12 @@ public class HTMLFeature {
     private Map<String, Object> properties;
 
     private FeatureType featureType;
+
     private String timestamp;
     private Integer numberReturned;
     private List<Link> links;
+    private OutputFormatHTMLSettings settings;
+
 
     public String getId() {
         return id;
@@ -71,6 +75,14 @@ public class HTMLFeature {
 
     public void setLinks(List<Link> links) {
         this.links = links;
+    }
+
+    public OutputFormatHTMLSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(OutputFormatHTMLSettings settings) {
+        this.settings = settings;
     }
 
 }
