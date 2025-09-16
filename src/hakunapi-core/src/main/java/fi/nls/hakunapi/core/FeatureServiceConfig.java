@@ -186,23 +186,12 @@ public abstract class FeatureServiceConfig {
         return knownSrids.stream()
                 .filter(it -> it.getSrid() == srid)
                 .findAny();
-        
     }
 
     public boolean isCrsLatLon(int srid) {
-        if (srid == 4326) {
-            // 4326 is well known at hakunapi level
-            return true;
-        }
-        if (knownSrids == null || knownSrids.isEmpty()) {
-            // Known srids aren't configured
-            return false;
-        }
-        return knownSrids.stream()
-                .filter(it -> it.getSrid() == srid)
-                .findAny()
-                .map(it -> it.isLatLon())
-                .orElse(false);
+        return getSridCode(srid)
+                .map(SRIDCode::isLatLon)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown srid"));
     }
 
     public String getTitle() {
@@ -233,6 +222,5 @@ public abstract class FeatureServiceConfig {
     public void setTelemetry(ServiceTelemetry usage) {
         this.telemetry = usage;
     }
-
     
 }

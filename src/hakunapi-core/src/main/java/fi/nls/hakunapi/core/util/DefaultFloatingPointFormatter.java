@@ -5,6 +5,9 @@ import java.nio.charset.StandardCharsets;
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 
 public class DefaultFloatingPointFormatter implements FloatingPointFormatter {
+    
+    public static final DefaultFloatingPointFormatter DEFAULT_DEGREES = new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 7);
+    public static final DefaultFloatingPointFormatter DEFAULT_METERS = new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 3);
 
     private final int minDecimalsFloat;
     private final int maxDecimalsFloat;
@@ -25,7 +28,7 @@ public class DefaultFloatingPointFormatter implements FloatingPointFormatter {
         this.maxDecimalsOrdinate = maxDecimalsOrdinate;
         this.buf = new byte[32];
     }
-
+    
     @Override
     public int maxDecimalsFloat() {
         return maxDecimalsFloat;

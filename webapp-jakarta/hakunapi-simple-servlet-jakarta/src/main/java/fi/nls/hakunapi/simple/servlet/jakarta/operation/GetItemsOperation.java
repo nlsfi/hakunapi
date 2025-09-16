@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -15,6 +13,7 @@ import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
@@ -30,12 +29,11 @@ import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
-import fi.nls.hakunapi.core.NextCursor;
 import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.operation.ParametrizedOperation;
-import fi.nls.hakunapi.core.param.CollectionsParam;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.param.LimitParam;
@@ -43,9 +41,8 @@ import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
 import fi.nls.hakunapi.core.schemas.Link;
-import fi.nls.hakunapi.core.util.CrsUtil;
+import fi.nls.hakunapi.core.util.GetCollectionItemsUtil;
 import fi.nls.hakunapi.core.util.Links;
-import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
 import fi.nls.hakunapi.simple.servlet.jakarta.ResponseUtil;
 import fi.nls.hakunapi.simple.servlet.jakarta.SimpleFeatureWriter;
@@ -73,7 +70,10 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
     }
 
     @GET
-    public Response handle(@Context UriInfo uriInfo, @Context Request wsRequest) {
+    public Response handle(
+            @Context UriInfo uriInfo,
+            @Context Request wsRequest,
+            @Context HttpHeaders headers) {
         GetFeatureRequest request = new GetFeatureRequest();
         request.setFormat(OperationUtil.determineOutputFormat(wsRequest, service.getOutputFormats()));
         try {
@@ -91,6 +91,12 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
             return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
 
+        request.setQueryHeaders(OperationUtil.toSimpleMap(headers.getRequestHeaders()));
+
+        List<Link> links = getLinks(request);
+        
+        SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
+
         StreamingOutput output = new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {
@@ -98,15 +104,13 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
                     final int totalLimit = request.getLimit();
                     int written = 0;
                     WriteReport report = null;
-                    int srid = request.getSRID();
                     
-                    writer.init(out, CrsUtil.getDefaultMaxDecimalCoordinates(srid), srid);
+                    writer.init(out, srid);
 
                     List<GetFeatureCollection> collections = request.getCollections();
-
-                    Iterator<GetFeatureCollection> it = collections.iterator();
-                    while (it.hasNext()) {
-                        GetFeatureCollection c = it.next();
+                    int i = 0;
+                    for (; i < collections.size(); i++) {
+                        GetFeatureCollection c = collections.get(i);
                         FeatureType ft = c.getFt();
                         FeatureProducer source = ft.getFeatureProducer();
                         try (FeatureStream features = source.getFeatures(request, c)) {
@@ -125,7 +129,9 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
                         }
                     }
 
-                    List<Link> links = getLinks(request, writer, report.next, collections);
+                    if (report.next != null) {
+                        links.add(GetCollectionItemsUtil.getNextLink(collections.get(i), report.next, links, collections.subList(i, collections.size())));
+                    }
                     writer.end(true, links, written);
                 } catch (Exception e) {
                     LOG.warn(e.getMessage(), e);
@@ -136,17 +142,17 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
 
         ResponseBuilder builder = Response.ok();
         request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-        request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+        request.getFormat().getResponseHeaders(request, new ArrayList<>(links)).forEach((k, v) -> builder.header(k, v));
         builder.entity(output);
         return builder.build();
     }
 
-    public List<Link> getLinks(GetFeatureRequest request, FeatureCollectionWriter writer, NextCursor cursor, List<GetFeatureCollection> remainingCollections) {
+    public List<Link> getLinks(GetFeatureRequest request) {
         Map<String, String> queryParams = request.getQueryParams();
         Map<String, String> queryHeaders = request.getQueryHeaders();
 
         String path = service.getCurrentServerURL(queryHeaders::get) + "/items";
-        String mimeType = writer.getMimeType();
+        String mimeType = request.getFormat().getMimeType();
 
         List<Link> links = new ArrayList<>();
 
@@ -162,17 +168,6 @@ public class GetItemsOperation implements ParametrizedOperation, DynamicResponse
             }
         }
         queryParams.put(FParam.QUERY_PARAM_NAME, fParamValue);
-
-        if (cursor != null) {
-            String collections = remainingCollections.stream()
-                    .map(c -> c.getFt().getName())
-                    .collect(Collectors.joining(","));
-            StringPair paramNameAndValue = remainingCollections.get(0).getPaginationStrategy().getNextQueryParam(cursor);
-            queryParams.put(paramNameAndValue.getLeft(), paramNameAndValue.getRight());
-            queryParams.put(CollectionsParam.PARAM_NAME, collections);
-            Link next = Links.getNextLink(path, queryParams, mimeType);
-            links.add(next);
-        }
 
         return links;
     }

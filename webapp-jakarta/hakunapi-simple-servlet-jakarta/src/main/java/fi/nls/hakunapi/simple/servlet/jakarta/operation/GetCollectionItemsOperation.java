@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -42,14 +41,11 @@ import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SRIDCode;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
-import fi.nls.hakunapi.core.param.NextParam;
-import fi.nls.hakunapi.core.param.OffsetParam;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
@@ -57,9 +53,8 @@ import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import fi.nls.hakunapi.core.telemetry.RequestTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetrySpan;
-import fi.nls.hakunapi.core.util.CrsUtil;
+import fi.nls.hakunapi.core.util.GetCollectionItemsUtil;
 import fi.nls.hakunapi.core.util.Links;
-import fi.nls.hakunapi.core.util.StringPair;
 import fi.nls.hakunapi.geojson.FeatureCollectionGeoJSON;
 import fi.nls.hakunapi.simple.servlet.jakarta.CacheManager;
 import fi.nls.hakunapi.simple.servlet.jakarta.ResponseUtil;
@@ -145,6 +140,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
             return ResponseUtil.exception(Status.NOT_ACCEPTABLE, e.getMessage());
         }
 
+        List<Link> links = getLinks(service, request);
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
         
@@ -153,7 +149,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
         Object output;
         if (ft.getCacheSettings() != null) {
-            LoadingCache<CacheKey, byte[]> cache = cacheManager.getCache(ft.getName(), () -> getFeatureCache(ft, ftt));
+            LoadingCache<CacheKey, byte[]> cache = cacheManager.getCache(ft.getName(), () -> getFeatureCache(ft, links, ftt));
             CacheKey key = new CacheKey(request);
             output = cache.get(key);
             if (output == null) {
@@ -164,7 +160,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 @Override
                 public void write(OutputStream out) throws WebApplicationException {
                     try {
-                        writeResponseBody(request, service, out, ftt);
+                        writeResponseBody(request, service, links, out, ftt);
                     } catch (Exception e) {
                         LOG.warn(e.getMessage(), e);
                         throw new WebApplicationException("Unexpected error occured");
@@ -175,12 +171,12 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
         ResponseBuilder builder = Response.ok();
         request.getResponseHeaders().forEach((k, v) -> builder.header(k, v));
-        request.getFormat().getResponseHeaders(request).forEach((k, v) -> builder.header(k, v));
+        request.getFormat().getResponseHeaders(request, new ArrayList<>(links)).forEach((k, v) -> builder.header(k, v));
         builder.entity(output);
         return builder.build();
     }
     
-    protected LoadingCache<CacheKey, byte[]> getFeatureCache(FeatureType ft, RequestTelemetry ftt) {
+    protected LoadingCache<CacheKey, byte[]> getFeatureCache(FeatureType ft, List<Link> links, RequestTelemetry ftt) {
         CacheSettings settings = ft.getCacheSettings();
         return Caffeine.newBuilder()
                 .maximumSize(settings.getMaximumSize())
@@ -189,7 +185,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 .build(cacheKey -> {
                     try( TelemetrySpan span = ftt.span()) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        writeResponseBody(cacheKey.request, service, baos, ftt);
+                        writeResponseBody(cacheKey.request, service, links, baos, ftt);
                         return baos.toByteArray();
                     } catch (Exception e) {
                         LOG.warn(e.getMessage(), e);
@@ -223,30 +219,28 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         return request;
     }
     
-    public static void writeResponseBody(GetFeatureRequest request, FeatureServiceConfig service, OutputStream out, RequestTelemetry ftt) throws Exception {
+    public static void writeResponseBody(GetFeatureRequest request, FeatureServiceConfig service, List<Link> links, OutputStream out, RequestTelemetry ftt) throws Exception {
         GetFeatureCollection c = request.getCollections().get(0);
         FeatureType ft = c.getFt();
         FeatureProducer producer = c.getFt().getFeatureProducer();
 
-        int srid = request.getSRID();
-
-        boolean crsIsLatLon = service.isCrsLatLon(srid);
-        Optional<SRIDCode> sridCode = service.getSridCode(srid);
-        int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-        HakunaGeometryDimension geomDimension =  c.getFt().getGeomDimension();
-        if(sridCode.isPresent()) {
-            geomDimension = sridCode.get().getOrDefaultDimension(geomDimension);
-        }
+        SRIDCode srid = service.getSridCode(request.getSRID()).orElseThrow();
 
         try (FeatureStream features = producer.getFeatures(request, c);
                 FeatureCollectionWriter writer = request.getFormat().getFeatureCollectionWriter();
                 TelemetrySpan span = ftt.span()) {
-            writer.init(out, maxDecimalCoordinates, srid, crsIsLatLon);
-            writer.initGeometryWriter(geomDimension);
+            // Buffer some features here so there's higher chance of not being committed to 200 OK response if something goes wrong
+            features.hasNext();
+
+            writer.init(out, srid);
+
             writer.startFeatureCollection(ft, c.getName());
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
             writer.endFeatureCollection();
-            writer.end(true, getLinks(service, request, report), report.numberReturned);
+            if (report.next != null) {
+                links.add(GetCollectionItemsUtil.getNextLink(c, report.next, links));
+            }
+            writer.end(true, links, report.numberReturned);
 
             span.counts(report);
         }
@@ -279,7 +273,7 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         }
     }
 
-    public static List<Link> getLinks(FeatureServiceConfig service, GetFeatureRequest request, WriteReport report) {
+    public static List<Link> getLinks(FeatureServiceConfig service, GetFeatureRequest request) {
         Map<String, String> queryParams = request.getQueryParams();
         Map<String, String> queryHeaders = request.getQueryHeaders();
 
@@ -303,16 +297,9 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
         }
         queryParams.put(FParam.QUERY_PARAM_NAME, fParamOriginalValue);
 
-        if (report.next != null) {
-            StringPair paramNameAndValue = c.getPaginationStrategy().getNextQueryParam(report.next);
-            queryParams.put(paramNameAndValue.getLeft(), paramNameAndValue.getRight());
-            Link next = Links.getNextLink(path, queryParams, mimeType);
-            links.add(next);
-        }
-
         return links;
     }
-    
+
     protected class CacheKey {
         
         private GetFeatureRequest request;

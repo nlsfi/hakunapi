@@ -3,7 +3,9 @@ package fi.nls.hakunapi.core.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import fi.nls.hakunapi.core.schemas.Link;
 
@@ -73,6 +75,12 @@ public class Links {
         }
         // return something, this code is unreachable
         return s;
+    }
+
+    public static StringPair toLinkHeader(List<Link> links) {
+        String key = "Link";
+        String value = links.stream().map(Link::toLinkHeader).collect(Collectors.joining(", "));
+        return new StringPair(key, value);
     }
 
 }

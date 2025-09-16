@@ -5,15 +5,18 @@ import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.schemas.Link;
+import fi.nls.hakunapi.html.OutputFormatHTMLSettings;
 
 public class HTMLFeatureCollection {
 
     private int srid;
     private FeatureType featureType;
     private List<HTMLFeature> features;
+
     private String timestamp;
     private Integer numberReturned;
     private List<Link> links;
+    private OutputFormatHTMLSettings settings;
 
     public HTMLFeatureCollection() {
         this.features = new ArrayList<>();
@@ -65,6 +68,14 @@ public class HTMLFeatureCollection {
 
     public List<Link> getLinks() {
         return links;
+    }
+
+    public OutputFormatHTMLSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(OutputFormatHTMLSettings settings) {
+        this.settings = settings;
     }
 
 }

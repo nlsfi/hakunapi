@@ -615,7 +615,7 @@ public class PostGISSimpleSource implements SimpleSource {
         } else if (dbSrid <= 0) {
             return sridStorage;
         } else {
-            if (sridStorage > 0) {
+            if (sridStorage > 0 && sridStorage != dbSrid) {
                 LOG.warn("For table {} column {} using srid {} from database instead of configured {}", table, column, dbSrid, sridStorage);
             }
             return dbSrid;

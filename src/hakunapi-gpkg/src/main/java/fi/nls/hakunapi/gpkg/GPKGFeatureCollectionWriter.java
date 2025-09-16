@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.Envelope;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyType;
 import fi.nls.hakunapi.core.property.HakunaPropertyWriters;
@@ -109,8 +110,8 @@ public class GPKGFeatureCollectionWriter extends GPKGFeatureWriter implements Fe
             insert.executeBatch();
         }
         insert.close();
-        GPKGGeometryColumn geometryColumn = createGeometryColumn(ft.getGeom());
-        GPKGSpatialRefSys srs = GPKGSpatialRefSystems.get(srid);
+        GPKGGeometryColumn geometryColumn = createGeometryColumn();
+        GPKGSpatialRefSys srs = GPKGSpatialRefSystems.get(srid.getSrid());
         GPKG.insertSpatialRefSys(c, srs);
         GPKGFeaturesTable tableEntry = new GPKGFeaturesTable(tableName, ft.getTitle(), ft.getDescription(), envelope, srs.getSrsId());
         GPKG.insertFeaturesTableEntry(c, tableEntry);
@@ -125,12 +126,12 @@ public class GPKGFeatureCollectionWriter extends GPKGFeatureWriter implements Fe
         return prop.getType() == HakunaPropertyType.INT || prop.getType() == HakunaPropertyType.LONG;
     }
 
-    private GPKGGeometryColumn createGeometryColumn(HakunaPropertyGeometry geom) {
+    private GPKGGeometryColumn createGeometryColumn() {
+        HakunaPropertyGeometry geom = ft.getGeom();
         String column = geom.getName();
         GeometryTypeName typeName = GeometryTypeName.valueOf(geom.getGeometryType().toString());
-        boolean hasZ = geom.getDimension() >= 3;
-        boolean hasM = geom.getDimension() >= 4;
-        return new GPKGGeometryColumn(tableName, column, typeName, srid, hasZ, hasM);
+        HakunaGeometryDimension dim = srid.getDimension();
+        return new GPKGGeometryColumn(tableName, column, typeName, srid.getSrid(), dim.hasZ(), dim.hasM());
     }
 
     @Override
@@ -140,7 +141,7 @@ public class GPKGFeatureCollectionWriter extends GPKGFeatureWriter implements Fe
         int headerLen = GPKGGeometry.LENGHT_XY_ENVELOPE;
         int wkbLen = geometry.getWKBLength();
         byte[] gpkgGeometry = new byte[headerLen + wkbLen];
-        GPKGGeometry.write(srid, env, gpkgGeometry);
+        GPKGGeometry.write(srid.getSrid(), env, gpkgGeometry);
         geometry.toWKB(gpkgGeometry, headerLen);
         insert.setBytes(2, gpkgGeometry); 
     }

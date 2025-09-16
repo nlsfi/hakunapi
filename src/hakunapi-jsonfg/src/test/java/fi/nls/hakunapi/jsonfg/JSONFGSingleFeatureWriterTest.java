@@ -11,14 +11,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.OutputFormat;
+import fi.nls.hakunapi.core.SingleFeatureWriter;
 import fi.nls.hakunapi.core.ValueProvider;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
-import fi.nls.hakunapi.core.util.CrsUtil;
 
 public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
+    
+    private OutputFormat format = new JSONFGOutputFormatFactory().create(Collections.emptyMap());
 
     @Test
     public void testWriteJSONFGFeatureWithDate() throws Exception {
@@ -34,15 +36,10 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
         request.addCollection(coll);
 
         try (FeatureStream fs = data.getFeaturesWithDate();
-                JSONFGSingleFeatureWriter fw = new JSONFGSingleFeatureWriter()) {
-
+                SingleFeatureWriter fw = format.getSingleFeatureWriter()) {
             ValueProvider feat = fs.next();
 
-            int srid =data.PLACE_SRID;
-            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-
-            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
-            fw.initGeometryWriter(HakunaGeometryDimension.XY);
+            fw.init(baos, PLACE_SRID);
 
             // Note: contains implicit call to startFeature !
             int i = 0;
@@ -54,16 +51,15 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
             fw.end(true, Collections.emptyList(), 1);
         }
 
-        System.out.println(baos.toString("UTF-8"));
-        System.out.flush();
+        // System.out.println(baos.toString("UTF-8"));
+        // System.out.flush();
 
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
                 .disable(SerializationFeature.CLOSE_CLOSEABLE);
 
         JsonNode json = mapper.readTree(baos.toByteArray());
 
-        mapper.writeValue(System.out, json);
-        
+        // mapper.writeValue(System.out, json);
         
         data.validateFeatureWithDate(json);
 
@@ -83,16 +79,12 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
         request.addCollection(coll);
 
         try (FeatureStream fs = data.getFeaturesWithTimestamp();
-                JSONFGSingleFeatureWriter fw = new JSONFGSingleFeatureWriter()) {
+                SingleFeatureWriter fw = format.getSingleFeatureWriter()) {
 
             ValueProvider feat = fs.next();
 
-            int srid =data.PLACE_SRID;
-            int maxDecimalCoordinates = CrsUtil.getDefaultMaxDecimalCoordinates(srid);
-
-            fw.init(baos, maxDecimalCoordinates, srid, data.PLACE_SRID_IS_LATLON);
-            fw.initGeometryWriter(HakunaGeometryDimension.XY);
-
+            fw.init(baos, PLACE_SRID);
+            
             // Note: contains implicit call to startFeature !
             int i = 0;
             for (HakunaProperty prop : coll.getProperties()) {
@@ -103,15 +95,15 @@ public class JSONFGSingleFeatureWriterTest extends JSONFGTestUtils {
             fw.end(true, Collections.emptyList(), 1);
         }
 
-        System.out.println(baos.toString("UTF-8"));
-        System.out.flush();
+        // System.out.println(baos.toString("UTF-8"));
+        // System.out.flush();
 
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
                 .disable(SerializationFeature.CLOSE_CLOSEABLE);
 
         JsonNode json = mapper.readTree(baos.toByteArray());
 
-        mapper.writeValue(System.out, json);
+        // mapper.writeValue(System.out, json);
 
         data.validateFeatureWithTimestamp(json);
 

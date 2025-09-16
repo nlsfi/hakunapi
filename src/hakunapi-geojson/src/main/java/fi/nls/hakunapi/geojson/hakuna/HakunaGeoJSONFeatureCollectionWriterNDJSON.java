@@ -7,7 +7,6 @@ import fi.nls.hakunapi.core.schemas.Link;
 
 public class HakunaGeoJSONFeatureCollectionWriterNDJSON extends HakunaGeoJSONFeatureCollectionWriter {
     
-    public static final String MIME_TYPE = "application/geo+json-ndjson";
     
     @Override
     protected void writeFeatureCollection() {
@@ -17,11 +16,6 @@ public class HakunaGeoJSONFeatureCollectionWriterNDJSON extends HakunaGeoJSONFea
     @Override
     public void end(boolean timeStamp, List<Link> links, int numberReturned) throws IOException {
         // Don't close features array or the FeatureCollection object
-    }
-    
-    @Override
-    public String getMimeType() {
-        return MIME_TYPE;
     }
     
     @Override

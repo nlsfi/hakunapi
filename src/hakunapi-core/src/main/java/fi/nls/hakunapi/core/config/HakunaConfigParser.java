@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,9 @@ import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyCursor;
 import fi.nls.hakunapi.core.PaginationStrategyHybrid;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
-import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
@@ -159,17 +158,11 @@ public class HakunaConfigParser {
         return Optional.of(securitySchemes);
     }
 
-    public List<SRIDCode> getKnownSrids() {
-        List<SRIDCode> knownSrids = new ArrayList<>();
-        for (String sridCode : getMultiple("srid")) {
-            int srid = Integer.parseInt(sridCode);
-            String latLonAttr = get("srid." + sridCode + ".latLon", "false");
-            boolean latLon = "true".equalsIgnoreCase(latLonAttr);
-            HakunaGeometryDimension geomDimension = getGeometryDims(get("srid."+sridCode+".geometryDimension"));
-            
-            knownSrids.add(new SRIDCode(srid, latLon, geomDimension));
-        }
-        return knownSrids;
+    public List<Integer> getKnownSrids() {
+        String[] srid = getMultiple("srid");
+        return Stream.concat(Stream.of(84, 4326), Arrays.stream(srid).map(Integer::parseInt))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public List<HakunaProperty> parseTimeProperties(List<HakunaProperty> properties, String[] timePropertyNames)
@@ -289,7 +282,6 @@ public class HakunaConfigParser {
         String p = "collections." + collectionId + ".";
 
         int[] srids = getSRIDs(get(p + "srid", get("default.collections.srid")));
-        HakunaGeometryDimension dim = getGeometryDims(get(p + "geometryDimension"));
 
         SimpleSource source;
         if (sourcesByType.size() == 1) {
@@ -309,7 +301,6 @@ public class HakunaConfigParser {
 
         ft.setTitle(title);
         ft.setDescription(description);
-        ft.setGeomDimension(dim);
         ft.setMetadata(parseMetadata(p, path));
         ft.setProjectionTransformerFactory(getProjection(p));
         ft.setCacheSettings(parseCacheConfig(collectionId));
@@ -362,12 +353,6 @@ public class HakunaConfigParser {
             if (ft.getGeom() == null) {
                 throw new IllegalArgumentException("Collection " + collectionId
                         + " failed: extent.spatial set but no (main) geometry property set!");
-            }
-            int expectedExtentSize = ft.getGeom().getDimension() * 2;
-            if (spatialExtent.length != expectedExtentSize) {
-                throw new IllegalArgumentException("Collection " + collectionId + " failed:"
-                        + " extent.spatial contained " + spatialExtent.length + " elements, expected value was "
-                        + expectedExtentSize + " (geometry dimension times two)");
             }
             ft.setSpatialExtent(Arrays.stream(spatialExtent).mapToDouble(Double::parseDouble).toArray());
         }
@@ -488,18 +473,6 @@ public class HakunaConfigParser {
         } catch (Exception e) {
             LOG.warn("Failed to init projection transformer", e.getMessage());
             return null;
-        }
-    }
-
-    private HakunaGeometryDimension getGeometryDims(String dimmode ) {
-        if( dimmode == null ) {
-            return HakunaGeometryDimension.DEFAULT;
-        }
-        try {
-            HakunaGeometryDimension dim = HakunaGeometryDimension.valueOf(dimmode);
-            return dim;
-        } catch (IllegalArgumentException e) {
-            return HakunaGeometryDimension.DEFAULT;
         }
     }
 
