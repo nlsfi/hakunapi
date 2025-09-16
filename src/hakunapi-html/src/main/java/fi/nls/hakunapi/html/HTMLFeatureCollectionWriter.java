@@ -27,8 +27,13 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
 
     private HTMLFeatureCollection model;
 
+    @Deprecated
     public HTMLFeatureCollectionWriter(Configuration configuration) {
-        super(configuration);
+        this(configuration, new OutputFormatHTMLSettings());
+    }
+
+    public HTMLFeatureCollectionWriter(Configuration configuration, OutputFormatHTMLSettings settings) {
+        super(configuration, settings);
     }
 
     @Override
@@ -43,6 +48,7 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
         this.model = new HTMLFeatureCollection();
         model.setSrid(srid);
         model.setFeatureType(ft);
+        model.setSettings(settings);
         Template template = getTemplate(ft, srid);
         this.environment = template.createProcessingEnvironment(model, new OutputStreamWriter(out, StandardCharsets.UTF_8));
         this.environment.setOutputEncoding(StandardCharsets.UTF_8.name());

@@ -24,8 +24,13 @@ public class HTMLSingleFeatureWriter extends HTMLFeatureWriterBase implements Si
     private static final String TEMPLATE_GENERIC_SRID = "feature_%d.ftl";
     private static final String TEMPLATE_GENERIC = "feature.ftl";
 
+    @Deprecated
     public HTMLSingleFeatureWriter(Configuration configuration) {
         super(configuration);
+    }
+
+    public HTMLSingleFeatureWriter(Configuration configuration, OutputFormatHTMLSettings settings) {
+        super(configuration, settings);
     }
 
     @Override
@@ -45,6 +50,7 @@ public class HTMLSingleFeatureWriter extends HTMLFeatureWriterBase implements Si
         this.feature = new HTMLFeature();
         this.feature.setId(fid);
         this.feature.setFeatureType(ft);
+        this.feature.setSettings(settings);
         this.properties = new PropertiesContextMap(feature.getProperties(), null);
         Template template = getTemplate(ft, srid);
         this.environment = template.createProcessingEnvironment(feature, new OutputStreamWriter(out, StandardCharsets.UTF_8));
