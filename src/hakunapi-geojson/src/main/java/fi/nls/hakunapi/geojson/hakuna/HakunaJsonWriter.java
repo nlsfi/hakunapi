@@ -4,8 +4,9 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.fasterxml.jackson.core.io.NumberOutput;
+
 import fi.nls.hakunapi.core.FloatingPointFormatter;
-import fi.nls.hakunapi.core.util.IToA;
 import fi.nls.hakunapi.core.util.UTF8;
 
 public class HakunaJsonWriter implements AutoCloseable, Flushable {
@@ -316,7 +317,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             if (pos + 11 >= BUF_LEN) {
                 flush();
             }
-            pos = IToA.itoa(v, buf, pos);
+            pos = NumberOutput.outputInt(v, buf, pos);
             comma = true;
             state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
             break;
@@ -338,7 +339,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             if (pos + 21 >= BUF_LEN) {
                 flush();
             }
-            pos = IToA.ltoa(v, buf, pos);
+            pos = NumberOutput.outputLong(v, buf, pos);
             comma = true;
             state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
             break;
