@@ -4,6 +4,7 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.core.io.NumberOutput;
 
@@ -11,6 +12,7 @@ import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.core.util.LocalDateOutput;
 import fi.nls.hakunapi.core.util.UTF8;
 
 public class CSVWriter implements AutoCloseable, Flushable {
@@ -139,6 +141,16 @@ public class CSVWriter implements AutoCloseable, Flushable {
             flush();
         }
         pos = formatter.writeDouble(v, buf, pos);
+        writeCommaOrLineFeed();
+    }
+
+    public void writeLocalDate(LocalDate value) throws IOException {
+        if (pos + 3 + LocalDateOutput.MAX_BYTE_LEN >= BUF_LEN) {
+            flush();
+        }
+        buf[pos++] = QUOTE;
+        pos = LocalDateOutput.outputLocalDate(value, buf, pos);
+        buf[pos++] = QUOTE;
         writeCommaOrLineFeed();
     }
 

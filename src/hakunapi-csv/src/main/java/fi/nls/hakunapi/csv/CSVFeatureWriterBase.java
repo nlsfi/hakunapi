@@ -92,7 +92,7 @@ public abstract class CSVFeatureWriterBase implements FeatureWriter {
         if (value == null) {
             writeNullProperty(name);
         } else {
-            writeProperty(name, value.toString());
+            csv.writeLocalDate(value);
         }
     }
 
