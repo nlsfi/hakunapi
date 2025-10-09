@@ -3,12 +3,10 @@ package fi.nls.hakunapi.geojson.hakuna;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDate;
 
 import com.fasterxml.jackson.core.io.NumberOutput;
 
 import fi.nls.hakunapi.core.FloatingPointFormatter;
-import fi.nls.hakunapi.core.util.LocalDateOutput;
 import fi.nls.hakunapi.core.util.UTF8;
 
 public class HakunaJsonWriter implements AutoCloseable, Flushable {
@@ -396,29 +394,6 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
-    public void writeLocalDate(LocalDate date) throws IOException {
-        switch (state) {
-        case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
-                flush();
-            }
-            if (comma) {
-                buf[pos++] = COMMA;
-            }
-        case STATE_OBJ_VALUE:
-            if (pos + 2 + LocalDateOutput.MAX_BYTE_LEN >= BUF_LEN) {
-                flush();
-            }
-            buf[pos++] = QUOTE;
-            pos = LocalDateOutput.outputLocalDate(date, buf, pos);
-            buf[pos++] = QUOTE;
-            comma = true;
-            state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
-            break;
-        default:
-            throw new IllegalStateException();
-        }
-    }
     public void writeCoordinate(double x, double y) throws IOException {
         writeCoordinate(x, y, numberPropertyFormatter);
     }
