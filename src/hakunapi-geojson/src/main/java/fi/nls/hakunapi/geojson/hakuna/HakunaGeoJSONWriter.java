@@ -206,7 +206,7 @@ public abstract class HakunaGeoJSONWriter implements FeatureWriter {
             if (name != null) {
                 json.writeFieldName(getProperty(name));
             }
-            json.writeInstant(value);
+            json.writeStringUnsafe(value.toString());
         }
     }
 

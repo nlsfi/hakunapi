@@ -4,9 +4,7 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.core.io.NumberOutput;
 
@@ -44,7 +42,6 @@ public class CSVWriter implements AutoCloseable, Flushable {
 
     private final OutputStream out;
     private final FloatingPointFormatter formatter;
-    private final StringBuilder strBuf;
 
     private final byte[] buf;
     private int pos;
@@ -55,7 +52,6 @@ public class CSVWriter implements AutoCloseable, Flushable {
     public CSVWriter(OutputStream out, FloatingPointFormatter formatter) {
         this.out = out;
         this.formatter = formatter;
-        this.strBuf = new StringBuilder(32);
         this.buf = new byte[BUF_LEN];
     }
 
@@ -154,20 +150,6 @@ public class CSVWriter implements AutoCloseable, Flushable {
         }
         buf[pos++] = QUOTE;
         pos = LocalDateOutput.outputLocalDate(value, buf, pos);
-        buf[pos++] = QUOTE;
-        writeCommaOrLineFeed();
-    }
-
-    public void writeInstant(Instant value) throws IOException {
-        strBuf.setLength(0);
-        DateTimeFormatter.ISO_INSTANT.formatTo(value, strBuf);
-        int len = strBuf.length();
-
-        if (pos + 3 + len >= BUF_LEN) {
-            flush();
-        }
-        buf[pos++] = QUOTE;
-        writeASCII(strBuf, len);
         buf[pos++] = QUOTE;
         writeCommaOrLineFeed();
     }
@@ -288,7 +270,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
         }
     }
 
-    private void writeASCII(CharSequence s, int len) {
+    private void writeASCII(String s, int len) {
         for (int i = 0; i < len; i++) {
             buf[pos++] = (byte) s.charAt(i);
         }

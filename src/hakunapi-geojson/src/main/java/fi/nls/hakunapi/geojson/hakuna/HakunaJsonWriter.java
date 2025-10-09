@@ -3,9 +3,7 @@ package fi.nls.hakunapi.geojson.hakuna;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.core.io.NumberOutput;
 
@@ -48,7 +46,6 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
 
     private final OutputStream out;
     private final FloatingPointFormatter numberPropertyFormatter;
-    private final StringBuilder strBuf;
 
     private final byte[] buf;
     private int pos;
@@ -60,7 +57,6 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public HakunaJsonWriter(OutputStream out, FloatingPointFormatter formatter) {
         this.out = out;
         this.numberPropertyFormatter = formatter;
-        this.strBuf = new StringBuilder(32);
         this.buf = new byte[BUF_LEN];
         this.pos = 0;
         this.state = STATE_INIT;
@@ -423,35 +419,6 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             throw new IllegalStateException();
         }
     }
-
-    public void writeInstant(Instant value) throws IOException {
-        strBuf.setLength(0);
-        DateTimeFormatter.ISO_INSTANT.formatTo(value, strBuf);
-        int len = strBuf.length();
-
-        switch (state) {
-        case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
-                flush();
-            }
-            if (comma) {
-                buf[pos++] = COMMA;
-            }
-        case STATE_OBJ_VALUE:
-            if (pos + 2 + len >= BUF_LEN) {
-                flush();
-            }
-            buf[pos++] = QUOTE;
-            writeASCII(strBuf, len);
-            buf[pos++] = QUOTE;
-            comma = true;
-            state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
-            break;
-        default:
-            throw new IllegalStateException();
-        }
-    }
-
     public void writeCoordinate(double x, double y) throws IOException {
         writeCoordinate(x, y, numberPropertyFormatter);
     }
@@ -595,7 +562,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
-    protected void writeASCII(CharSequence s, int len) {
+    protected void writeASCII(String s, int len) {
         for (int i = 0; i < len; i++) {
             buf[pos++] = (byte) s.charAt(i);
         }
