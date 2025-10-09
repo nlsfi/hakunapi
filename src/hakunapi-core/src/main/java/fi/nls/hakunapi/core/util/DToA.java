@@ -2,6 +2,8 @@ package fi.nls.hakunapi.core.util;
 
 import java.nio.charset.StandardCharsets;
 
+import com.fasterxml.jackson.core.io.NumberOutput;
+
 public class DToA {
 
     private static final byte[] NAN = { 'N', 'a', 'N' };
@@ -57,7 +59,7 @@ public class DToA {
             decimal = 0;
             l++;
         }
-        off = IToA.ltoa(l, b, off);
+        off = NumberOutput.outputLong(l, b, off);
         if (decimal == 0) {
             if (minDecimals > 0) {
                 b[off++] = '.';
@@ -101,7 +103,7 @@ public class DToA {
             decimal = 0;
             l++;
         }
-        off = IToA.ltoa(l, b, off);
+        off = NumberOutput.outputLong(l, b, off);
         if (decimal == 0) {
             if (minDecimals > 0) {
                 b[off++] = '.';
@@ -145,7 +147,7 @@ public class DToA {
             decimal = 0;
             l++;
         }
-        off = IToA.ltoa(l, b, off);
+        off = NumberOutput.outputLong(l, b, off);
         if (decimal == 0) {
             if (minDecimals > 0) {
                 b[off++] = '.';
@@ -189,7 +191,7 @@ public class DToA {
             decimal = 0;
             l++;
         }
-        off = IToA.ltoa(l, b, off);
+        off = NumberOutput.outputLong(l, b, off);
         if (decimal == 0) {
             if (minDecimals > 0) {
                 b[off++] = '.';
@@ -212,7 +214,7 @@ public class DToA {
             b[off++] = '0';
         }
 
-        off = IToA.ltoa(value, b, off);
+        off = NumberOutput.outputLong(value, b, off);
 
         int decimals = off - start;
 
@@ -237,7 +239,7 @@ public class DToA {
             b[off++] = '0';
         }
 
-        off = IToA.ltoa(value, b, off);
+        off = NumberOutput.outputLong(value, b, off);
 
         int decimals = off - start;
 

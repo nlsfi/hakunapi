@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import com.fasterxml.jackson.core.io.NumberOutput;
+
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
-import fi.nls.hakunapi.core.util.IToA;
 import fi.nls.hakunapi.core.util.UTF8;
 
 public class CSVWriter implements AutoCloseable, Flushable {
@@ -113,7 +114,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
         if (pos + 12 >= BUF_LEN) {
             flush();
         }
-        pos = IToA.itoa(v, buf, pos);
+        pos = NumberOutput.outputInt(v, buf, pos);
         writeCommaOrLineFeed();
     }
 
@@ -121,7 +122,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
         if (pos + 22 >= BUF_LEN) {
             flush();
         }
-        pos = IToA.ltoa(v, buf, pos);
+        pos = NumberOutput.outputLong(v, buf, pos);
         writeCommaOrLineFeed();
     }
 
