@@ -113,5 +113,7 @@ To hot reload
  - You must connect to the container from your IDE, this will trigger the changes to be reflected in the running container.
    - IntelliJ IDEA: Run -> Edit Configurations -> Remote JVM Debug
      - Make sure to set port to "41467", don't use the default "5005" (or edit the docker compose file to match)
+     - Also Be sure that you have "Reload classes after compilation: Always" ON in IntelliJ IDEA in HotSwap section in your IDEA preferences.
+     - See https://hotswapagent.org/mydoc_setup_intellij_idea.html for a little more info (you can ignore most of the set up, just step 4+5)
    - Eclipse: Run -> Debug Configurations -> Remote Java Application (untested)
  - After connecting, you can make changes to the code and recompile (usually Ctrl+F9 or Cmd+F9) and the changes should be reflected in the running container.
