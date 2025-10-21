@@ -18,6 +18,7 @@ target/
 bin/
 **/bin/
 
+certs/
 hakuna.log
 pom.xml.versionsBackup
 **/pom.xml.versionsBackup

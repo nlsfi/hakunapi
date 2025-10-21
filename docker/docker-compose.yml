@@ -1,0 +1,39 @@
+name: hakunapi
+
+services:
+  db:
+    image: postgis/postgis:18-3.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: address_fin
+      POSTGRES_USER: address_reader
+      POSTGRES_PASSWORD: test
+    volumes:
+      - ./init-addresses.sh:/docker-entrypoint-initdb.d/init-addresses.sh:ro
+      - ../examples/finnish_addresses/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+      - ../examples/finnish_addresses/simple_addresses.sql:/docker-entrypoint-initdb.d/simple_addresses.sql:ro
+      - ../examples/finnish_addresses/suomi_kunnat.csv:/docker-entrypoint-initdb.d/suomi_kunnat.csv:ro
+      - ../examples/finnish_addresses/suomi_osoitteet.csv:/docker-entrypoint-initdb.d/suomi_osoitteet.csv:ro
+      - ../examples/finnish_addresses/cfg:/docker-entrypoint-initdb.d/cfg:ro
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+  hakunapi:
+    build: ../.
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "41467:41467"
+    volumes:
+      # mount the working example config dir so hakunapi can read addresses.properties (read-only)
+      - ./cfg:/app/config:ro
+    environment:
+      # Tell Tomcat / hakunapi where to find the config file and pass JVM flags to Tomcat
+      CATALINA_OPTS: >-
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:41467
+        -Dfeatures.hakuna.config.path=/app/config/addresses.properties
+    depends_on:
+      - db
+
+volumes:
+  db_data: {}

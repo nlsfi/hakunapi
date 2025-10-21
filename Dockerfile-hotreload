@@ -1,0 +1,43 @@
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
+WORKDIR /build
+
+COPY . /build
+
+# Copy hotswap-agent properties into the resources directory
+# Needed for configuring hotswap-agent behavior
+# Currently set up for watching ftl files and all target/classes of current modules under /src
+# If a new one get created, you will need to update this file accordingly
+COPY ./docker/hotswap-agent.properties /build/webapp-jakarta/hakunapi-simple-webapp-jakarta/src/main/resources/hotswap-agent.properties
+
+RUN mvn -DskipTests -pl webapp-jakarta/hakunapi-simple-webapp-jakarta clean package
+
+FROM tomcat:jdk21-openjdk
+ARG HOTSWAP_VERSION=2.0.1
+ENV CATALINA_OUT=/dev/stdout
+
+# install tools, download and install JetBrains JBR,
+# and download HotswapAgent into the JBR lib directory
+RUN apt-get update -qq \
+ && apt-get install -y -qq curl tar gzip \
+ # create install dir \
+ && mkdir -p /opt/jbr \
+ # download and extract JetBrains JBR (cache-redirector URL)
+ && curl -fSL "https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.8-linux-x64-b1163.59.tar.gz" -o /tmp/jbr.tar.gz \
+ && tar -xzf /tmp/jbr.tar.gz -C /opt/jbr --strip-components=1 \
+ && rm /tmp/jbr.tar.gz \
+ # set JAVA_HOME to the JBR path (used by catalina.sh). Also ensure tools dir exists for hotswap \
+ && mkdir -p /opt/jbr/lib/hotswap \
+ # download HotswapAgent into the JBR lib
+ && curl -fSL "https://github.com/HotswapProjects/HotswapAgent/releases/download/RELEASE-${HOTSWAP_VERSION}/hotswap-agent-${HOTSWAP_VERSION}.jar" -o /opt/jbr/lib/hotswap/hotswap-agent.jar \
+ && chmod 644 /opt/jbr/lib/hotswap/hotswap-agent.jar
+
+# Point Tomcat to use the JBR we installed
+ENV JAVA_HOME=/opt/jbr
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Copy the built WAR from the build stage
+COPY --from=build /build/webapp-jakarta/hakunapi-simple-webapp-jakarta/target/*.war /usr/local/tomcat/webapps/features.war
+
+EXPOSE 8080
+
+CMD ["catalina.sh", "run"]
