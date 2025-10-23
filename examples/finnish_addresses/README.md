@@ -1,19 +1,18 @@
 # Simple addresses of Buildings of Finland
 
-The goal of this example project is to create an OGC API Features service with hakunapi to provide nationwide addresses of the buildings in Finland available freely from https://www.avoindata.fi/data/fi/dataset/rakennusten-osoitetiedot-koko-suomi.
+The goal of this example project is to create an OGC API Features service with hakunapi to provide addresses of the buildings in Finland available freely from https://github.com/ubigu/finnish-open-addresses.
+
+## I want to use it already 
+
+Run `docker compose up` in `docker` directory
+
+You should be good to go, see http://localhost:8080/features
 
 ## Processing the data
 
 ### Getting the data
 
-Begin by downloading the .7z file containing all required data from https://www.avoindata.fi/data/fi/dataset/rakennusten-osoitetiedot-koko-suomi
-
-Extract the file the 7zip file using your favourite tool and convert the file from latin-1 to utf-8 encoding, for example
-
-```
-7z x suomi_osoitteet_2023-02-13.7z
-iconv -f ISO-8859-1 -t UTF-8 Suomi_osoitteet_2023-02-13.OPT > suomi_osoitteet.csv
-```
+This example directory includes addresses of Helsinki by default. If you prefer nationwide dataset begin by downloading the data from https://github.com/ubigu/finnish-open-addresses/releases (latest is best) as either zip or tar.gz and extract the file using your favourite tool and move the `data` directory to this path (the `data` directory is contained inside a `finnish-open-addresses-<date>`)
 
 ### Setting up the database
 
@@ -29,38 +28,52 @@ CREATE EXTENSION postgis;
 
 ### Load the data into the database
 
-Create the tables to represent the raw data and load the data in
+Create the tables
 ```
 psql -d address_fin -f create_tables.sql
+```
 
-psql -d address_fin -c "\copy suomi_osoitteet (
-rakennustunnus,
-sijaintikunta,
-maakunta,
-kayttotarkoitus,
-pohjoiskoordinaatti,
-itakoordinaatti,
-osoitenumero,
-kadunnimi_suomi,
-kadunnimi_ruotsi,
-katunumero,
-postinumero,
-aanestysalue,
-aanestysalue_nimi_suomi,
-aanestysalue_nimi_ruotsi,
-sijaintikiinteisto,
-tietojen_poimintapaiva
-) FROM 'suomi_osoitteet.csv' WITH (FORMAT CSV, DELIMITER ';')"
+Load the data
 
+Helsinki only
+```
+psql -d address_fin -c "\copy finnish_open_address (
+  permanent_building_identifier,
+  address_index,
+  east,
+  north,
+  postal_code,
+  address,
+  address_number,
+  municipality_number,
+  property_identifier
+) FROM '091.csv' WITH (FORMAT CSV)" 
+```
+
+If you instead previously downloaded nationwide dataset you can import all of them with
+```
+cut -d, -f 1 suomi_kunnat.csv | tail -n +2 | while read -r municipality; do PGPASSWORD=<password> psql -U <user> -d address_fin -c "\copy finnish_open_address (
+  permanent_building_identifier,
+  address_index,
+  east,
+  north,
+  postal_code,
+  address,
+  address_number,
+  municipality_number,
+  property_identifier
+) FROM 'data/${municipality}.csv' WITH (FORMAT CSV)"; done
+```
+
+Import municipality name data
+```
 psql -d address_fin -c "\copy suomi_kunnat (sijaintikunta, nimi_suomi) FROM 'suomi_kunnat.csv' WITH (FORMAT CSV, DELIMITER ';', HEADER)"
 ```
 
 ### Transform raw data
 
 * Create unique primary key index by combining rakennustunnus with osoitenumero
-* Select thoroughfarename from kadunnimi_suomi, kadunnimi_ruotsi
-* Copy finnish municipality name over
-* Filter out rows with no finnish or swedish thoroughfarenames
+* Replace municipality_code with the finnish name of the municipality
 
 ```
 psql -d address_fin -f simple_addresses.sql
