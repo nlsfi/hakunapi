@@ -9,20 +9,17 @@ services:
       POSTGRES_USER: address_reader
       POSTGRES_PASSWORD: test
     volumes:
-      - ./init-addresses.sh:/docker-entrypoint-initdb.d/init-addresses.sh:ro
-      - ../examples/finnish_addresses/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
-      - ../examples/finnish_addresses/simple_addresses.sql:/docker-entrypoint-initdb.d/simple_addresses.sql:ro
-      - ../examples/finnish_addresses/suomi_kunnat.csv:/docker-entrypoint-initdb.d/suomi_kunnat.csv:ro
-      - ../examples/finnish_addresses/suomi_osoitteet.csv:/docker-entrypoint-initdb.d/suomi_osoitteet.csv:ro
-      - ../examples/finnish_addresses/cfg:/docker-entrypoint-initdb.d/cfg:ro
+      - ../examples/finnish_addresses/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+      - ../examples/finnish_addresses/091.csv:/usr/local/share/091.csv:ro
+      - ../examples/finnish_addresses/suomi_kunnat.csv:/usr/local/share/suomi_kunnat.csv:ro
       - db_data:/var/lib/postgresql
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 30s
-      timeout: 10s
+      test: [ "CMD-SHELL", "pg_isready -h localhost" ]
+      interval: 5s
       retries: 5
+      timeout: 10s
   hakunapi:
     build: ../.
     restart: unless-stopped
@@ -38,7 +35,9 @@ services:
         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:41467
         -Dfeatures.hakuna.config.path=/app/config/addresses.properties
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        restart: true
 
 volumes:
   db_data: {}
