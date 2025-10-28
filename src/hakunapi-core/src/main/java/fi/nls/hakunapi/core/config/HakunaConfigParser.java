@@ -34,6 +34,7 @@ import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyCursor;
 import fi.nls.hakunapi.core.PaginationStrategyHybrid;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
@@ -276,7 +277,7 @@ public class HakunaConfigParser {
         return collectionsIds;
     }
 
-    public FeatureType readCollection(Path path, Map<String, SimpleSource> sourcesByType, String collectionId) throws Exception {
+    public FeatureType readCollection(Path path, Map<String, SimpleSource> sourcesByType, String collectionId, List<SRIDCode> knownSrids) throws Exception {
     	LOG.info("collection "+collectionId);
         // Current prefix for properties
         String p = "collections." + collectionId + ".";
@@ -304,6 +305,7 @@ public class HakunaConfigParser {
         ft.setMetadata(parseMetadata(p, path));
         ft.setProjectionTransformerFactory(getProjection(p));
         ft.setCacheSettings(parseCacheConfig(collectionId));
+        ft.setKnownSrids(knownSrids);
 
         if (ft.getPaginationStrategy() == null) {
             ft.setPaginationStrategy(getPaginationStrategy(p, ft));
