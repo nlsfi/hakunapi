@@ -2,13 +2,11 @@ package fi.nls.hakunapi.cql2.function;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
 import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo.FunctionArgumentType;
-import fi.nls.hakunapi.cql2.model.function.FunctionCall;
-import fi.nls.hakunapi.cql2.model.literal.StringLiteral;
 
 public class FunctionTableTest {
 
@@ -17,23 +15,18 @@ public class FunctionTableTest {
 
         FunctionTableImpl functions = FunctionTable.of("poc",
                 //
-                Function.of("A", (func, call) -> {
-                    return func.toString(call, "param");
+                Function.of("echo", (func, args, ctx) -> {
+                    return func.getStringArg(args, "param");
                 }).argument("param", FunctionArgumentType.string),
                 //
-                Function.of("B", (func, call) -> {
-                    return func.toString(call, "param");
-                }).argument("param", FunctionArgumentType.string)
+                Function.of("numToString", (func, args, ctx) -> {
+                    return func.getNumberArg(args, "arg1").toString();
+                }).argument("arg1", FunctionArgumentType.number)
 
         );
 
-        FunctionCall callA = new FunctionCall("A", Arrays.asList(new StringLiteral("A")));
-
-        assertTrue("A".equals(functions.getFunction("A").visit(callA)));
-
-        FunctionCall callB = new FunctionCall("B", Arrays.asList(new StringLiteral("B")));
-
-        assertTrue("B".equals(functions.getFunction("B").visit(callB)));
+        assertTrue("A".equals(functions.getFunction("echo").invoke(List.of("A"), null)));
+        assertTrue("1337.0".equals(functions.getFunction("numToString").invoke(List.of(1337.0), null)));
 
     }
 }

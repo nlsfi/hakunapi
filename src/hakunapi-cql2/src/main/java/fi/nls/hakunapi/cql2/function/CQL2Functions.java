@@ -17,7 +17,11 @@ public class CQL2Functions {
     Map<String, FunctionTable> FUNCTION_TABLES = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public void register() {
-        FunctionTableProvider.getFunctionTables().forEach(ft -> {
+        init(FunctionTableProvider.getFunctionTables());
+    }
+
+    public void init(List<FunctionTable> functionTables) {
+        functionTables.forEach(ft -> {
             FUNCTION_TABLES.put(ft.getPackageName(), ft);
         });
     }

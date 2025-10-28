@@ -11,16 +11,12 @@ import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo;
 import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo.FunctionArgumentType;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo.FunctionReturnsType;
-import fi.nls.hakunapi.cql2.model.function.FunctionCall;
-import fi.nls.hakunapi.cql2.model.literal.NumberLiteral;
-import fi.nls.hakunapi.cql2.model.literal.StringLiteral;
-import fi.nls.hakunapi.cql2.model.spatial.SpatialLiteral;
 
 public class Function {
 
     @FunctionalInterface
     public interface FunctionImplementation {
-        Object visit(Function func, FunctionCall call);
+        Object invoke(Function func, List<Object> args, Object context);
     }
 
     protected String name;
@@ -74,7 +70,7 @@ public class Function {
         return returns;
     }
 
-    public Object visit(FunctionCall functionCall) {
+    public Object invoke(List<Object> args, Object context) {
         throw new RuntimeException("Missing function implementation");
     }
 
@@ -97,22 +93,25 @@ public class Function {
     public static Function of(String name, final FunctionImplementation impl) {
 
         return new Function(name, null, null) {
-            public Object visit(FunctionCall call) {
-                return impl.visit(this, call);
+            public Object invoke(List<Object> args, Object context) {
+                return impl.invoke(this, args, context);
             }
         };
     }
 
-    protected Geometry toGeometry(FunctionCall call, String name) {
-        return ((SpatialLiteral) call.getArgs().get(argumentsPosName.get(name))).getGeometry();
+    protected Geometry getGeometryArg(List<Object> args, String name) {
+        int i = argumentsPosName.get(name);
+        return (Geometry) args.get(i);
     }
 
-    protected Number toNumber(FunctionCall call, String name) {
-        return ((NumberLiteral) call.getArgs().get(argumentsPosName.get(name))).getValue();
+    protected Number getNumberArg(List<Object> args, String name) {
+        int i = argumentsPosName.get(name);
+        return (Number) args.get(i);
     }
 
-    protected String toString(FunctionCall call, String name) {
-        return ((StringLiteral) call.getArgs().get(argumentsPosName.get(name))).getValue();
+    protected String getStringArg(List<Object> args, String name) {
+        int i = argumentsPosName.get(name);
+        return args.get(i).toString();
     }
 
 }
