@@ -27,27 +27,27 @@ import fi.nls.hakunapi.cql2.model.logical.Or;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialLiteral;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialPredicate;
 
-public class ExpressionToHakunaFilter implements ExpressionVisitor {
+public class ExpressionToHakunaFilter implements ExpressionVisitor<FilterContext> {
 
     @Override
-    public Object visit(And and, Object context) {
+    public Object visit(And and, FilterContext context) {
         return Filter
                 .and(and.getChildren().stream().map(child -> visit(child, context)).map(Filter.class::cast).collect(Collectors.toList()));
     }
 
     @Override
-    public Object visit(Or or, Object context) {
+    public Object visit(Or or, FilterContext context) {
         return Filter
                 .or(or.getChildren().stream().map(child -> visit(child, context)).map(Filter.class::cast).collect(Collectors.toList()));
     }
 
     @Override
-    public Object visit(Not not, Object context) {
+    public Object visit(Not not, FilterContext context) {
         return ((Filter) visit(not.getExpression(), context)).negate();
     }
 
     @Override
-    public Object visit(BinaryComparisonPredicate p, Object context) {
+    public Object visit(BinaryComparisonPredicate p, FilterContext context) {
         PropertyName propertyName = p.getProp();
         Expression e = p.getValue();
         HakunaProperty prop = visit(propertyName, context);
@@ -73,7 +73,7 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(LikePredicate p, Object context) {
+    public Object visit(LikePredicate p, FilterContext context) {
         PropertyName propertyName = p.getProperty();
         StringLiteral pattern = p.getPattern();
         HakunaProperty prop = visit(propertyName, context);
@@ -83,46 +83,43 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(IsNullPredicate p, Object context) {
+    public Object visit(IsNullPredicate p, FilterContext context) {
         return Filter.isNull(visit(p.getProperty(), context));
     }
 
     @Override
-    public HakunaProperty visit(PropertyName p, Object context) {
-        HakunaProperty prop = ((FilterContext) context).queryables.get(p.getValue());
-        if (prop == null) {
-            throw new IllegalArgumentException("Non queryable property " + p.getValue());
-        }
-        return prop;
+    public HakunaProperty visit(PropertyName p, FilterContext context) {
+        return context.queryable(p.getValue())
+            .orElseThrow(() -> new IllegalArgumentException("Non queryable property " + p.getValue()));
     }
 
     @Override
-    public Object visit(BooleanLiteral p, Object context) {
+    public Object visit(BooleanLiteral p, FilterContext context) {
         return p.getValue() ? "true" : "false";
     }
 
     @Override
-    public Object visit(NumberLiteral p, Object context) {
+    public Object visit(NumberLiteral p, FilterContext context) {
         return Double.toString(p.getValue());
     }
 
     @Override
-    public Object visit(StringLiteral p, Object context) {
+    public Object visit(StringLiteral p, FilterContext context) {
         return p.getValue();
     }
 
     @Override
-    public Object visit(DateLiteral p, Object context) {
+    public Object visit(DateLiteral p, FilterContext context) {
         return p.getDate().toString();
     }
 
     @Override
-    public Object visit(TimestampLiteral p, Object context) {
+    public Object visit(TimestampLiteral p, FilterContext context) {
         return p.getTimestamp().toString();
     }
 
     @Override
-    public Object visit(SpatialPredicate p, Object context) {
+    public Object visit(SpatialPredicate p, FilterContext context) {
         HakunaProperty property = visit(p.getProp(), context);
         if (!(property instanceof HakunaPropertyGeometry)) {
             throw new IllegalArgumentException(
@@ -159,12 +156,12 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(SpatialLiteral p, Object context) {
+    public Object visit(SpatialLiteral p, FilterContext context) {
         return p.getGeometry();
     }
 
     @Override
-    public Object visit(FunctionCall functionCall, Object context) {
+    public Object visit(FunctionCall functionCall, FilterContext context) {
         List<Object> args = functionCall.getArgs().stream()
                 .map(arg -> visit(arg, context))
                 .collect(Collectors.toList());
@@ -185,7 +182,7 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
         }
     }
 
-    private Object invokeFunction(Function f, List<Object> visitedArgs, Object context) {
+    private Object invokeFunction(Function f, List<Object> visitedArgs, FilterContext context) {
         // visit() transformed all literal values (except Geometries) to strings for Filter
         // => Convert them back as the Functions expect objects that match the arg type
         List<FunctionArgumentInfo> fArgs = f.getArguments();
@@ -201,7 +198,7 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(EmptyExpression ee, Object context) {
+    public Object visit(EmptyExpression ee, FilterContext context) {
         return Filter.PASS;
     }
 

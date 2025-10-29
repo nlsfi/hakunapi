@@ -25,7 +25,7 @@ public class TestGeometryFunctionsFactory {
         List<FunctionTable> functionTables = factory.createFunctionTables();
 
         assertEquals(functionTables.size(), 1);
-        Function buffer = functionTables.get(0).getFunction("Buffer");
+        Function<?> buffer = functionTables.get(0).getFunction("Buffer");
         assertNotNull(buffer);
 
         LineString geomFrom = geomFactory
@@ -45,7 +45,7 @@ public class TestGeometryFunctionsFactory {
         List<FunctionTable> functionTables = factory.createFunctionTables();
 
         assertEquals(functionTables.size(), 1);
-        Function st_buffer = functionTables.get(0).getFunction("ST_Buffer");
+        Function<?> st_buffer = functionTables.get(0).getFunction("ST_Buffer");
         assertNotNull(st_buffer);
 
         LineString geomFrom = geomFactory
@@ -65,7 +65,7 @@ public class TestGeometryFunctionsFactory {
         List<FunctionTable> functionTables = factory.createFunctionTables();
 
         assertEquals(functionTables.size(), 1);
-        Function st_buffer = functionTables.get(0).getFunction("ST_Buffer");
+        Function<?> st_buffer = functionTables.get(0).getFunction("ST_Buffer");
         assertNotNull(st_buffer);
 
         LineString geomFrom = geomFactory

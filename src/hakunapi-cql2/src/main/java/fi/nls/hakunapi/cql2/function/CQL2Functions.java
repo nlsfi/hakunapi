@@ -35,7 +35,7 @@ public class CQL2Functions {
                 .filter(Objects::nonNull).findFirst();
     }
 
-    public static FunctionInfo fromFunc(Function func) {
+    public static FunctionInfo fromFunc(Function<?> func) {
         final FunctionInfo funcInfo = new FunctionInfo(func.getName(), func.getDescription(), func.getMetadataUrl());
         funcInfo.setArguments(func.getArguments());
         funcInfo.setReturns(func.getReturns());

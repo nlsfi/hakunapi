@@ -16,6 +16,7 @@ import fi.nls.hakunapi.cql2.model.EmptyExpression;
 import fi.nls.hakunapi.cql2.model.Expression;
 import fi.nls.hakunapi.cql2.model.ExpressionToHakunaFilter;
 import fi.nls.hakunapi.cql2.model.FilterContext;
+import fi.nls.hakunapi.cql2.model.SimpleFilterContext;
 
 public class CQL2Text implements FilterParser {
 
@@ -32,7 +33,7 @@ public class CQL2Text implements FilterParser {
     public Filter parse(FeatureType ft, String filter, int filterSrid) throws IllegalArgumentException {
         try {
             Expression expression = parse(filter, new GeometryFactory(new PrecisionModel(), filterSrid));
-            FilterContext context = new FilterContext(ft, ft.getSrid(filterSrid).get());
+            FilterContext context = new SimpleFilterContext(ft, ft.getSrid(filterSrid).get());
             return (Filter) new ExpressionToHakunaFilter().visit(expression, context);
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {

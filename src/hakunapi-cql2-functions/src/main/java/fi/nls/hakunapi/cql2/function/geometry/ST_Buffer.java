@@ -11,8 +11,9 @@ import org.locationtech.jts.operation.buffer.BufferParameters;
 import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo.FunctionArgumentType;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo.FunctionReturnsType;
 import fi.nls.hakunapi.cql2.function.Function;
+import fi.nls.hakunapi.cql2.model.FilterContext;
 
-public class ST_Buffer extends Function {
+public class ST_Buffer extends Function<FilterContext> {
 
     /*
      * reference: http://postgis.net/docs/manual-3.2/ST_Buffer.html
@@ -31,7 +32,7 @@ public class ST_Buffer extends Function {
     }
 
     @Override
-    public Object invoke(List<Object> args, Object context) {
+    public Object invoke(List<Object> args, FilterContext context) {
         Geometry geom = getGeometryArg(args, "geom");
         double radius_of_buffer = getNumberArg(args, "radius_of_buffer").doubleValue();
         String buffer_style_parameters = getStringArg(args, "buffer_style_parameters");

@@ -9,12 +9,14 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 import java.util.List;
+import java.util.Optional;
 
 import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.filter.FilterOp;
 import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyWriters;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
@@ -31,7 +33,7 @@ public class ExpressionToHakunaFilterTest {
 
     @BeforeClass
     public static void init() {
-        Function buffer = Function.of("buffer", (fn, args, ctx) -> {
+        Function<?> buffer = Function.of("buffer", (fn, args, ctx) -> {
             Geometry g = (Geometry) args.get(0);
             double distance = ((Number) args.get(1)).doubleValue();
             return g.buffer(distance);
@@ -40,7 +42,7 @@ public class ExpressionToHakunaFilterTest {
         .argument("distance", FunctionArgumentType.number)
         .returns(FunctionReturnsType.geometry);
 
-        Function centroid = Function.of("centroid", (fn, args, ctx) -> {
+        Function<?> centroid = Function.of("centroid", (fn, args, ctx) -> {
             Geometry g = (Geometry) args.get(0);
             return g.getFactory().createPoint(Centroid.getCentroid(g));
         })
@@ -61,7 +63,27 @@ public class ExpressionToHakunaFilterTest {
         String filter = "S_Intersects(footprint, BUFFER(cenTroid( lineString (0 0, 100 100)), 10))";
         SRIDCode filterSrid = new SRIDCode(4326, true, true, HakunaGeometryDimension.XY);
 
-        FilterContext ctx = new FilterContext(queryables, filterSrid);
+        FilterContext ctx = new FilterContext() {
+            @Override
+            public Optional<HakunaProperty> queryable(String name) {
+                return queryables.stream().filter(x -> x.getName().equals(name)).findAny();
+            }
+
+            @Override
+            public Optional<SRIDCode> storageSrid() {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ProjectionTransformerFactory> projectionTransformer() {
+                return Optional.empty();
+            }
+
+            @Override
+            public SRIDCode filterSrid() {
+                return filterSrid;
+            }
+        };
 
         Expression expr = CQL2Text.parse(filter);
         Filter f = (Filter) new ExpressionToHakunaFilter().visit(expr, ctx);

@@ -13,9 +13,9 @@ import fi.nls.hakunapi.cql2.model.logical.Or;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialLiteral;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialPredicate;
 
-public interface ExpressionVisitor {
+public interface ExpressionVisitor<T> {
 
-    default public Object visit(Expression e, Object context) {
+    default public Object visit(Expression e, T context) {
         if (e instanceof BinaryComparisonPredicate) {
             return visit((BinaryComparisonPredicate) e, context);
         } else if (e instanceof LikePredicate) {
@@ -53,26 +53,26 @@ public interface ExpressionVisitor {
         throw new IllegalStateException("Unknown Expression " + e.getClass());
     }
 
-    public Object visit(And and, Object context);
-    public Object visit(Or or, Object context);
-    public Object visit(Not not, Object context);
+    public Object visit(And and, T context);
+    public Object visit(Or or, T context);
+    public Object visit(Not not, T context);
 
-    public Object visit(SpatialPredicate p, Object context);
-    public Object visit(SpatialLiteral p, Object context);
+    public Object visit(SpatialPredicate p, T context);
+    public Object visit(SpatialLiteral p, T context);
 
-    public Object visit(BinaryComparisonPredicate p, Object context);
-    public Object visit(LikePredicate p, Object context);
-    public Object visit(IsNullPredicate p, Object context);
+    public Object visit(BinaryComparisonPredicate p, T context);
+    public Object visit(LikePredicate p, T context);
+    public Object visit(IsNullPredicate p, T context);
     
-    public Object visit(PropertyName p, Object context);
+    public Object visit(PropertyName p, T context);
 
-    public Object visit(BooleanLiteral p, Object context);
-    public Object visit(NumberLiteral p, Object context);
-    public Object visit(StringLiteral p, Object context);
-    public Object visit(DateLiteral p, Object context);
-    public Object visit(TimestampLiteral p, Object context);
+    public Object visit(BooleanLiteral p, T context);
+    public Object visit(NumberLiteral p, T context);
+    public Object visit(StringLiteral p, T context);
+    public Object visit(DateLiteral p, T context);
+    public Object visit(TimestampLiteral p, T context);
 
-    public Object visit(FunctionCall fn, Object context);
-    public Object visit(EmptyExpression ee, Object context);
+    public Object visit(FunctionCall fn, T context);
+    public Object visit(EmptyExpression ee, T context);
 
 }

@@ -12,11 +12,11 @@ import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo.FunctionArgumentType;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo.FunctionReturnsType;
 
-public class Function {
+public class Function<TContext> {
 
     @FunctionalInterface
-    public interface FunctionImplementation {
-        Object invoke(Function func, List<Object> args, Object context);
+    public interface FunctionImplementation<TContext> {
+        Object invoke(Function<TContext> func, List<Object> args, TContext context);
     }
 
     protected String name;
@@ -50,14 +50,14 @@ public class Function {
         this.metadataUrl = metadataUrl;
     }
 
-    public Function argument(String name, FunctionArgumentType type) {
+    public Function<TContext> argument(String name, FunctionArgumentType type) {
         FunctionArgumentInfo funcArgInfo = new FunctionArgumentInfo(name, null, type);
         argumentsPosName.put(name, arguments.size());
         arguments.add(funcArgInfo);
         return this;
     }
 
-    public Function returns(FunctionReturnsType type) {
+    public Function<TContext> returns(FunctionReturnsType type) {
         returns = new FunctionReturnsInfo(type);
         return this;
     }
@@ -70,7 +70,7 @@ public class Function {
         return returns;
     }
 
-    public Object invoke(List<Object> args, Object context) {
+    public Object invoke(List<Object> args, TContext context) {
         throw new RuntimeException("Missing function implementation");
     }
 
@@ -81,19 +81,19 @@ public class Function {
         this.metadataUrl = metadataUrl;
     }
 
-    public static Function of(String name) {
-        return new Function(name, null, null);
+    public static <TContext> Function<TContext> of(String name) {
+        return new Function<>(name, null, null);
     }
 
-    public static Function of(String name, String description, String metadataUrl) {
+    public static <TContext> Function<TContext> of(String name, String description, String metadataUrl) {
 
-        return new Function(name, description, metadataUrl);
+        return new Function<>(name, description, metadataUrl);
     }
 
-    public static Function of(String name, final FunctionImplementation impl) {
+    public static <TContext> Function<TContext> of(String name, final FunctionImplementation<TContext> impl) {
 
-        return new Function(name, null, null) {
-            public Object invoke(List<Object> args, Object context) {
+        return new Function<>(name, null, null) {
+            public Object invoke(List<Object> args, TContext context) {
                 return impl.invoke(this, args, context);
             }
         };
