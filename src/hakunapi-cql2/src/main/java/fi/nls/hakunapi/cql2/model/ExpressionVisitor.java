@@ -13,66 +13,66 @@ import fi.nls.hakunapi.cql2.model.logical.Or;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialLiteral;
 import fi.nls.hakunapi.cql2.model.spatial.SpatialPredicate;
 
-public interface ExpressionVisitor {
+public interface ExpressionVisitor<T> {
 
-    default public Object visit(Expression e) {
+    default public Object visit(Expression e, T context) {
         if (e instanceof BinaryComparisonPredicate) {
-            return visit((BinaryComparisonPredicate) e);
+            return visit((BinaryComparisonPredicate) e, context);
         } else if (e instanceof LikePredicate) {
-            return visit((LikePredicate) e);
+            return visit((LikePredicate) e, context);
         } else if (e instanceof IsNullPredicate) {
-            return visit((IsNullPredicate) e);
+            return visit((IsNullPredicate) e, context);
         } else if (e instanceof BooleanLiteral) {
-            return visit((BooleanLiteral) e);
+            return visit((BooleanLiteral) e, context);
         } else if (e instanceof NumberLiteral) {
-            return visit((NumberLiteral) e);
+            return visit((NumberLiteral) e, context);
         } else if (e instanceof StringLiteral) {
-            return visit((StringLiteral) e);
+            return visit((StringLiteral) e, context);
         } else if (e instanceof DateLiteral) {
-            return visit((DateLiteral) e);
+            return visit((DateLiteral) e, context);
         } else if (e instanceof TimestampLiteral) {
-            return visit((TimestampLiteral) e);
+            return visit((TimestampLiteral) e, context);
         } else if (e instanceof PropertyName) {
-            return visit((PropertyName) e);
+            return visit((PropertyName) e, context);
         } else if (e instanceof And) {
-            return visit((And) e);
+            return visit((And) e, context);
         } else if (e instanceof Or) {
-            return visit((Or) e);
+            return visit((Or) e, context);
         } else if (e instanceof Not) {
-            return visit((Not) e);
+            return visit((Not) e, context);
         } else if (e instanceof SpatialPredicate) {
-            return visit((SpatialPredicate) e);
+            return visit((SpatialPredicate) e, context);
         } else if (e instanceof SpatialLiteral) {
-            return visit((SpatialLiteral) e);
+            return visit((SpatialLiteral) e, context);
         } else if (e instanceof FunctionCall) {
-            return visit((FunctionCall) e);
+            return visit((FunctionCall) e, context);
         } else if (e instanceof EmptyExpression) {
-            return visit((EmptyExpression) e);
+            return visit((EmptyExpression) e, context);
         }
 
         throw new IllegalStateException("Unknown Expression " + e.getClass());
     }
 
-    public Object visit(And and);
-    public Object visit(Or or);
-    public Object visit(Not not);
+    public Object visit(And and, T context);
+    public Object visit(Or or, T context);
+    public Object visit(Not not, T context);
 
-    public Object visit(SpatialPredicate p);
-    public Object visit(SpatialLiteral p);
+    public Object visit(SpatialPredicate p, T context);
+    public Object visit(SpatialLiteral p, T context);
 
-    public Object visit(BinaryComparisonPredicate p);
-    public Object visit(LikePredicate p);
-    public Object visit(IsNullPredicate p);
+    public Object visit(BinaryComparisonPredicate p, T context);
+    public Object visit(LikePredicate p, T context);
+    public Object visit(IsNullPredicate p, T context);
     
-    public Object visit(PropertyName p);
+    public Object visit(PropertyName p, T context);
 
-    public Object visit(BooleanLiteral p);
-    public Object visit(NumberLiteral p);
-    public Object visit(StringLiteral p);
-    public Object visit(DateLiteral p);
-    public Object visit(TimestampLiteral p);
+    public Object visit(BooleanLiteral p, T context);
+    public Object visit(NumberLiteral p, T context);
+    public Object visit(StringLiteral p, T context);
+    public Object visit(DateLiteral p, T context);
+    public Object visit(TimestampLiteral p, T context);
 
-    public Object visit(FunctionCall fn);
-    public Object visit(EmptyExpression ee);
+    public Object visit(FunctionCall fn, T context);
+    public Object visit(EmptyExpression ee, T context);
 
 }

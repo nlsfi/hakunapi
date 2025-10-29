@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -15,6 +16,7 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.PaginationStrategy;
 import fi.nls.hakunapi.core.PaginationStrategyOffset;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
@@ -168,6 +170,11 @@ public class TestLoggingFeatureServiceTelemetry {
         public FeatureProducer getFeatureProducer() {
 
             return null;
+        }
+
+        @Override
+        public Optional<SRIDCode> getSrid(int srid) {
+            return Optional.empty();
         }
 
     };

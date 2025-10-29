@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +53,7 @@ public class GpkgSimpleSourceTest {
 
     @Test
     public void testParsingFeatureType() throws Exception {
-        FeatureType ft = cfg.readCollection(null, Map.of(source.getType(), source), "sample_feature_table");
+        FeatureType ft = cfg.readCollection(null, Map.of(source.getType(), source), "sample_feature_table", Collections.emptyList());
         assertEquals("sample_feature_table", ft.getTitle());
         assertEquals("", ft.getDescription());
         assertEquals(5, ft.getProperties().size());
@@ -70,7 +71,7 @@ public class GpkgSimpleSourceTest {
 
     @Test
     public void testReadingFeatures() throws Exception {
-        FeatureType ft = cfg.readCollection(null, Map.of(source.getType(), source), "sample_feature_table");
+        FeatureType ft = cfg.readCollection(null, Map.of(source.getType(), source), "sample_feature_table", Collections.emptyList());
         GetFeatureRequest request = new GetFeatureRequest();
         request.setSRID(3067);
         request.setLimit(1);
