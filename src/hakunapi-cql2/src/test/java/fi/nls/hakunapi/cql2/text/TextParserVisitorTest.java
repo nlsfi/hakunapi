@@ -259,9 +259,9 @@ public class TextParserVisitorTest {
 
     @Test
     public void testSIntersectsBbox() {
-        String intersects_envelope = "S_Intersects(footprint, bbox (43.5845, -79.5442, 43.6079, -79.7893))";
+        String intersects_envelope = "S_Intersects(footprint, bbox (43.5845, -79.7893, 43.6079, -79.5442))";
         parse(intersects_envelope).accept(toString);
-        String expected = "S_INTERSECTS(footprint, POLYGON ((43.5845 -79.5442, 43.6079 -79.5442, 43.6079 -79.7893, 43.5845 -79.7893, 43.5845 -79.5442)))";
+        String expected = "S_INTERSECTS(footprint, POLYGON ((43.5845 -79.7893, 43.6079 -79.7893, 43.6079 -79.5442, 43.5845 -79.5442, 43.5845 -79.7893)))";
         String actual = toString.finish();
         assertEquals(expected, actual);
     }

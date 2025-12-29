@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+import fi.nls.hakunapi.core.geom.Bbox;
 import fi.nls.hakunapi.cql2.Cql2Parser;
 import fi.nls.hakunapi.cql2.Cql2Parser.BinaryComparisonPredicateContext;
 import fi.nls.hakunapi.cql2.Cql2Parser.PropertyNameContext;
@@ -332,18 +333,11 @@ public class TextParserVisitor extends Cql2ParserBaseVisitor<Expression> impleme
         if (values.length == 6) {
             // Skip z
             i++;
-            // Currently we throw an exception with ?bbox=x1,y1,z1,x2,y2,z2 so this is not exact same behaviour
         }
         double x2 = values[i++];
         double y2 = values[i++];
-        Coordinate[] shell = new Coordinate[] {
-                new Coordinate(x1, y1),
-                new Coordinate(x2, y1),
-                new Coordinate(x2, y2),
-                new Coordinate(x1, y2),
-                new Coordinate(x1, y1)
-        };
-        return new SpatialLiteral(gf.createPolygon(shell));
+        Geometry bbox = Bbox.createBboxGeometry(x1, y1, x2, y2, gf);
+        return new SpatialLiteral(bbox);
     }
 
     @Override

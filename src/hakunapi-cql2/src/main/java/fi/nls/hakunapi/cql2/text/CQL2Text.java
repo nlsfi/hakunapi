@@ -9,6 +9,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.cql2.Cql2Lexer;
 import fi.nls.hakunapi.cql2.Cql2Parser;
@@ -28,10 +29,10 @@ public class CQL2Text implements FilterParser {
     }
 
     @Override
-    public Filter parse(FeatureType ft, String filter, int filterSrid) throws IllegalArgumentException {
+    public Filter parse(FeatureType ft, String filter, SRIDCode filterSrid) throws IllegalArgumentException {
         try {
-            Expression expression = parse(filter, new GeometryFactory(new PrecisionModel(), filterSrid));
-            return (Filter) new ExpressionToHakunaFilter(ft).visit(expression);
+            Expression expression = parse(filter, new GeometryFactory(new PrecisionModel(), filterSrid.getSrid()));
+            return (Filter) new ExpressionToHakunaFilter(ft, filterSrid).visit(expression);
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {
                 throw e;

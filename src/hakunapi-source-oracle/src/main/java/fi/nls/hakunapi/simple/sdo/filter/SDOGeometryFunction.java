@@ -8,7 +8,6 @@ import org.geotools.data.oracle.sdo.GeometryConverter;
 import org.locationtech.jts.geom.Geometry;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.simple.sdo.sql.filter.SQLFilter;
@@ -37,7 +36,6 @@ public abstract class SDOGeometryFunction implements SQLFilter {
     public int bind(Filter filter, Connection c, PreparedStatement ps, int i) throws SQLException {
         HakunaPropertyGeometry prop = (HakunaPropertyGeometry) filter.getProp();
         Geometry geom = (Geometry) filter.getValue();
-        geom = ProjectionHelper.reprojectToStorageCRS(prop, geom);
 
         OracleConnection oc = c.unwrap(OracleConnection.class);
 

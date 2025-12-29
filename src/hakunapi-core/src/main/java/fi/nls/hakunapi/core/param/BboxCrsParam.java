@@ -1,15 +1,10 @@
 package fi.nls.hakunapi.core.param;
 
-import org.locationtech.jts.geom.Geometry;
-
 import fi.nls.hakunapi.core.FeatureServiceConfig;
-import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
-import fi.nls.hakunapi.core.util.AxisOrderSwapFilter;
 import fi.nls.hakunapi.core.util.CrsUtil;
-import fi.nls.hakunapi.core.util.FilterUtil;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
@@ -39,33 +34,22 @@ public class BboxCrsParam implements GetFeatureParam {
             return;
         }
 
+        int srid = CrsUtil.parseSRID(value, getParamName());
+
         for (GetFeatureCollection collection : request.getCollections()) {
             HakunaPropertyGeometry geom = collection.getFt().getGeom();
-            if (geom == null) {
-                continue;
-            }
-            Filter bboxFilter = FilterUtil.findFilterByTag(collection.getFilters(), BboxParam.TAG);
-            if (bboxFilter == null) {
-                continue;
-            }
-            int srid = CrsUtil.parseSRID(value, getParamName());
-            if (!geom.isSRIDSupported(srid)) {
+            if (geom != null && !geom.isSRIDSupported(srid)) {
                 throw new IllegalArgumentException(CrsUtil.ERR_UNSUPPORTED_CRS);
             }
-            Geometry bbox = (Geometry) bboxFilter.getValue();
-            bbox.setSRID(srid);
-
-            if (service.isCrsLatLon(srid)) {
-                bbox.apply(new AxisOrderSwapFilter());
-            }
         }
-        
+
+        request.setBboxSrid(srid);
         request.addQueryParam(getParamName(), value);
     }
 
     @Override
     public int priority() {
-        return 10; // Run after BboxParam
+        return -10; // Run before BboxParam
     }
 
 }

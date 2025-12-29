@@ -8,7 +8,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 
@@ -23,9 +22,7 @@ public class PostGISIntersectsIndex implements SQLFilter {
 
     @Override
     public int bind(Filter filter, Connection c, PreparedStatement ps, int i) throws SQLException {
-        HakunaPropertyGeometry prop = (HakunaPropertyGeometry) filter.getProp();
         Geometry bbox = (Geometry) filter.getValue();
-        bbox = ProjectionHelper.reprojectToStorageCRS(prop, bbox);
 
         int outputDimension = bbox.getDimension() > 2 ? 3 : 2;
         byte[] wkb = new WKBWriter(outputDimension, false).write(bbox);

@@ -2,6 +2,7 @@ package fi.nls.hakunapi.core.param;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
@@ -53,9 +54,12 @@ public class FilterParam implements GetFeatureParam {
             throw new IllegalArgumentException(err);
         }
 
+        SRIDCode filterSrid = service.getSridCode(request.getFilterSrid())
+            .orElseThrow(() -> new IllegalArgumentException("Unknown SRID: " + request.getFilterSrid()));
+
         for (GetFeatureCollection c : request.getCollections()) {
             FeatureType ft = c.getFt();
-            Filter filter = parser.parse(ft, value, request.getFilterSrid());
+            Filter filter = parser.parse(ft, value, filterSrid);
             if (filter != null) {
                 filter.setTag(TAG);
                 c.addFilter(filter);

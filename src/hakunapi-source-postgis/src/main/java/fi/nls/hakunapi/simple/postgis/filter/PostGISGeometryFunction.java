@@ -8,13 +8,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
-import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 
 public abstract class PostGISGeometryFunction implements SQLFilter {
-    
-    public abstract String getFunctionName(); 
+
+    public abstract String getFunctionName();
 
     @Override
     public String toSQL(Filter filter) {
@@ -25,9 +23,7 @@ public abstract class PostGISGeometryFunction implements SQLFilter {
 
     @Override
     public int bind(Filter filter, Connection c, PreparedStatement ps, int i) throws SQLException {
-        HakunaPropertyGeometry prop = (HakunaPropertyGeometry) filter.getProp();
         Geometry geom = (Geometry) filter.getValue();
-        geom = ProjectionHelper.reprojectToStorageCRS(prop, geom);
 
         int outputDimension = geom.getDimension() > 2 ? 3 : 2;
         byte[] wkb = new WKBWriter(outputDimension, false).write(geom);

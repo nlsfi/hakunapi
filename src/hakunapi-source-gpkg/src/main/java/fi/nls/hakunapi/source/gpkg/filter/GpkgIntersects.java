@@ -8,7 +8,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.source.gpkg.GpkgFeatureType;
 
@@ -50,8 +49,7 @@ public class GpkgIntersects implements SQLFilter {
 
     @Override
     public int bind(Filter filter, Connection c, PreparedStatement ps, int i) throws SQLException {
-        HakunaPropertyGeometry prop = (HakunaPropertyGeometry) filter.getProp();
-        Geometry geom = ProjectionHelper.reprojectToStorageCRS(prop, (Geometry) filter.getValue());
+        Geometry geom = (Geometry) filter.getValue();
         Envelope envelope = geom.getEnvelopeInternal();
 
         ps.setDouble(i++, envelope.getMinX());
