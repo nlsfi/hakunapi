@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
@@ -56,5 +57,7 @@ public interface FeatureType {
     public default CacheSettings getCacheSettings() {
         return null;
     }
+
+    public Optional<SRIDCode> getSrid(int srid);
 
 }

@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
@@ -32,6 +32,7 @@ public abstract class SimpleFeatureType implements FeatureType {
     private List<Filter> staticFilters;
     private ProjectionTransformerFactory transformerFactory;
     private Map<String, Object> metadata;
+    private List<SRIDCode> knownSrids;
     
     public abstract FeatureProducer getFeatureProducer();
 
@@ -200,6 +201,19 @@ public abstract class SimpleFeatureType implements FeatureType {
     @Override
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    public Optional<SRIDCode> getSrid(int srid) {
+        if (knownSrids == null) {
+            return Optional.empty();
+        }
+        return knownSrids.stream()
+            .filter(x -> x.getSrid() == srid)
+            .findAny();
+    }
+
+    public void setKnownSrids(List<SRIDCode> knownSrids) {
+        this.knownSrids = knownSrids;
     }
     
 }

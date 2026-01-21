@@ -101,7 +101,7 @@ public class HakunaContextListener implements ServletContextListener {
 
             Map<String, FeatureType> collections = new LinkedHashMap<>();
             for (String collectionId : parser.readCollectionIds()) {
-                FeatureType ft = parser.readCollection(configPath, sourcesByType, collectionId);
+                FeatureType ft = parser.readCollection(configPath, sourcesByType, collectionId, knownSrids);
                 collections.put(collectionId, ft);
             }
 

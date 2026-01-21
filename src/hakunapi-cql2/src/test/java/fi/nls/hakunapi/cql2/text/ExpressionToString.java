@@ -37,7 +37,7 @@ public class ExpressionToString implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(And and) {
+    public Object visit(And and, Object context) {
         boolean first = true;
         for (Expression e : and.getChildren()) {
             if (!first) {
@@ -46,7 +46,7 @@ public class ExpressionToString implements ExpressionVisitor {
             if (e instanceof LogicalExpression) {
                 sb.append("(");
             }
-            visit(e);
+            visit(e, context);
             if (e instanceof LogicalExpression) {
                 sb.append(")");
             }
@@ -56,7 +56,7 @@ public class ExpressionToString implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(Or or) {
+    public Object visit(Or or, Object context) {
         boolean first = true;
         for (Expression e : or.getChildren()) {
             if (!first) {
@@ -65,7 +65,7 @@ public class ExpressionToString implements ExpressionVisitor {
             if (e instanceof LogicalExpression) {
                 sb.append("(");
             }
-            visit(e);
+            visit(e, context);
             if (e instanceof LogicalExpression) {
                 sb.append(")");
             }
@@ -75,103 +75,103 @@ public class ExpressionToString implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(Not not) {
+    public Object visit(Not not, Object context) {
         sb.append("NOT (");
-        this.visit(not.getExpression());
+        this.visit(not.getExpression(), context);
         sb.append(")");
 
         return null;
     }
 
     @Override
-    public Object visit(BinaryComparisonPredicate expression) {
-        visit(expression.getProp());
+    public Object visit(BinaryComparisonPredicate expression, Object context) {
+        visit(expression.getProp(), context);
         sb.append(' ');
         if (expression.getProp().isCasei() || expression.getValue().isCasei()) {
             sb.append(CASEI_PREFIX);
         }
         sb.append(expression.getOp().op);
         sb.append(' ');
-        visit(expression.getValue());
+        visit(expression.getValue(), context);
         return null;
     }
 
     @Override
-    public Object visit(LikePredicate p) {
-        visit(p.getProperty());
+    public Object visit(LikePredicate p, Object context) {
+        visit(p.getProperty(), context);
         sb.append(' ');
         if (p.getProperty().isCasei() || p.getPattern().isCasei()) {
             sb.append('I');
         }
         sb.append("LIKE");
         sb.append(' ');
-        visit(p.getPattern());
+        visit(p.getPattern(), context);
         return null;
     }
 
     @Override
-    public Object visit(IsNullPredicate p) {
-        visit(p.getProperty());
+    public Object visit(IsNullPredicate p, Object context) {
+        visit(p.getProperty(), context);
         sb.append(" IS NULL");
         return null;
     }
 
     @Override
-    public Object visit(PropertyName expression) {
+    public Object visit(PropertyName expression, Object context) {
         sb.append(expression.getValue());
         return null;
     }
 
     @Override
-    public Object visit(NumberLiteral number) {
+    public Object visit(NumberLiteral number, Object context) {
         sb.append(number.getValue());
         return null;
     }
 
     @Override
-    public Object visit(BooleanLiteral bool) {
+    public Object visit(BooleanLiteral bool, Object context) {
         sb.append(bool.getValue());
         return null;
     }
 
     @Override
-    public Object visit(StringLiteral string) {
+    public Object visit(StringLiteral string, Object context) {
         sb.append(string.getValue());
         return null;
     }
 
     @Override
-    public Object visit(DateLiteral p) {
+    public Object visit(DateLiteral p, Object context) {
         sb.append(p.getDate().toString());
         return null;
     }
 
     @Override
-    public Object visit(TimestampLiteral p) {
+    public Object visit(TimestampLiteral p, Object context) {
         sb.append(p.getTimestamp().toString());
         return null;
     }
 
     @Override
-    public Object visit(SpatialPredicate p) {
+    public Object visit(SpatialPredicate p, Object context) {
         sb.append(p.getOp().name());
         sb.append('(');
-        visit(p.getProp());
+        visit(p.getProp(), context);
         sb.append(',');
         sb.append(' ');
-        visit(p.getValue());
+        visit(p.getValue(), context);
         sb.append(')');
         return null;
     }
 
     @Override
-    public Object visit(SpatialLiteral p) {
+    public Object visit(SpatialLiteral p, Object context) {
         sb.append(new WKTWriter().write(p.getGeometry()));
         return null;
     }
 
     @Override
-    public Object visit(FunctionCall fn) {
+    public Object visit(FunctionCall fn, Object context) {
         sb.append(fn.getName());
         sb.append('(');
         boolean f = true;
@@ -179,7 +179,7 @@ public class ExpressionToString implements ExpressionVisitor {
             if (!f) {
                 sb.append(", ");
             }
-            visit(arg);
+            visit(arg, context);
             f = false;
         }
         sb.append(')');
@@ -187,7 +187,7 @@ public class ExpressionToString implements ExpressionVisitor {
     }
 
     @Override
-    public Object visit(EmptyExpression ee) {
+    public Object visit(EmptyExpression ee, Object context) {
         return null;
     }
 

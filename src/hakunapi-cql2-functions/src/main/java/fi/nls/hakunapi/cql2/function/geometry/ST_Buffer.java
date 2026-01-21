@@ -1,5 +1,6 @@
 package fi.nls.hakunapi.cql2.function.geometry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,9 +11,9 @@ import org.locationtech.jts.operation.buffer.BufferParameters;
 import fi.nls.hakunapi.core.schemas.FunctionArgumentInfo.FunctionArgumentType;
 import fi.nls.hakunapi.core.schemas.FunctionReturnsInfo.FunctionReturnsType;
 import fi.nls.hakunapi.cql2.function.Function;
-import fi.nls.hakunapi.cql2.model.function.FunctionCall;
+import fi.nls.hakunapi.cql2.model.FilterContext;
 
-public class ST_Buffer extends Function {
+public class ST_Buffer extends Function<FilterContext> {
 
     /*
      * reference: http://postgis.net/docs/manual-3.2/ST_Buffer.html
@@ -31,11 +32,10 @@ public class ST_Buffer extends Function {
     }
 
     @Override
-    public Object visit(FunctionCall functionCall) {
-
-        Geometry geom = toGeometry(functionCall, "geom");
-        double radius_of_buffer = toNumber(functionCall, "radius_of_buffer").doubleValue();
-        String buffer_style_parameters = toString(functionCall, "buffer_style_parameters");
+    public Object invoke(List<Object> args, FilterContext context) {
+        Geometry geom = getGeometryArg(args, "geom");
+        double radius_of_buffer = getNumberArg(args, "radius_of_buffer").doubleValue();
+        String buffer_style_parameters = getStringArg(args, "buffer_style_parameters");
         String[] parts = buffer_style_parameters.split(" ");
         final Map<String, String> kv = Stream.of(parts).filter(v -> !v.isEmpty()).map(elem -> elem.split("="))
                 .filter(v -> v.length != 0).collect(Collectors.toMap(e -> e[0], e -> e[1]));
