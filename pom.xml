@@ -52,7 +52,7 @@
 		<geotools.version>33.1</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
-		<cyclonedx.version>2.7.3</cyclonedx.version>
+		<cyclonedx.version>2.9.1</cyclonedx.version>
 	    <json-path.version>2.9.0</json-path.version>
 	    <caffeine.version>2.9.3</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
