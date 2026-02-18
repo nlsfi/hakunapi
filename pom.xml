@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fi.nls.hakunapi</groupId>
 	<artifactId>hakunapi</artifactId>
-	<version>1.6.0</version>
+	<version>1.6.1</version>
 	<packaging>pom</packaging>
 
 	<name>Hakunapi</name>
@@ -43,16 +43,16 @@
 		<freemarker.version>2.3.33</freemarker.version>
 		<jackson.version>2.17.1</jackson.version>
 		<jackson-databind.version>2.17.1</jackson-databind.version>
-		<swagger.version>2.2.21</swagger.version>
+		<swagger.version>2.2.42</swagger.version>
 		<jts.version>1.20.0</jts.version>
 		<hikari.version>4.0.3</hikari.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<log4j.version>2.23.1</log4j.version>
-		<pgjdbc.version>42.7.7</pgjdbc.version>
-		<geotools.version>33.1</geotools.version>
+		<log4j.version>2.25.3</log4j.version>
+		<pgjdbc.version>42.7.10</pgjdbc.version>
+		<geotools.version>33.4</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
-		<cyclonedx.version>2.7.3</cyclonedx.version>
+		<cyclonedx.version>2.9.1</cyclonedx.version>
 	    <json-path.version>2.9.0</json-path.version>
 	    <caffeine.version>2.9.3</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
