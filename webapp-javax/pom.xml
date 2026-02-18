@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>fi.nls.hakunapi</groupId>
 		<artifactId>hakunapi</artifactId>
-		<version>1.6.0</version>
+		<version>1.6.1</version>
 	</parent>
 	<artifactId>webapp-javax</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
-		<jersey.version>2.45</jersey.version>
+		<jersey.version>2.47</jersey.version>
 		<servlet.version>3.0.1</servlet.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
 	</properties>

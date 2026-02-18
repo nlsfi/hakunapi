@@ -5,13 +5,13 @@
     <parent>
         <groupId>fi.nls.hakunapi</groupId>
         <artifactId>hakunapi</artifactId>
-        <version>1.6.0</version>
+        <version>1.6.1</version>
     </parent>
     <artifactId>webapp-jakarta</artifactId>
     <packaging>pom</packaging>
 
     <properties>
-        <jersey-jakarta.version>3.1.9</jersey-jakarta.version>
+        <jersey-jakarta.version>3.1.11</jersey-jakarta.version>
         <jakarta.annotation.version></jakarta.annotation.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
         <jakarta.validation.version>3.0.2</jakarta.validation.version>
