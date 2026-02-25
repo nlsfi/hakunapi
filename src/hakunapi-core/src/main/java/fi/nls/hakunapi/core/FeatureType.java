@@ -10,6 +10,7 @@ import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
+import fi.nls.hakunapi.core.schemas.Link;
 
 public interface FeatureType {
 
@@ -55,6 +56,10 @@ public interface FeatureType {
 
     public default CacheSettings getCacheSettings() {
         return null;
+    }
+
+    public default List<Link> getAdditionalLinks() {
+        return Collections.emptyList();
     }
 
 }
