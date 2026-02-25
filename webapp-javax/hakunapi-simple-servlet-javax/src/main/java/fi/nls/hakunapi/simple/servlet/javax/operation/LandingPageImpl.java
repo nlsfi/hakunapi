@@ -45,6 +45,7 @@ public class LandingPageImpl {
                 .collections(MediaType.TEXT_HTML)
                 .conformance(MediaType.APPLICATION_JSON)
                 .conformance(MediaType.TEXT_HTML)
+                .additionalLinks(service.getAdditionalLinks())
                 .build();
     }
 

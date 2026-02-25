@@ -40,6 +40,7 @@ import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.property.HakunaPropertyArray;
 import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyJSON;
@@ -130,6 +131,20 @@ public class HakunaConfigParser {
         }
 
         return servers;
+    }
+
+    public List<Link> readAdditionalLinks() {
+        String[] names = getMultiple("api.links");
+        List<Link> links = new ArrayList<>();
+        for (String name : names) {
+            String prefix = "api.links." + name + ".";
+            String href = getRequired(prefix + "href");
+            String rel = getRequired(prefix + "rel");
+            String type = getRequired(prefix + "type");
+            String title = getRequired(prefix + "title");
+            links.add(new Link(href, rel, type, title));
+        }
+        return links;
     }
 
     public Optional<Map<String, SecurityScheme>> readSecuritySchemes() {

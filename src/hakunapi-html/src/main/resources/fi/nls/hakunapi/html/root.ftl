@@ -46,7 +46,17 @@
       <h2>Conformance</h2>
       <p><a href="conformance">OGC API conformance classes implemented by this server</a></p>
     </div>
-    
+
+<#assign additionalLinks = model.links?filter(link -> link.rel != "self" && link.rel != "alternate" && link.rel != "service-desc" && link.rel != "data" && link.rel != "conformance") />
+<#if additionalLinks?size gt 0>
+    <div class="row">
+      <h2>Additional Resources</h2>
+<#list additionalLinks as link>
+      <p><a href="${link.href}" target="_blank">${link.title}</a></p>
+</#list>
+    </div>
+</#if>
+
     <footer class="pt-3 mt-4 text-muted border-top">Powered by hakunapi</footer>
   </div>
 </main>

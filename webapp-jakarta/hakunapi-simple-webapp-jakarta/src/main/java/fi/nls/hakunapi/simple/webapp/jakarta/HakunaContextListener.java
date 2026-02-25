@@ -137,6 +137,7 @@ public class HakunaContextListener implements ServletContextListener {
             SimpleFeatureServiceConfig service = new SimpleFeatureServiceConfig(collections, outputFormats, filterParsers);
             service.setInfo(info);
             service.setServers(servers);
+            service.setAdditionalLinks(parser.readAdditionalLinks());
             service.setLimitDefault(PropertyUtil.getInt(config, "getfeatures.limit.default", 1000));
             service.setLimitMaximum(PropertyUtil.getInt(config, "getfeatures.limit.max", 10000));
             service.setConformanceClasses(conformsTo);
