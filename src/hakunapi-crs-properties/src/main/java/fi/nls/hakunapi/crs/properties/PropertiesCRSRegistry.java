@@ -12,6 +12,8 @@ import fi.nls.hakunapi.core.geom.HakunaGeometryDimension;
  * srid.<code>.latLon=true/false (default false)
  * srid.<code>.degrees=true/false (default false)
  * srid.<code>.geometryDimension=XY/XYZ/XYZM (default XY)
+ * srid.<code>.wrapXMin=<number> (optional, e.g., -180.0 for geographic, -20037508 for WebMercator)
+ * srid.<code>.wrapXMax=<number> (optional, e.g., 180.0 for geographic, 20037508 for WebMercator)
  */
 public class PropertiesCRSRegistry implements CRSRegistry {
 
@@ -20,12 +22,30 @@ public class PropertiesCRSRegistry implements CRSRegistry {
         String latLonStr = config.getProperty("srid." + srid + ".latLon", "false");
         String degreesStr = config.getProperty("srid." + srid + ".degrees", "false");
         String dimensionStr = config.getProperty("srid." + srid + ".geometryDimension", "XY");
+        String wrapXMinStr = config.getProperty("srid." + srid + ".wrapXMin");
+        String wrapXMaxStr = config.getProperty("srid." + srid + ".wrapXMax");
 
         boolean latLon = "true".equalsIgnoreCase(latLonStr);
         boolean degrees = "true".equalsIgnoreCase(degreesStr);
-        HakunaGeometryDimension geomDimension = HakunaGeometryDimension.valueOf(dimensionStr);                
+        HakunaGeometryDimension geomDimension = HakunaGeometryDimension.valueOf(dimensionStr);
 
-        return new SRIDCode(srid, latLon, degrees, geomDimension);
+        Double wrapXMin = parseDouble(wrapXMinStr);
+        Double wrapXMax = parseDouble(wrapXMaxStr);
+
+        // Validate: both must be set or neither
+        if ((wrapXMin == null) != (wrapXMax == null)) {
+            throw new IllegalArgumentException(
+                "srid." + srid + ": Both wrapXMin and wrapXMax must be set, or neither");
+        }
+
+        return new SRIDCode(srid, latLon, degrees, geomDimension, wrapXMin, wrapXMax);
+    }
+
+    private static Double parseDouble(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        return Double.parseDouble(value);
     }
 
 }

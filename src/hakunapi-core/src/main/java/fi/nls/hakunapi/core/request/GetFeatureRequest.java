@@ -17,6 +17,7 @@ public class GetFeatureRequest {
     private int offset;
     private int limit;
     private int srid = Crs.CRS84_SRID;
+    private int bboxSrid = Crs.CRS84_SRID;
     private int filterSrid = Crs.CRS84_SRID;
     private Map<String, String> pathParams;
     private Map<String, String> queryParams;
@@ -72,6 +73,14 @@ public class GetFeatureRequest {
 
     public void setSRID(int srid) {
         this.srid = srid;
+    }
+
+    public int getBboxSrid() {
+        return bboxSrid;
+    }
+
+    public void setBboxSrid(int srid) {
+        this.bboxSrid = srid;
     }
 
     public int getFilterSrid() {

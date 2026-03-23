@@ -9,6 +9,7 @@ import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.geom.EWKTReader;
 import fi.nls.hakunapi.core.geom.HakunaGeometryFactory;
+import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
@@ -93,6 +94,7 @@ public class WKTGeometryOperationParam implements CustomizableGetFeatureParam {
     }
 
     private Filter toFilter(Geometry g) {
+        g = ProjectionHelper.reprojectToStorageCRS(geom, g);
         switch (op) {
         case INTERSECTS:
             return Filter.intersects(geom, g);

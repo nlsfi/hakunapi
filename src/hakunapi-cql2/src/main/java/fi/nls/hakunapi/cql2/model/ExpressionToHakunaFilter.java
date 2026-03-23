@@ -7,7 +7,10 @@ import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Geometry;
 
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.filter.Filter;
+import fi.nls.hakunapi.core.geom.Bbox;
+import fi.nls.hakunapi.core.projection.ProjectionHelper;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.cql2.function.CQL2Functions;
@@ -28,10 +31,12 @@ import fi.nls.hakunapi.cql2.model.spatial.SpatialPredicate;
 public class ExpressionToHakunaFilter implements ExpressionVisitor {
 
     private final Map<String, HakunaProperty> queryables;
+    private final SRIDCode filterSrid;
 
-    public ExpressionToHakunaFilter(FeatureType ft) {
+    public ExpressionToHakunaFilter(FeatureType ft, SRIDCode filterSrid) {
         this.queryables = ft.getQueryableProperties().stream()
                 .collect(Collectors.toMap(HakunaProperty::getName, it -> it));
+        this.filterSrid = filterSrid;
     }
 
     @Override
@@ -140,6 +145,19 @@ public class ExpressionToHakunaFilter implements ExpressionVisitor {
             throw new IllegalArgumentException("Expected geometry");
         }
         Geometry geom = (Geometry) geometry;
+
+        // Check if this is a bbox that crosses the wrap-x boundary (antimeridian)
+        if (Bbox.isWrapXCrossingBbox(geom)) {
+            if (filterSrid.supportsWrapX()) {
+                geom = Bbox.splitWrapXBbox(geom, filterSrid.getWrapXMin(), filterSrid.getWrapXMax());
+            } else {
+                throw new IllegalArgumentException(
+                    "Invalid bbox: west-most edge is larger than east-most edge. " +
+                    "This is only valid for coordinate systems that support wrap-x.");
+            }
+        }
+
+        geom = ProjectionHelper.reprojectToStorageCRS(prop, geom);
 
         switch (p.getOp()) {
         case S_INTERSECTS:
