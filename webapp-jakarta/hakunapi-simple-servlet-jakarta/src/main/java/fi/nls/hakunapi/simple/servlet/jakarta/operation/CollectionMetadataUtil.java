@@ -45,6 +45,9 @@ public class CollectionMetadataUtil {
         links.add(getDescribedByLink(headers, service, queryParams, ft));
         links.add(getQueryablesLinks(headers, service, queryParams, ft));
 
+        // Add configured additional links
+        links.addAll(ft.getAdditionalLinks());
+
         String[] crs = null;
         String storageCrs = null;
         if (ft.getGeom() != null) {

@@ -40,6 +40,7 @@ import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
+import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.property.HakunaPropertyArray;
 import fi.nls.hakunapi.core.property.HakunaPropertyHidden;
 import fi.nls.hakunapi.core.property.HakunaPropertyJSON;
@@ -130,6 +131,33 @@ public class HakunaConfigParser {
         }
 
         return servers;
+    }
+
+    public List<Link> readAdditionalLinks() {
+        return readLinksWithPrefix("api.links");
+    }
+
+    private List<Link> readLinksWithPrefix(String keyPrefix) {
+        String[] names = getMultiple(keyPrefix);
+        List<Link> links = new ArrayList<>();
+        for (String name : names) {
+            String prefix = keyPrefix + "." + name + ".";
+            String href = getRequired(prefix + "href");
+            String rel = getRequired(prefix + "rel");
+            String type = getRequired(prefix + "type");
+            String title = getRequired(prefix + "title");
+            links.add(new Link(href, rel, type, title));
+        }
+        return links;
+    }
+
+    private List<Link> readCollectionLinks(String collectionPrefix) {
+        List<Link> links = new ArrayList<>();
+        // Add default collection links
+        links.addAll(readLinksWithPrefix("default.collections.links"));
+        // Add collection-specific links
+        links.addAll(readLinksWithPrefix(collectionPrefix + "links"));
+        return links;
     }
 
     public Optional<Map<String, SecurityScheme>> readSecuritySchemes() {
@@ -304,6 +332,7 @@ public class HakunaConfigParser {
         ft.setMetadata(parseMetadata(p, path));
         ft.setProjectionTransformerFactory(getProjection(p));
         ft.setCacheSettings(parseCacheConfig(collectionId));
+        ft.setAdditionalLinks(readCollectionLinks(p));
 
         if (ft.getPaginationStrategy() == null) {
             ft.setPaginationStrategy(getPaginationStrategy(p, ft));

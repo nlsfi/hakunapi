@@ -113,6 +113,11 @@ public class Root implements Component {
             return this;
         }
 
+        public Builder additionalLinks(List<Link> additional) {
+            links.addAll(additional);
+            return this;
+        }
+
         public Root build() {
             return new Root(title, description, links);
         }

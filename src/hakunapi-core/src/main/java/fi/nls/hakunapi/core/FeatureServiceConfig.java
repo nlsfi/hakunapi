@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
+import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -39,6 +40,7 @@ public abstract class FeatureServiceConfig {
     protected List<MetadataFormat> metadataFormats;
     protected List<SRIDCode> knownSrids;
     protected ServiceTelemetry telemetry = ServiceTelemetry.NOP;
+    protected List<Link> additionalLinks;
 
     public int getLimitDefault() {
         return limitDefault;
@@ -222,5 +224,13 @@ public abstract class FeatureServiceConfig {
     public void setTelemetry(ServiceTelemetry usage) {
         this.telemetry = usage;
     }
-    
+
+    public List<Link> getAdditionalLinks() {
+        return additionalLinks == null ? Collections.emptyList() : additionalLinks;
+    }
+
+    public void setAdditionalLinks(List<Link> additionalLinks) {
+        this.additionalLinks = additionalLinks;
+    }
+
 }
