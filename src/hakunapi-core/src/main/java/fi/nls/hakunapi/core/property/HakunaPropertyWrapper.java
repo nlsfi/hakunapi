@@ -1,5 +1,6 @@
 package fi.nls.hakunapi.core.property;
 
+import java.util.List;
 import java.util.Map;
 
 import fi.nls.hakunapi.core.FeatureType;
@@ -62,13 +63,20 @@ public abstract class HakunaPropertyWrapper implements HakunaProperty {
     }
 
     @Override
+    public List<String> getColumns() {
+        return wrapped.getColumns();
+    }
+
+    @Override
     public FeatureType getFeatureType() {
         return wrapped.getFeatureType();
     }
 
     @Override
     public void setFeatureType(FeatureType ft) {
-        wrapped.setFeatureType(ft);
+        if (wrapped.getFeatureType() == null) {
+            wrapped.setFeatureType(ft);
+        }
     }
 
     @Override

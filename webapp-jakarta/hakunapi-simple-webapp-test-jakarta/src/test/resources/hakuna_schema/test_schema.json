@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://example.com/test_schema",
+    "title": "Test schema",
+    "properties": {
+        "building_part_area": {
+            "title": "Building part (area)",
+            "description": "Building parts represented as areas",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "description": "Name of the building part",
+                    "type": "string"
+                },
+                "building_function_id": {
+                    "title": "Function",
+                    "enum": [1, 2, 3, 4],
+                    "x-codelist-uri": "https://uri.suomi.fi/codelist/maastotest/building_function_v1",
+                    "type": "integer"
+                },
+                "geometry": {
+                    "title": "Geom",
+                    "type": "object",
+                    "x-geometry-type": "POINT"
+                }
+            }
+        },
+        "fence": {
+            "title": "Fence",
+            "description": "A fence or wall structure",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "geometry": {
+                    "title": "Geom",
+                    "type": "object",
+                    "x-geometry-type": "POINT"
+                }
+            }
+        }
+    }
+}

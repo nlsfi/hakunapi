@@ -1,0 +1,7 @@
+.git
+**/target
+docker
+*.md
+*.json
+!**/pom.xml
+!**/src/**

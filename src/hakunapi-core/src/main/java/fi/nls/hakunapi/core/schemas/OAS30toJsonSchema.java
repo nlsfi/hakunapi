@@ -26,6 +26,9 @@ public class OAS30toJsonSchema {
         } else if ("number".equals(schema.getType())) {
             schema.setFormat(null);
         }
+        // Remove OAS 3.0 nullable, not valid in JSON Schema 2020-12
+        schema.setNullable(null);
+
         return schema;
     }
 
