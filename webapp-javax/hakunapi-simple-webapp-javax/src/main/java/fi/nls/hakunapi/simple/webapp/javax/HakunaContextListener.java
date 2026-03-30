@@ -49,6 +49,7 @@ import fi.nls.hakunapi.cql2.function.CQL2Functions;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
 import fi.nls.hakunapi.geojson.hakuna.OutputFormatGeoJSON;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
@@ -99,9 +100,13 @@ public class HakunaContextListener implements ServletContextListener {
             }
             List<SRIDCode> knownSrids = getKnownSrids(config, parser);
 
+            Map<String, Schema<?>> schemas = parser.readSchemas(configPath);
+
             Map<String, FeatureType> collections = new LinkedHashMap<>();
             for (String collectionId : parser.readCollectionIds()) {
                 FeatureType ft = parser.readCollection(configPath, sourcesByType, collectionId);
+                ft = parser.applyJsonSchema(ft, schemas);
+
                 collections.put(collectionId, ft);
             }
 

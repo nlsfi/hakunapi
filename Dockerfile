@@ -3,7 +3,8 @@ WORKDIR /build
 
 COPY . /build
 
-RUN mvn -DskipTests -pl webapp-jakarta/hakunapi-simple-webapp-jakarta -am clean package
+RUN --mount=type=cache,target=/root/.m2/repository \
+    mvn -DskipTests -pl webapp-jakarta/hakunapi-simple-webapp-jakarta -am clean package
 
 FROM tomcat:jdk21-openjdk
 ENV CATALINA_OUT=/dev/stdout

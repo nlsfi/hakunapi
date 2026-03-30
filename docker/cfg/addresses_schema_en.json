@@ -1,0 +1,103 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/nlsfi/hakunapi/examples/finnish_addresses",
+    "title": "INSPIRE Simple Addresses, Finland",
+    "properties": {
+        "addresses": {
+            "title": "Simple Addresses",
+            "description": "Addresses of Finland's buildings",
+            "type": "object",
+            "properties": {
+                "inspireId_localId": {
+                    "title": "INSPIRE Local ID",
+                    "description": "Local identifier of the address",
+                    "type": "string"
+                },
+                "inspireId_namespace": {
+                    "title": "INSPIRE Namespace",
+                    "description": "Namespace for the INSPIRE identifier",
+                    "type": "string"
+                },
+                "component_ThoroughfareName": {
+                    "title": "Street Name",
+                    "description": "Name of the street or road",
+                    "type": "string"
+                },
+                "component_PostalDescriptor": {
+                    "title": "Postal Code",
+                    "description": "Postal code of the address",
+                    "type": "string"
+                },
+                "component_AdminUnitName_1": {
+                    "title": "Country",
+                    "description": "Name of the country",
+                    "type": "string"
+                },
+                "component_AdminUnitName_4": {
+                    "title": "Municipality",
+                    "description": "Name of the municipality",
+                    "type": "string"
+                },
+                "locator_designator_addressNumber": {
+                    "title": "Address Number",
+                    "description": "House or building number",
+                    "type": "string"
+                },
+                "locator_level": {
+                    "title": "Locator Level",
+                    "description": "Level of the locator designator",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/LocatorLevelValue"
+                },
+                "locator_level_href": {
+                    "title": "Locator Level URI",
+                    "description": "URI reference for the locator level code value",
+                    "type": "string"
+                },
+                "position_specification": {
+                    "title": "Position Specification",
+                    "description": "Specification of the nature of the position",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/GeometrySpecificationValue"
+                },
+                "position_specification_href": {
+                    "title": "Position Specification URI",
+                    "description": "URI reference for the position specification code value",
+                    "type": "string"
+                },
+                "position_method": {
+                    "title": "Position Method",
+                    "description": "Method used to determine the position",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/GeometryMethodValue"
+                },
+                "position_method_href": {
+                    "title": "Position Method URI",
+                    "description": "URI reference for the position method code value",
+                    "type": "string"
+                },
+                "position_default": {
+                    "title": "Default Position",
+                    "description": "Whether this is the default position for the address",
+                    "type": "string"
+                },
+                "building": {
+                    "title": "Building ID",
+                    "description": "Permanent building identifier (VTJ-PRT)",
+                    "type": "string"
+                },
+                "parcel": {
+                    "title": "Parcel ID",
+                    "description": "Property identifier of the parcel",
+                    "type": "string"
+                },
+                "geometry": {
+                    "title": "Position",
+                    "description": "Geographic position of the address",
+                    "type": "object",
+                    "x-geometry-type": "POINT"
+                }
+            }
+        }
+    }
+}

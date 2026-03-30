@@ -1,0 +1,103 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/nlsfi/hakunapi/examples/finnish_addresses",
+    "title": "INSPIRE Yksinkertaiset osoitteet, Suomi",
+    "properties": {
+        "addresses": {
+            "title": "Yksinkertaiset osoitteet",
+            "description": "Suomen rakennusten osoitteet",
+            "type": "object",
+            "properties": {
+                "inspireId_localId": {
+                    "title": "INSPIRE-paikallinen tunnus",
+                    "description": "Osoitteen paikallinen tunnus",
+                    "type": "string"
+                },
+                "inspireId_namespace": {
+                    "title": "INSPIRE-nimiavaruus",
+                    "description": "INSPIRE-tunnuksen nimiavaruus",
+                    "type": "string"
+                },
+                "component_ThoroughfareName": {
+                    "title": "Kadun nimi",
+                    "description": "Kadun tai tien nimi",
+                    "type": "string"
+                },
+                "component_PostalDescriptor": {
+                    "title": "Postinumero",
+                    "description": "Osoitteen postinumero",
+                    "type": "string"
+                },
+                "component_AdminUnitName_1": {
+                    "title": "Maa",
+                    "description": "Maan nimi",
+                    "type": "string"
+                },
+                "component_AdminUnitName_4": {
+                    "title": "Kunta",
+                    "description": "Kunnan nimi",
+                    "type": "string"
+                },
+                "locator_designator_addressNumber": {
+                    "title": "Osoitenumero",
+                    "description": "Talon tai rakennuksen numero",
+                    "type": "string"
+                },
+                "locator_level": {
+                    "title": "Paikantajataso",
+                    "description": "Paikantajamääritteen taso",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/LocatorLevelValue"
+                },
+                "locator_level_href": {
+                    "title": "Paikantajatason URI",
+                    "description": "URI-viite paikantajatason koodiarvolle",
+                    "type": "string"
+                },
+                "position_specification": {
+                    "title": "Sijaintimäärittely",
+                    "description": "Sijainnin luonteen määrittely",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/GeometrySpecificationValue"
+                },
+                "position_specification_href": {
+                    "title": "Sijaintimäärittelyn URI",
+                    "description": "URI-viite sijaintimäärittelyn koodiarvolle",
+                    "type": "string"
+                },
+                "position_method": {
+                    "title": "Sijaintimenetelmä",
+                    "description": "Sijainnin määrittämiseen käytetty menetelmä",
+                    "type": "string",
+                    "x-codelist-uri": "https://inspire.ec.europa.eu/codelist/GeometryMethodValue"
+                },
+                "position_method_href": {
+                    "title": "Sijaintimenetelmän URI",
+                    "description": "URI-viite sijaintimenetelmän koodiarvolle",
+                    "type": "string"
+                },
+                "position_default": {
+                    "title": "Oletussijainti",
+                    "description": "Onko tämä osoitteen oletussijainti",
+                    "type": "string"
+                },
+                "building": {
+                    "title": "Rakennustunnus",
+                    "description": "Pysyvä rakennustunnus (VTJ-PRT)",
+                    "type": "string"
+                },
+                "parcel": {
+                    "title": "Kiinteistötunnus",
+                    "description": "Kiinteistön kiinteistötunnus",
+                    "type": "string"
+                },
+                "geometry": {
+                    "title": "Sijainti",
+                    "description": "Osoitteen maantieteellinen sijainti",
+                    "type": "object",
+                    "x-geometry-type": "POINT"
+                }
+            }
+        }
+    }
+}
