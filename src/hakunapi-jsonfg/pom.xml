@@ -10,7 +10,7 @@
     <artifactId>hakunapi-jsonfg</artifactId>
 
     <properties>
-        <json-schema-validator.version>1.4.0</json-schema-validator.version>
+        <json-schema-validator.version>3.0.1</json-schema-validator.version>
     </properties>
     <dependencies>
         <dependency>
@@ -32,7 +32,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <scope>test</scope>
         </dependency>

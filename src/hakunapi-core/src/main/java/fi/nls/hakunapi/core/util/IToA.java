@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.core.util;
 
-import com.fasterxml.jackson.core.io.NumberOutput;
+import tools.jackson.core.io.NumberOutput;
 
 
 /**

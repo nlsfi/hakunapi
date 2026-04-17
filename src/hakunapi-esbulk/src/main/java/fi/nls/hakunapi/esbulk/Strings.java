@@ -1,7 +1,7 @@
 package fi.nls.hakunapi.esbulk;
 
-import com.fasterxml.jackson.core.SerializableString;
-import com.fasterxml.jackson.core.io.SerializedString;
+import tools.jackson.core.SerializableString;
+import tools.jackson.core.io.SerializedString;
 
 class Strings {
 

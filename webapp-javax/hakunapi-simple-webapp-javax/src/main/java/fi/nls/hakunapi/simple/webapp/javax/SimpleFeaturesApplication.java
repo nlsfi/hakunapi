@@ -41,7 +41,7 @@ import fi.nls.hakunapi.simple.servlet.javax.GzipInterceptor;
 import fi.nls.hakunapi.simple.servlet.javax.NotAcceptableExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.javax.NotFoundExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.javax.ObjectMapperProvider;
-import fi.nls.hakunapi.simple.servlet.javax.OpenAPIObjectMapperProvider;
+import fi.nls.hakunapi.simple.servlet.javax.OpenAPIMessageBodyWriter;
 import fi.nls.hakunapi.simple.servlet.javax.operation.CollectionMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.CollectionsMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.javax.operation.ConformanceImpl;
@@ -126,7 +126,7 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         register(ObjectMapperProvider.class);
         register(JacksonFeature.class);
 
-        register(OpenAPIObjectMapperProvider.class);
+        register(OpenAPIMessageBodyWriter.class);
 
         OutputFormat html = service.getOutputFormat(OutputFormatHTML.ID);
         if (html != null) {

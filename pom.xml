@@ -41,8 +41,8 @@
 
 	<properties>
 		<freemarker.version>2.3.33</freemarker.version>
-		<jackson.version>2.17.1</jackson.version>
-		<jackson-databind.version>2.17.1</jackson-databind.version>
+		<jackson.version>3.1.1</jackson.version>
+		<jackson-annotations.version>2.21</jackson-annotations.version>
 		<swagger.version>2.2.42</swagger.version>
 		<jts.version>1.20.0</jts.version>
 		<hikari.version>4.0.3</hikari.version>
@@ -56,7 +56,7 @@
 	    <json-path.version>2.9.0</json-path.version>
 	    <caffeine.version>2.9.3</caffeine.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
@@ -168,24 +168,19 @@
 				<version>${freemarker.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
+				<groupId>tools.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
+				<groupId>tools.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>${jackson-databind.version}</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jackson-annotations.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>

@@ -15,9 +15,9 @@ public class SmileFeatureCollectionWriter extends SmileFeatureWriterBase impleme
     public void init(OutputStream out, SRIDCode srid) throws Exception {
         super.init(out, srid);
         w.writeStartObject();
-        w.writeFieldName(GeoJSONStrings.TYPE);
+        w.writeName(GeoJSONStrings.TYPE);
         w.writeString(GeoJSONStrings.FEATURE_COLLECTION);
-        w.writeFieldName(GeoJSONStrings.FEATURES);
+        w.writeName(GeoJSONStrings.FEATURES);
         w.writeStartArray();
     }
 
@@ -58,9 +58,9 @@ public class SmileFeatureCollectionWriter extends SmileFeatureWriterBase impleme
 
     private void startFeature() throws IOException {
         w.writeStartObject();
-        w.writeFieldName(GeoJSONStrings.TYPE);
+        w.writeName(GeoJSONStrings.TYPE);
         w.writeString(GeoJSONStrings.FEATURE);
-        w.writeFieldName(GeoJSONStrings.ID);
+        w.writeName(GeoJSONStrings.ID);
     }
 
     @Override

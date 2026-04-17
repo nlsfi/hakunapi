@@ -74,6 +74,8 @@
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
+            <!-- jackson-jakarta-rs-json-provider (Jackson 3) does not support javax — Jakarta only.
+                 Keep jersey-media-json-jackson (Jackson 2) until webapp-javax is dropped. -->
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>

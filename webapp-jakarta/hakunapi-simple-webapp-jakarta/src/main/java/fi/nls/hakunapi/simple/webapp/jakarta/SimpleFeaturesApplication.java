@@ -8,7 +8,7 @@ import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Context;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -41,7 +41,7 @@ import fi.nls.hakunapi.simple.servlet.jakarta.GzipInterceptor;
 import fi.nls.hakunapi.simple.servlet.jakarta.NotAcceptableExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.jakarta.NotFoundExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.jakarta.ObjectMapperProvider;
-import fi.nls.hakunapi.simple.servlet.jakarta.OpenAPIObjectMapperProvider;
+import fi.nls.hakunapi.simple.servlet.jakarta.OpenAPIMessageBodyWriter;
 import fi.nls.hakunapi.simple.servlet.jakarta.operation.CollectionMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.jakarta.operation.CollectionsMetadataImpl;
 import fi.nls.hakunapi.simple.servlet.jakarta.operation.ConformanceImpl;
@@ -125,9 +125,10 @@ public class SimpleFeaturesApplication extends ResourceConfig {
 
         // Use Jackson as POJO provider
         register(ObjectMapperProvider.class);
-        register(JacksonFeature.class);
+        register(JacksonJsonProvider.class);
 
-        register(OpenAPIObjectMapperProvider.class);
+        // Use custom body writer when serializing OpenAPI object
+        register(OpenAPIMessageBodyWriter.class);
 
         OutputFormat html = service.getOutputFormat(OutputFormatHTML.ID);
         if (html != null) {

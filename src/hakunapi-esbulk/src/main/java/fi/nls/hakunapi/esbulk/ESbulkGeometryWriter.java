@@ -1,8 +1,8 @@
 package fi.nls.hakunapi.esbulk;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.SerializableString;
-import com.fasterxml.jackson.core.io.SerializedString;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.SerializableString;
+import tools.jackson.core.io.SerializedString;
 
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
@@ -27,11 +27,11 @@ public class ESbulkGeometryWriter implements GeometryWriter {
 
     @Override
     public void init(HakunaGeometryType type, int srid, int dimension) throws Exception {
-        json.writeFieldName(fieldName);
+        json.writeName(fieldName);
         json.writeStartObject();
-        json.writeFieldName(Strings.TYPE);
+        json.writeName(Strings.TYPE);
         json.writeString(getGeoJSONType(type));
-        json.writeFieldName(Strings.COORDINATES);
+        json.writeName(Strings.COORDINATES);
     }
 
     private SerializableString getGeoJSONType(HakunaGeometryType type) {

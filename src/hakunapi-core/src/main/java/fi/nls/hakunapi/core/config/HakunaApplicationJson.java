@@ -7,10 +7,11 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class HakunaApplicationJson {
     public static final String HAKUNA_APPLICATION_JSON_PROP = "HAKUNA_APPLICATION_JSON";
@@ -55,17 +56,17 @@ public class HakunaApplicationJson {
                 });
                 appJson.contextProperties.put(ctx, valuesAsProperties);
             });
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOG.warn("Invalid HAKUNA_APPLICATION_JSON " + e);
         }
 
         return appJson;
     }
 
-    protected static final ObjectMapper MAPPER = new ObjectMapper();
+    protected static final ObjectMapper MAPPER = new JsonMapper();
 
     protected static Map<String, Map<String, String>> loadJson(HakunaApplicationJson appJson, String json)
-            throws JsonMappingException, JsonProcessingException {
+            throws JacksonException, DatabindException {
         TypeReference<Map<String, Map<String, String>>> type = new TypeReference<Map<String, Map<String, String>>>() {
         };
         return MAPPER.readValue(json, type);

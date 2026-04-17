@@ -4,15 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.URL;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import fi.nls.hakunapi.core.property.HakunaPropertyType;
 
@@ -20,10 +17,11 @@ public class JSONCodeListTransformerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void test() throws JsonParseException, JsonMappingException, IOException {
+    public void test() throws Exception {
         JSONCodeListTransformer t = new JSONCodeListTransformer();
-        URL url = getClass().getClassLoader().getResource("mapping.json");
-        Map<String, Object> map = t.readMap(url);
+        Map<String, Object> map = null;
+        File f = Path.of(getClass().getClassLoader().getResource("mapping.json").toURI()).toFile();
+        map = t.readMap(f);
         t.initFromMap(HakunaPropertyType.STRING, map);
 
         assertEquals("foo", t.toPublic("A"));

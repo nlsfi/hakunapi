@@ -1,11 +1,11 @@
 package fi.nls.hakunapi.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.filter.Filter;
 import fi.nls.hakunapi.core.param.NextParam;
@@ -16,7 +16,7 @@ import fi.nls.hakunapi.core.util.StringPair;
 
 public class PaginationStrategyCursor implements PaginationStrategy {
 
-    private static final ObjectMapper om = new ObjectMapper();
+    private static final ObjectMapper om = JsonMapper.builder().build();
 
     public static final PaginationStrategyCursor INSTANCE = new PaginationStrategyCursor();
     public static final String NAME = "cursor";
@@ -75,17 +75,13 @@ public class PaginationStrategyCursor implements PaginationStrategy {
     private static String toJsonArray(List<String> list) {
         try {
             return om.writeValueAsString(list);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }
 
     private static List<String> fromJsonArray(String json) {
-        try {
-            return om.readValue(json, om.getTypeFactory().constructCollectionType(List.class, String.class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return om.readValue(json, om.getTypeFactory().constructCollectionType(List.class, String.class));
     }
 
     @Override

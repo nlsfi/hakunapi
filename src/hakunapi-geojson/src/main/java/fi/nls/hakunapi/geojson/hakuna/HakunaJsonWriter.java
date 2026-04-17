@@ -4,7 +4,7 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.fasterxml.jackson.core.io.NumberOutput;
+import tools.jackson.core.io.NumberOutput;
 
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.util.UTF8;

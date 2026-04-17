@@ -1,11 +1,16 @@
 package fi.nls.hakunapi.simple.servlet.jakarta;
 
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.ext.ContextResolver;
-import jakarta.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.ObjectMapper;
@@ -26,7 +31,6 @@ import io.swagger.v3.oas.models.media.DateSchema;
 import io.swagger.v3.oas.models.media.Discriminator;
 import io.swagger.v3.oas.models.media.Encoding;
 import io.swagger.v3.oas.models.media.EncodingProperty;
-import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.XML;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -43,12 +47,10 @@ import io.swagger.v3.oas.models.servers.ServerVariables;
 import io.swagger.v3.oas.models.tags.Tag;
 
 @Provider
-@Produces(value = { MediaTypes.APPLICATION_OPENAPI_V3, MediaTypes.APPLICATION_SCHEMA })
-public class OpenAPIObjectMapperProvider implements ContextResolver<ObjectMapper> {
+@Produces(MediaTypes.APPLICATION_OPENAPI_V3)
+public class OpenAPIMessageBodyWriter implements MessageBodyWriter<OpenAPI> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenAPIObjectMapperProvider.class);
-
-    final ObjectMapper om = createMapper();
+    private final ObjectMapper om = createMapper();
 
     private static ObjectMapper createMapper() {
         return JsonMapper.builder()
@@ -63,7 +65,7 @@ public class OpenAPIObjectMapperProvider implements ContextResolver<ObjectMapper
                 .addMixIn(ExternalDocumentation.class, ExtensionsMixin.class)
                 .addMixIn(Link.class, ExtensionsMixin.class)
                 .addMixIn(LinkParameter.class, ExtensionsMixin.class)
-                .addMixIn(MediaType.class, MediaTypeMixin.class)
+                .addMixIn(io.swagger.v3.oas.models.media.MediaType.class, MediaTypeMixin.class)
                 .addMixIn(OAuthFlow.class, ExtensionsMixin.class)
                 .addMixIn(OAuthFlows.class, ExtensionsMixin.class)
                 .addMixIn(Operation.class, OperationMixin.class)
@@ -92,9 +94,14 @@ public class OpenAPIObjectMapperProvider implements ContextResolver<ObjectMapper
     }
 
     @Override
-    public ObjectMapper getContext(Class<?> type) {
-        LOG.info("Look ma, I'm providing the ObjectMapper!");
-        return om;
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return OpenAPI.class.isAssignableFrom(type);
     }
 
+    @Override
+    public void writeTo(OpenAPI openAPI, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                    throws IOException, WebApplicationException {
+        om.writeValue(entityStream, openAPI);
+    }
 }
