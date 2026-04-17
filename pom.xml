@@ -13,7 +13,6 @@
 
 	<modules>
 		<module>src</module>
-		<module>webapp-javax</module>
 		<module>webapp-jakarta</module>
 	</modules>
 
