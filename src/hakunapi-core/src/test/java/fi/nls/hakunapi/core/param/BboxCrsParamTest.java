@@ -121,7 +121,8 @@ public class BboxCrsParamTest {
         assertEquals(1, filters.size());
         Filter filter = filters.get(0);
         Geometry geom = (Geometry) filter.getValue();
-        assertEquals(4326, geom.getSRID());
+        // Geometry should've been reprojected to storageCRS by this point
+        assertEquals(84, geom.getSRID());
         Coordinate bottomLeft = geom.getCoordinates()[0];
         assertEquals(-180, bottomLeft.getX(), 0.0);
         assertEquals(-90, bottomLeft.getY(), 0.0);
