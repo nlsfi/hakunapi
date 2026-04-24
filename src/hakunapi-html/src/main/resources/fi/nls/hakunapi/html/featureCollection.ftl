@@ -11,6 +11,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <#if sridCode?? && sridCode.proj4??>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4-src.min.js" integrity="sha512-HfgZgM0HUFax2GrHYLPg6BKnJk3k8mFzyWVDq+cCJY3GymqWXoQrEnYEUIOmnoxOfn50CY9bJy+58/gbcZhjSA==" crossorigin=""/></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.min.js" integrity="sha512-wjJpCHc+MFPoF+WHrSjrlw6EY1pinfEgnVYN/eiClWCIkk3QEYX8QDJQXqPIAHnkS9wCIQy2apbrw5z61DeS4A==" crossorigin=""/></script>
+  </#if>
   <title>${(featureType.title)!(featureType.name)} - Items</title>
 </head>
 <body>
@@ -128,9 +132,24 @@ document.getElementById("json-link").href = url.toString();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 <script>
+<#if sridCode?? && sridCode.proj4??>
+var crsConfig = {
+  resolutions: [
+    8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5, 0.25
+  ]
+};
+<#if settings.tileOriginX?? && settings.tileOriginY??>
+crsConfig.origin = [${settings.tileOriginX}, ${settings.tileOriginY}];
+</#if>
+var crs = new L.Proj.CRS("EPSG:${srid?c}",
+  "${sridCode.proj4}",
+  crsConfig)
+var map = L.map('map', { crs: crs });
+<#else>
 var map = L.map('map');
+</#if>
 L.tileLayer('${settings.tileUrl}', {
-    <#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
+    <#if sridCode?? && sridCode.proj4??>minZoom: 0, maxZoom: 15, </#if><#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
 }).addTo(map);
 
 var data = [
@@ -164,6 +183,12 @@ const singleFeatureLinkQuery = singleFeatureLinkParams.size === 0 ? "" : "?" + s
 data.forEach(f => document.getElementById("feature-link-" + f.id).href = "items/" + f.id + singleFeatureLinkQuery);
 
 var layer = L.geoJSON(data, {
+  <#if sridCode?? && sridCode.proj4??>
+  coordsToLatLng: function(coords) {
+    var point = L.point(coords[0], coords[1]);
+    return crs.projection.unproject(point);
+  },
+  </#if>
   onEachFeature: function (feature, layer) {
     layer.bindPopup('<a href="./items/' + feature.id + singleFeatureLinkQuery + '">' + feature.id + '</a>');
   }
@@ -171,19 +196,51 @@ var layer = L.geoJSON(data, {
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('bbox')) {
-  var bbox = urlParams.get('bbox');
-  var parts = bbox.split(",");
+  const bbox = urlParams.get('bbox');
+  const parts = bbox.split(",").map(parseFloat);
+  <#if sridCode?? && sridCode.proj4??>
+  <#if sridCode.latLon>
+  const x0 = parts[1], y0 = parts[0], x1 = parts[3], y1 = parts[2];
+  <#else>
+  const x0 = parts[0], y0 = parts[1], x1 = parts[2], y1 = parts[3];
+  </#if>
+  const topL = crs.projection.unproject(L.point(x0, y0));
+  const botL = crs.projection.unproject(L.point(x1, y0));
+  const topR = crs.projection.unproject(L.point(x0, y1));
+  const botR = crs.projection.unproject(L.point(x1, y1));
+  const lat1 = Math.min(botL.lat, botR.lat);
+  const lat2 = Math.max(topL.lat, topR.lat);
+  const lng1 = Math.min(topL.lng, botL.lng);
+  const lng2 = Math.max(topR.lng, botR.lng);
+  map.fitBounds([
+    [lat1, lng1],
+    [lat2, lng2]
+  ]);
+  <#else>
   map.fitBounds([
     [parts[1], parts[0]],
     [parts[3], parts[2]]
   ]);
+  </#if>
 } else {
   map.fitBounds(layer.getBounds());
 }
 
 function bboxToMapBounds() {
   const urlParams = new URLSearchParams(window.location.search);
+  <#if sridCode?? && sridCode.proj4??>
+  const bounds = map.getBounds();
+  const topL = crs.projection.project(bounds.getNorthWest());
+  const botR = crs.projection.project(bounds.getSouthEast());
+  <#if sridCode.latLon>
+  urlParams.set("bbox", topL.y + ',' + topL.x + ',' + botR.y + ',' + botR.x);
+  <#else>
+  urlParams.set("bbox", topL.x + ',' + topL.y + ',' + botR.x + ',' + botR.y);
+  </#if>
+  urlParams.set("bbox-crs", 'http://www.opengis.net/def/crs/EPSG/0/${srid?c}');
+  <#else>
   urlParams.set("bbox", map.getBounds().toBBoxString());
+  </#if>
   window.location.search = urlParams.toString();
 }
 </script>

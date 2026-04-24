@@ -253,7 +253,7 @@ As specified by the [OGC API Features](https://ogcapi.ogc.org/features/) Part 1,
 
 This support is implemented by the `hakunapi-html` module and it can be enabled in a Hakunapi feature service using a configuration line like `formats=geojson,html`. An user receives HTML content when the `f=html` URL parameter or the `Accept` header with `text/html` is available in a request.
 
-The HTML content produced is Hakunapi specific according to structure, layout and styling. Anyway for feature collection responses, it should produce same feature items as GeoJSON request would return, but formatted as HTML. If application specific HTML content styling is required this module should be extended or rewritten based on application needs. 
+The HTML content produced includes an interactive Leaflet map by default, with features visualized on a configurable tile layer and displayed in a data table. Maps work with any coordinate system configured via proj4 definitions and per-SRID tile settings, handling both geographic and projected CRS transparently. The HTML templates are customizable and can be extended or replaced for application-specific needs. 
 
 ### GeoPackage
 
