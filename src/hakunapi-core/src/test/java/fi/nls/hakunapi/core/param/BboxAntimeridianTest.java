@@ -277,8 +277,8 @@ public class BboxAntimeridianTest {
         Filter filter = getItems.getFilters().get(0);
         Geometry geom = (Geometry) filter.getValue();
 
-        // Should have SRID 4326 and create a geometry (possibly MultiPolygon after reprojection)
-        assertEquals(4326, geom.getSRID());
+        // Should have SRID 84 (reprojected to storageCRS) and create a geometry (possibly MultiPolygon after reprojection)
+        assertEquals(84, geom.getSRID());
         assertEquals("MultiPolygon", geom.getGeometryType());
         assertEquals(2, geom.getNumGeometries());
     }
