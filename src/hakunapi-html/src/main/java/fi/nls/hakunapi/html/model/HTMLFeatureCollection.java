@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.html.OutputFormatHTMLSettings;
 
 public class HTMLFeatureCollection {
 
     private int srid;
+    private SRIDCode sridCode;
     private FeatureType featureType;
     private List<HTMLFeature> features;
 
@@ -28,6 +30,14 @@ public class HTMLFeatureCollection {
 
     public void setSrid(int srid) {
         this.srid = srid;
+    }
+
+    public SRIDCode getSridCode() {
+        return sridCode;
+    }
+
+    public void setSridCode(SRIDCode sridCode) {
+        this.sridCode = sridCode;
     }
 
     public void setFeatureType(FeatureType ft) {

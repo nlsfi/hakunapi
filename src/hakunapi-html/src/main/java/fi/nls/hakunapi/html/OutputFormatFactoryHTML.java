@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -79,7 +80,23 @@ public class OutputFormatFactoryHTML implements OutputFormatFactorySpi {
             }
         }
 
-        return new OutputFormatHTML(cfg, settings);
+        Map<Integer, OutputFormatHTMLSettings> sridSettings = new HashMap<>();
+        for (Map.Entry<String, String> param : params.entrySet()) {
+            String key = param.getKey();
+            if (key.matches("\\d+\\.(tileUrl|tileAttribution|tileOriginX|tileOriginY)")) {
+                int dotIdx = key.indexOf('.');
+                int srid = Integer.parseInt(key.substring(0, dotIdx));
+                String fieldName = key.substring(dotIdx + 1);
+                OutputFormatHTMLSettings sridSetting = sridSettings.computeIfAbsent(srid, k -> new OutputFormatHTMLSettings());
+                try {
+                    OutputFormatHTMLSettings.class.getDeclaredField(fieldName).set(sridSetting, param.getValue());
+                } catch (Exception ignore) {
+                    // It's okay
+                }
+            }
+        }
+
+        return new OutputFormatHTML(cfg, settings, sridSettings);
     }
 
 }

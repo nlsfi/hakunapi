@@ -9,6 +9,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <#if sridCode?? && sridCode.proj4??>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4-src.min.js" integrity="sha512-HfgZgM0HUFax2GrHYLPg6BKnJk3k8mFzyWVDq+cCJY3GymqWXoQrEnYEUIOmnoxOfn50CY9bJy+58/gbcZhjSA==" crossorigin=""/></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.min.js" integrity="sha512-wjJpCHc+MFPoF+WHrSjrlw6EY1pinfEgnVYN/eiClWCIkk3QEYX8QDJQXqPIAHnkS9wCIQy2apbrw5z61DeS4A==" crossorigin=""/></script>
+  </#if>
   <title>${featureType.name} - ${id}</title>
   <style>
   </style>
@@ -77,9 +81,24 @@ document.getElementById("json-link").href = url.toString();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 <script>
+<#if sridCode?? && sridCode.proj4??>
+var crsConfig = {
+  resolutions: [
+    8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5, 0.25
+  ]
+};
+<#if settings.tileOriginX?? && settings.tileOriginY??>
+crsConfig.origin = [${settings.tileOriginX}, ${settings.tileOriginY}];
+</#if>
+var crs = new L.Proj.CRS("EPSG:${srid?c}",
+  "${sridCode.proj4}",
+  crsConfig)
+var map = L.map('map', { crs: crs });
+<#else>
 var map = L.map('map');
+</#if>
 L.tileLayer('${settings.tileUrl}', {
-    <#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
+    <#if sridCode?? && sridCode.proj4??>minZoom: 0, maxZoom: 15, </#if><#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
 }).addTo(map);
 
 <#if geometry??>
@@ -89,6 +108,12 @@ var data = {
   "geometry": ${geometry}
 };
 var layer = L.geoJSON(data, {
+  <#if sridCode?? && sridCode.proj4??>
+  coordsToLatLng: function(coords) {
+    var point = L.point(coords[0], coords[1]);
+    return crs.projection.unproject(point);
+  },
+  </#if>
   onEachFeature: function (feature, layer) {
     layer.bindPopup(feature.id);
   }

@@ -26,19 +26,26 @@ public class SRIDCode {
     private final HakunaGeometryDimension dimension;
     private final Double wrapXMin;
     private final Double wrapXMax;
+    private final String proj4;
 
     public SRIDCode(int srid, boolean latLon, boolean degrees, HakunaGeometryDimension dimension) {
-        this(srid, latLon, degrees, dimension, null, null);
+        this(srid, latLon, degrees, dimension, null, null, null);
     }
 
     public SRIDCode(int srid, boolean latLon, boolean degrees, HakunaGeometryDimension dimension,
                     Double wrapXMin, Double wrapXMax) {
+        this(srid, latLon, degrees, dimension, wrapXMin, wrapXMax, null);
+    }
+
+    public SRIDCode(int srid, boolean latLon, boolean degrees, HakunaGeometryDimension dimension,
+                    Double wrapXMin, Double wrapXMax, String proj4) {
         this.srid = srid;
         this.latLon = latLon;
         this.degrees = degrees;
         this.dimension = dimension;
         this.wrapXMin = wrapXMin;
         this.wrapXMax = wrapXMax;
+        this.proj4 = proj4;
     }
 
     public int getSrid() {
@@ -69,8 +76,12 @@ public class SRIDCode {
         return wrapXMin != null && wrapXMax != null;
     }
 
+    public String getProj4() {
+        return proj4;
+    }
+
     public SRIDCode withDimension(HakunaGeometryDimension d) {
-        return new SRIDCode(this.srid, this.latLon, this.degrees, d, this.wrapXMin, this.wrapXMax);
+        return new SRIDCode(this.srid, this.latLon, this.degrees, d, this.wrapXMin, this.wrapXMax, this.proj4);
     }
 
 }

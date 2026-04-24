@@ -15,6 +15,8 @@ public class OutputFormatHTMLSettings {
 
     public String tileUrl;
     public String tileAttribution;
+    public String tileOriginX;
+    public String tileOriginY;
 
     public String getTileUrl() {
         return tileUrl;
@@ -30,6 +32,22 @@ public class OutputFormatHTMLSettings {
 
     public void setTileAttribution(String tileAttribution) {
         this.tileAttribution = tileAttribution;
+    }
+
+    public String getTileOriginX() {
+        return tileOriginX;
+    }
+
+    public void setTileOriginX(String tileOriginX) {
+        this.tileOriginX = tileOriginX;
+    }
+
+    public String getTileOriginY() {
+        return tileOriginY;
+    }
+
+    public void setTileOriginY(String tileOriginY) {
+        this.tileOriginY = tileOriginY;
     }
 
 }

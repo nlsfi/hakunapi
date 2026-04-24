@@ -1,5 +1,8 @@
 package fi.nls.hakunapi.html;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import freemarker.template.Configuration;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.OutputFormat;
@@ -12,14 +15,24 @@ public class OutputFormatHTML implements OutputFormat {
 
     private final Configuration configuration;
     private final OutputFormatHTMLSettings settings;
+    private final Map<Integer, OutputFormatHTMLSettings> sridSettings;
 
     public OutputFormatHTML(Configuration configuration, OutputFormatHTMLSettings settings) {
+        this(configuration, settings, new HashMap<>());
+    }
+
+    public OutputFormatHTML(Configuration configuration, OutputFormatHTMLSettings settings, Map<Integer, OutputFormatHTMLSettings> sridSettings) {
         this.configuration = configuration;
         this.settings = settings;
+        this.sridSettings = sridSettings;
     }
     
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public OutputFormatHTMLSettings getSettingsForSrid(int srid) {
+        return sridSettings.getOrDefault(srid, settings);
     }
 
     @Override
@@ -44,12 +57,12 @@ public class OutputFormatHTML implements OutputFormat {
 
     @Override
     public FeatureCollectionWriter getFeatureCollectionWriter() {
-        return new HTMLFeatureCollectionWriter(configuration, settings);
+        return new HTMLFeatureCollectionWriter(configuration, settings, sridSettings);
     }
 
     @Override
     public SingleFeatureWriter getSingleFeatureWriter() {
-        return new HTMLSingleFeatureWriter(configuration, settings);
+        return new HTMLSingleFeatureWriter(configuration, settings, sridSettings);
     }
 
 }
