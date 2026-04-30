@@ -26,11 +26,10 @@ Hakunapi supports following data stores and output formats:
 
 ### Environment
 
-Services implemented with Hakunapi can be deployed both as [Jakarta EE](https://jakarta.ee/) and [Java EE](https://www.oracle.com/java/technologies/java-ee-glance.html) based servlet web applications. There are `hakunapi-simple-servlet` modules for both cases allowing deploying "off-the-shelf" servlets by just adding geospatial data and feature type specific configuration. Alternatively you can also extend Hakunapi base servlet implementations with custom Java code.
+Services implemented with Hakunapi can be deployed as [Jakarta EE](https://jakarta.ee/) based servlet web applications. Hakunapi provides `hakunapi-simple-servlet` modules for deploying "off-the-shelf" servlets by just adding geospatial data and feature type specific configuration. Alternatively you can also extend Hakunapi base servlet implementations with custom Java code.
 
-Miniminum requirements for the deployment servlet environment:
-* webapps based on modules under `webapp-jakarta`: Java 17+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
-* webapps based on modules under `webapp-javax`: Java 11+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 9. 
+Minimum requirements for the deployment servlet environment:
+* Java 17+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
 
 It's also possible to embed such Hakunapi services on a containerized environment, like Docker, however the support for this is not yet documented.
 
@@ -340,30 +339,13 @@ The `hakunapi-telemetry-opentelemetry` module (use `opentelemetry` for the mode 
 
 ### Java versions
 
-Hakunapi code modules has the minimum requirement of Java 11, and Hakunapi officially supports Java 11, Java 17 and 21 versions. Other Java versions are not currently tested.
+Hakunapi code modules require Java 17 as minimum, and Hakunapi officially supports Java 17 and 21 versions. Other Java versions are not currently tested.
 
 The support for Java 8 was dropped in 2023, see issue [#17](https://github.com/nlsfi/hakunapi/issues/17).
 
 ### About servlet frameworks
 
-Hakunapi provides servlet webapp support both for [Jakarta EE](https://jakarta.ee/) (`jakarta.*`) and [Java EE](https://www.oracle.com/java/technologies/java-ee-glance.html) (`javax.*`) based webapps and servlet containers. See Hakunapi issue [#16](https://github.com/nlsfi/hakunapi/issues/16) for background.
-
-In summary Jakarta EE is the future of enterprise Java; it is actively developed, widely supported, and future-proof for new and modernized applications. Java EE is now legacy, but still widely used in many systems.
-
-Main differences on these frameworks, as analyzed without relation to Hakunapi:
-
-| Aspect           | Jakarta EE                           |              Javax EE        |
-|------------------|--------------------------------------|-------------------------------------|
-| **Namespace**    | Uses `jakarta.*` package prefix      | Uses `javax.*` package prefix       |
-| **Standardization & Ownership** | Managed by Eclipse Foundation, open specification process | Formerly managed by Oracle, closed process; now legacy |
-| **API Evolution**| Actively developed: new features, bugfixes, and specs | No new features; only maintenance for legacy systems |
-| **Servlet Containers & Frameworks** | Modern containers (Tomcat 10+, Jetty 11+, Payara 6+, WildFly 27+) require Jakarta APIs | Older containers (Tomcat 9, Jetty 9/10, GlassFish 5, WildFly <26) use Javax APIs |
-| **Compatibility & Migration** | Requires source code changes (jakarta.* imports) when upgrading from Javax | Legacy code remains compatible but cannot use new Jakarta features |
-| **Maintainability** | Preferred for new projects; easier to get support and updates | Increasing technical debt; harder to maintain as ecosystem evolves |
-| **Future-proofing** | Roadmap includes evolution of Jakarta EE, MicroProfile, new cloud-native features | No roadmap for Javax EE; only bugfixes or security patches for legacy |
-| **Community & Ecosystem** | Vibrant, growing community and tooling | Shrinking community; focus shifting to Jakarta EE |
-| **Vendor Support** | Most vendors moving to Jakarta APIs; long-term support planned | Support waning, likely to end as Javax becomes obsolete |
-| **Best Practice** | Use Jakarta EE for all new and actively maintained apps | Use Javax EE only for maintaining legacy apps that cannot migrate |
+Hakunapi targets [Jakarta EE](https://jakarta.ee/) for servlet webapp support. Jakarta EE is actively developed, widely supported, and future-proof for new and modernized applications.
 
 ### Hakunapi webapp and servlet modules
 
@@ -402,19 +384,6 @@ Adds telemetry and monitoring capabilities to Hakunapi Jakarta webapps, enabling
 Supplies an application variant of the Hakunapi Jakarta webapp tailored for Oracle Database backends, implementing optimized feature type mapping, connection management, and SQL handling compatible with Oracle spatial extensions. Use this module when building OGC API services over Oracle databases, leveraging full Hakunapi and Jakarta Servlet integration.
 
 In summary these modules are intended to be assembled for building, testing, and operating Jakarta Servlet-based OGC API services with Hakunapi. The `simple-servlet` module supplies core servlet classes; `simple-webapp` wraps them into a complete, runnable webapp; `simple-webapp-test` enables thorough testing of that webapp; `telemetry-webapp` adds monitoring features; and `oracle-webapp` provides specialized support for Oracle Database deployments. Together, they streamline geospatial API development from prototype through production, with extensibility for different backend databases and operational needs.
-
-### Java EE webapps
-
-Minimum requirements for [Java EE](https://www.oracle.com/java/technologies/java-ee-glance.html) based Hakunapi web applications are Java 11 and Java EE 8. Use Java EE compliant servlet containers like [Apache Tomcat](https://tomcat.apache.org/) version 9.
-
-Hakunapi modules (under `webapp-javax`) supporting Java EE are listed below:
-* `hakunapi-simple-servlet-javax`
-* `hakunapi-simple-webapp-javax`
-* `hakunapi-simple-webapp-test-javax`
-* `hakunapi-telemetry-webapp-javax`
-* `hakunapi-oracle-webapp-javax`
-
-Purposes and features of each module are similar to those introduced in the previous section related to Jakarta EE.
 
 ## Testing
 
