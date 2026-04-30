@@ -84,9 +84,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <version>${jersey-jakarta.version}</version>
+                <groupId>tools.jackson.jakarta.rs</groupId>
+                <artifactId>jackson-jakarta-rs-json-provider</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <!--

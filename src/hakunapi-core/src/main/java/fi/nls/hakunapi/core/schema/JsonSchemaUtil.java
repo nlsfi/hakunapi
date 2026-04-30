@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -51,7 +51,7 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 public class JsonSchemaUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonSchemaUtil.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new JsonMapper();
 
     private JsonSchemaUtil() {
     }
@@ -105,7 +105,7 @@ public class JsonSchemaUtil {
             return null;
         }
 
-        String type = node.has("type") ? node.get("type").asText() : "object";
+        String type = node.has("type") ? node.get("type").asString() : "object";
         Schema schema;
         switch (type) {
             case "string":
@@ -126,13 +126,13 @@ public class JsonSchemaUtil {
         }
 
         if (node.has("title")) {
-            schema.setTitle(node.get("title").asText());
+            schema.setTitle(node.get("title").asString());
         }
         if (node.has("description")) {
-            schema.setDescription(node.get("description").asText());
+            schema.setDescription(node.get("description").asString());
         }
         if (node.has("format")) {
-            schema.setFormat(node.get("format").asText());
+            schema.setFormat(node.get("format").asString());
         }
         if (node.has("enum")) {
             List<Object> enumValues = new ArrayList<>();
@@ -144,7 +144,7 @@ public class JsonSchemaUtil {
                 } else if (val.isDouble()) {
                     enumValues.add(val.doubleValue());
                 } else {
-                    enumValues.add(val.asText());
+                    enumValues.add(val.asString());
                 }
             }
             schema.setEnum(enumValues);
@@ -152,9 +152,7 @@ public class JsonSchemaUtil {
 
         if (node.has("properties")) {
             Map<String, Schema> props = new LinkedHashMap<>();
-            Iterator<Map.Entry<String, JsonNode>> fields = node.get("properties").fields();
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> field = fields.next();
+            for (Map.Entry<String, JsonNode> field : node.get("properties").properties()) {
                 Schema propSchema = nodeToSchema(field.getValue());
                 if (propSchema != null) {
                     props.put(field.getKey(), propSchema);
@@ -164,12 +162,10 @@ public class JsonSchemaUtil {
         }
 
         // Collect x- extension fields
-        Iterator<Map.Entry<String, JsonNode>> allFields = node.fields();
-        while (allFields.hasNext()) {
-            Map.Entry<String, JsonNode> field = allFields.next();
+        for (Map.Entry<String, JsonNode> field : node.properties()) {
             if (field.getKey().startsWith("x-")) {
-                schema.addExtension(field.getKey(), field.getValue().isTextual()
-                        ? field.getValue().asText()
+                schema.addExtension(field.getKey(), field.getValue().isString()
+                        ? field.getValue().asString()
                         : field.getValue());
             }
         }

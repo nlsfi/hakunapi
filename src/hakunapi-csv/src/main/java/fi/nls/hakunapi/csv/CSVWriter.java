@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.core.io.NumberOutput;
+import tools.jackson.core.io.NumberOutput;
 
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;

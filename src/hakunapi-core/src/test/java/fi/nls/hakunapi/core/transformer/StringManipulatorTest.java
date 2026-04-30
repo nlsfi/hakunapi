@@ -2,19 +2,14 @@ package fi.nls.hakunapi.core.transformer;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import fi.nls.hakunapi.core.property.HakunaProperty;
 
 public class StringManipulatorTest {
 
     @Test
-    public void test() throws JsonParseException, JsonMappingException, IOException {
+    public void test() {
         StringManipulator t = new StringManipulator();
 
         t.parseParts("%d[0:3],'-',%d[3:6],'-',%d[6:10],'-',%d[10:14]");

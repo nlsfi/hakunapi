@@ -14,8 +14,9 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
@@ -57,8 +58,9 @@ public class ConfigTest {
             System.out.println("Parent path: " + parent.toAbsolutePath().toString());
         }
 
-        ObjectMapper om = new ObjectMapper();
-        om.enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper om = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .build();
 
         HakunaConfigParser parser = new HakunaConfigParser(properties);
 

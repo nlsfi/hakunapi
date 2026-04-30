@@ -13,7 +13,7 @@ public class ESbulkPointGeometryWriter extends ESbulkGeometryWriter {
         if (type != HakunaGeometryType.POINT) {
             throw new IllegalArgumentException();
         }
-        json.writeFieldName(fieldName);
+        json.writeName(fieldName);
     }
 
     @Override

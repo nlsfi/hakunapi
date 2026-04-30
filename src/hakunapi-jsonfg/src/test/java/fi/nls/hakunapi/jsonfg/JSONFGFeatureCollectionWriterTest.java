@@ -5,9 +5,10 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureStream;
@@ -46,8 +47,10 @@ public class JSONFGFeatureCollectionWriterTest {
             fw.end(false, Collections.emptyList(), numberReturned);
         }
 
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-                .disable(SerializationFeature.CLOSE_CLOSEABLE);
+        ObjectMapper mapper = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(SerializationFeature.CLOSE_CLOSEABLE)
+            .build();
 
         // System.out.println(new String(baos.toByteArray()));
         
@@ -85,8 +88,10 @@ public class JSONFGFeatureCollectionWriterTest {
             fw.end(false, Collections.emptyList(), numberReturned);
         }
 
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-                .disable(SerializationFeature.CLOSE_CLOSEABLE);
+        ObjectMapper mapper = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(SerializationFeature.CLOSE_CLOSEABLE)
+            .build();
 
         JsonNode json = mapper.readTree(baos.toByteArray());
 

@@ -2,7 +2,7 @@ package fi.nls.hakunapi.core.util;
 
 import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.core.io.NumberOutput;
+import tools.jackson.core.io.NumberOutput;
 
 public class DToA {
 

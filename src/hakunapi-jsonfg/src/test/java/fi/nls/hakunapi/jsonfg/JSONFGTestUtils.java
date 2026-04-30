@@ -6,16 +6,16 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion.VersionFlag;
-import com.networknt.schema.ValidationMessage;
+import tools.jackson.databind.JsonNode;
+
+import com.networknt.schema.Error;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SpecificationVersion;
 
 import fi.nls.hakunapi.core.DatetimeProperty;
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
@@ -50,7 +50,7 @@ import fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory;
 
 public class JSONFGTestUtils {
 
-    JsonSchemaFactory factory = JsonSchemaFactory.getInstance(VersionFlag.V202012);
+    SchemaRegistry factory = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12);
 
     protected final int SRID = Crs.CRS84_SRID;
     protected final SRIDCode PLACE_SRID = new SRIDCode(3067, false, false, HakunaGeometryDimension.XY);
@@ -175,10 +175,10 @@ public class JSONFGTestUtils {
     }
 
     public void validateFeatureCollection(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory
+        Schema jsonSchema = factory
                 .getSchema(JSONFGTestUtils.class.getResourceAsStream("featurecollection.min.json"));
 
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        List<Error> errors = jsonSchema.validate(jsonNode);
         /* Debug
         for (ValidationMessage err : errors) {
             System.err.println(err);
@@ -188,10 +188,10 @@ public class JSONFGTestUtils {
     }
 
     public void validateFeatureWithDate(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory
+        Schema jsonSchema = factory
                 .getSchema(JSONFGTestUtils.class.getResourceAsStream("feature-with-date-schema.json"));
 
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        List<Error> errors = jsonSchema.validate(jsonNode);
         /* Debug
         for (ValidationMessage err : errors) {
             System.err.println(err);
@@ -201,10 +201,10 @@ public class JSONFGTestUtils {
     }
 
     public void validateFeatureWithTimestamp(JsonNode jsonNode) {
-        JsonSchema jsonSchema = factory
+        Schema jsonSchema = factory
                 .getSchema(JSONFGTestUtils.class.getResourceAsStream("feature-with-timestamp-schema.json"));
 
-        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+        List<Error> errors = jsonSchema.validate(jsonNode);
         assertTrue(errors.isEmpty());
 
     }

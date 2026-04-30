@@ -23,9 +23,9 @@ public class SmileSingleFeatureWriter extends SmileFeatureWriterBase implements 
 
     private void startFeature() throws IOException {
         w.writeStartObject();
-        w.writeFieldName(GeoJSONStrings.TYPE);
+        w.writeName(GeoJSONStrings.TYPE);
         w.writeString(GeoJSONStrings.FEATURE);
-        w.writeFieldName(GeoJSONStrings.ID);
+        w.writeName(GeoJSONStrings.ID);
     }
 
     @Override

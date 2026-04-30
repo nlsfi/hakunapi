@@ -6,7 +6,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureType;
@@ -17,7 +18,7 @@ import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 
 public class LoggingServiceTelemetry implements ServiceTelemetry {
 
-    protected static ObjectMapper MAPPER = new ObjectMapper();
+    protected static ObjectMapper MAPPER = new JsonMapper();
 
     protected String name;
     protected Logger log;

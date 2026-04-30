@@ -1,17 +1,18 @@
 package fi.nls.hakunapi.core.transformer;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyTransformed;
@@ -42,16 +43,16 @@ public class JSONCodeListTransformer implements ValueTransformer {
         HakunaPropertyTransformed t = (HakunaPropertyTransformed) property;
         this.innerType = t.getInnerType();
 
-        URL url = new URL(codelist);
-        Map<String, Object> map = readMap(url);
+        File file = new File(codelist);
+        Map<String, Object> map = readMap(file);
 
         initFromMap(innerType, map);
     }
 
-    protected Map<String, Object> readMap(URL url) throws JsonParseException, JsonMappingException, IOException {
-        ObjectMapper om = new ObjectMapper();
+    protected Map<String, Object> readMap(File file) throws JacksonException, DatabindException, IOException {
+        ObjectMapper om = new JsonMapper();
         TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-        return om.readValue(url, typeRef);
+        return om.readValue(file, typeRef);
     }
 
     protected void initFromMap(HakunaPropertyType innerType, Map<String, Object> map) {

@@ -23,8 +23,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.nls.hakunapi.core.CacheSettings;
 import fi.nls.hakunapi.core.DatetimeProperty;
@@ -681,7 +682,7 @@ public class HakunaConfigParser {
         }
 
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-        ObjectMapper om = new ObjectMapper();
+        ObjectMapper om = new JsonMapper();
 
         try {
             return om.readValue(metadataProp, typeRef);

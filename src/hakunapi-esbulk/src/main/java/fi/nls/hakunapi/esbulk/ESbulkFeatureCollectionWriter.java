@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.esbulk;
 
-import com.fasterxml.jackson.core.io.SerializedString;
+import tools.jackson.core.io.SerializedString;
 
 import fi.nls.hakunapi.core.FeatureCollectionWriter;
 import fi.nls.hakunapi.core.FeatureType;
@@ -25,7 +25,7 @@ public class ESbulkFeatureCollectionWriter extends ESbulkFeatureWriterBase imple
         writeHeader(indexName);
 
         w.writeStartObject();
-        w.writeFieldName(Strings.ID);
+        w.writeName(Strings.ID);
         w.writeString(fid);
     }
 
@@ -34,7 +34,7 @@ public class ESbulkFeatureCollectionWriter extends ESbulkFeatureWriterBase imple
         writeHeader(indexName);
 
         w.writeStartObject();
-        w.writeFieldName(Strings.ID);
+        w.writeName(Strings.ID);
         w.writeNumber(fid);
     }
 

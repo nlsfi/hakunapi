@@ -14,7 +14,7 @@
             <artifactId>hakunapi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <groupId>tools.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-smile</artifactId>
             <version>${jackson.version}</version>
         </dependency>

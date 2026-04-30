@@ -1,6 +1,6 @@
 package fi.nls.hakunapi.esbulk;
 
-import com.fasterxml.jackson.core.io.SerializedString;
+import tools.jackson.core.io.SerializedString;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.SingleFeatureWriter;
@@ -14,7 +14,7 @@ public class ESbulkSingleFeatureWriter extends ESbulkFeatureWriterBase implement
         writeHeader(new SerializedString(layername));
 
         w.writeStartObject();
-        w.writeFieldName(Strings.ID);
+        w.writeName(Strings.ID);
         w.writeString(fid);
     }
 
@@ -25,7 +25,7 @@ public class ESbulkSingleFeatureWriter extends ESbulkFeatureWriterBase implement
         writeHeader(new SerializedString(layername));
 
         w.writeStartObject();
-        w.writeFieldName(Strings.ID);
+        w.writeName(Strings.ID);
         w.writeNumber(fid);
     }
 

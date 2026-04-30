@@ -1,7 +1,7 @@
 package fi.nls.hakunapi.smile;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.SerializableString;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.SerializableString;
 
 import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
@@ -18,11 +18,11 @@ public class SmileGeometryWriter implements GeometryWriter {
 
     @Override
     public void init(HakunaGeometryType type, int srid, int dimension) throws Exception {
-        json.writeFieldName(fieldName);
+        json.writeName(fieldName);
         json.writeStartObject();
-        json.writeFieldName(GeoJSONStrings.TYPE);
+        json.writeName(GeoJSONStrings.TYPE);
         json.writeString(getGeoJSONType(type));
-        json.writeFieldName(GeoJSONStrings.COORDINATES);
+        json.writeName(GeoJSONStrings.COORDINATES);
     }
 
     private SerializableString getGeoJSONType(HakunaGeometryType type) {
