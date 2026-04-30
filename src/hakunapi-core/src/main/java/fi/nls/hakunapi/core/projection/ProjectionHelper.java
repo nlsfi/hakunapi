@@ -9,7 +9,7 @@ import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.util.CrsUtil;
 
 public class ProjectionHelper {
-    
+
     public static Geometry reprojectToStorageCRS(HakunaPropertyGeometry prop, Geometry geom) {
         int geomSRID = geom.getSRID();
         int storageSRID = prop.getStorageSRID();
@@ -26,6 +26,7 @@ public class ProjectionHelper {
             throw new IllegalArgumentException(CrsUtil.ERR_UNSUPPORTED_CRS);
         }
         geom = ProjectionHelper.reproject(geom, t);
+        geom.setSRID(storageSRID);
 
         return geom;
     }
