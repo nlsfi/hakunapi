@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -24,13 +26,21 @@ public class HTMLSingleFeatureWriter extends HTMLFeatureWriterBase implements Si
     private static final String TEMPLATE_GENERIC_SRID = "feature_%d.ftl";
     private static final String TEMPLATE_GENERIC = "feature.ftl";
 
+    private Map<Integer, OutputFormatHTMLSettings> sridSettings;
+
     @Deprecated
     public HTMLSingleFeatureWriter(Configuration configuration) {
         super(configuration);
+        this.sridSettings = new HashMap<>();
     }
 
     public HTMLSingleFeatureWriter(Configuration configuration, OutputFormatHTMLSettings settings) {
+        this(configuration, settings, new HashMap<>());
+    }
+
+    public HTMLSingleFeatureWriter(Configuration configuration, OutputFormatHTMLSettings settings, Map<Integer, OutputFormatHTMLSettings> sridSettings) {
         super(configuration, settings);
+        this.sridSettings = sridSettings;
     }
 
     @Override
@@ -50,7 +60,10 @@ public class HTMLSingleFeatureWriter extends HTMLFeatureWriterBase implements Si
         this.feature = new HTMLFeature();
         this.feature.setId(fid);
         this.feature.setFeatureType(ft);
-        this.feature.setSettings(settings);
+        this.feature.setSrid(srid);
+        this.feature.setSridCode(sridCode);
+        OutputFormatHTMLSettings sridSpecific = sridSettings.getOrDefault(srid, settings);
+        this.feature.setSettings(sridSpecific);
         this.properties = new PropertiesContextMap(feature.getProperties(), null);
         Template template = getTemplate(ft, srid);
         this.environment = template.createProcessingEnvironment(feature, new OutputStreamWriter(out, StandardCharsets.UTF_8));

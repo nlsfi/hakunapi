@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -26,6 +28,7 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
     private static final String TEMPLATE_GENERIC = "featureCollection.ftl";
 
     private HTMLFeatureCollection model;
+    private Map<Integer, OutputFormatHTMLSettings> sridSettings;
 
     @Deprecated
     public HTMLFeatureCollectionWriter(Configuration configuration) {
@@ -33,7 +36,12 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
     }
 
     public HTMLFeatureCollectionWriter(Configuration configuration, OutputFormatHTMLSettings settings) {
+        this(configuration, settings, new HashMap<>());
+    }
+
+    public HTMLFeatureCollectionWriter(Configuration configuration, OutputFormatHTMLSettings settings, Map<Integer, OutputFormatHTMLSettings> sridSettings) {
         super(configuration, settings);
+        this.sridSettings = sridSettings;
     }
 
     @Override
@@ -47,8 +55,10 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
     public void startFeatureCollection(FeatureType ft, String layername) throws Exception {
         this.model = new HTMLFeatureCollection();
         model.setSrid(srid);
+        model.setSridCode(sridCode);
         model.setFeatureType(ft);
-        model.setSettings(settings);
+        OutputFormatHTMLSettings sridSpecific = sridSettings.getOrDefault(srid, settings);
+        model.setSettings(sridSpecific);
         Template template = getTemplate(ft, srid);
         this.environment = template.createProcessingEnvironment(model, new OutputStreamWriter(out, StandardCharsets.UTF_8));
         this.environment.setOutputEncoding(StandardCharsets.UTF_8.name());

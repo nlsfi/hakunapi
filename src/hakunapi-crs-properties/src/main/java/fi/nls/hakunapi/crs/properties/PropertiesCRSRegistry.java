@@ -24,6 +24,7 @@ public class PropertiesCRSRegistry implements CRSRegistry {
         String dimensionStr = config.getProperty("srid." + srid + ".geometryDimension", "XY");
         String wrapXMinStr = config.getProperty("srid." + srid + ".wrapXMin");
         String wrapXMaxStr = config.getProperty("srid." + srid + ".wrapXMax");
+        String proj4Str = config.getProperty("srid." + srid + ".proj4");
 
         boolean latLon = "true".equalsIgnoreCase(latLonStr);
         boolean degrees = "true".equalsIgnoreCase(degreesStr);
@@ -38,7 +39,7 @@ public class PropertiesCRSRegistry implements CRSRegistry {
                 "srid." + srid + ": Both wrapXMin and wrapXMax must be set, or neither");
         }
 
-        return new SRIDCode(srid, latLon, degrees, geomDimension, wrapXMin, wrapXMax);
+        return new SRIDCode(srid, latLon, degrees, geomDimension, wrapXMin, wrapXMax, proj4Str);
     }
 
     private static Double parseDouble(String value) {

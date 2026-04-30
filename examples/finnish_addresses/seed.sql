@@ -60,3 +60,15 @@ JOIN suomi_kunnat USING (municipality_number)
 WHERE east IS NOT NULL
 AND north IS NOT NULL
 AND postal_code IS NOT NULL;
+
+CREATE OR REPLACE VIEW simple_addresses_3903 AS
+SELECT
+  id,
+  ST_Transform(geom, 3903)::geometry(Point, 3903) as geom,
+  thoroughfare_name,
+  postal_descriptor,
+  admin_unit_name_4,
+  address_number,
+  building,
+  parcel
+FROM simple_addresses;

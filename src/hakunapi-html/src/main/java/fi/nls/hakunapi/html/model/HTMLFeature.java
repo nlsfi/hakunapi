@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.html.OutputFormatHTMLSettings;
 
@@ -15,6 +16,8 @@ public class HTMLFeature {
     private Map<String, Object> properties;
 
     private FeatureType featureType;
+    private int srid;
+    private SRIDCode sridCode;
 
     private String timestamp;
     private Integer numberReturned;
@@ -51,6 +54,22 @@ public class HTMLFeature {
 
     public void setFeatureType(FeatureType featureType) {
         this.featureType = featureType;
+    }
+
+    public int getSrid() {
+        return srid;
+    }
+
+    public void setSrid(int srid) {
+        this.srid = srid;
+    }
+
+    public SRIDCode getSridCode() {
+        return sridCode;
+    }
+
+    public void setSridCode(SRIDCode sridCode) {
+        this.sridCode = sridCode;
     }
 
     public String getTimestamp() {
