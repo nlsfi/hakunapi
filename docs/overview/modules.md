@@ -46,6 +46,69 @@ See also [issues](https://github.com/nlsfi/hakunapi/issues/139) and the latest [
 
 ## Dependencies
 
+hakunapi keeps the third-party dependency footprint deliberately small. Every dependency must earn its place by serving a real, concrete purpose; if a need can reasonably be covered by a few classes or lines of in-tree code, that is preferred over pulling in a library. Each added dependency has a long-term maintenance cost: version bumps, transitive conflicts, CVE triage and license tracking.
+
+Dependencies should also be scoped as tightly as possible to the modules that actually need them. Each external library is declared in the module that directly uses it, not hoisted into a shared module. Convenience is not a good enough reason to widen the dependency footprint of a module that other components transitively depend on.
+
+For example, FreeMarker is declared only in `hakunapi-html`, the ANTLR runtime only in `hakunapi-cql2`, and each JDBC driver only in its own source module (e.g. PostgreSQL in `hakunapi-source-postgis`). An application that does not use a given source or format module therefore does not pull in its dependencies at all.
+
+Test-scope dependencies are held to a looser standard: they are not shipped to consumers, so the criteria above apply mainly to compile/runtime dependencies.
+
+### Direct external dependencies
+
+The table below lists all direct third-party dependencies declared in the Hakunapi Maven modules. Internal `hakunapi-*` modules are not repeated here (see graphs below).
+
+#### Web API and serialization
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| Jakarta EE APIs | servlet 6.0.0, ws.rs 3.1.0, validation 3.0.2 | Servlet API, JAX-RS API | **To consider:** Currently too much logic is implemented against JAX-RS APIs. Additional layer would allow for migration to another Web API layer ("Control" and "Service" layers are now somewhat intermingled) |
+| Jersey | 3.1.11 | JAX-RS implementation: servlet container integration + HK2 dependency injection | |
+| Jackson | 3.1.1 (annotations 2.21) | JSON streaming, object mapping and JAX-RS integration for Jersey. Jackson 3.1.x reuses the 2.21 annotation artifact. | |
+| Swagger Core | 2.2.42 | OpenAPI 3 model classes and serialization for API description generation | |
+
+#### Spatial geometry and CRS
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| JTS Topology Suite | 1.20.0 | Geometry model, spatial predicates | |
+| GeoTools | 34.2 | proj-gt: `gt-epsg-hsql` provides EPSG CRS database (HSQL-backed) for CRS definitions and reprojection | **To consider:** hakunapi-proj-proj (PROJ) [Issue #143](https://github.com/nlsfi/hakunapi/issues/143) to replace hakunapi-proj-gt for CRS definitions and reprojection? |
+
+#### Database connectivity
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| HikariCP | 4.0.3 | JDBC connection pool | 4.0.3 is the last Java 8 release; current line is **7.x** |
+| PostgreSQL JDBC | 42.7.11 | PostgreSQL / PostGIS JDBC driver for source-postgis | Try to stay up to date |
+| SQLite JDBC | 3.47.0.0 | SQLite JDBC for reading GeoPackage files for source-gpkg | |
+
+#### Output formats and parsing
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| FreeMarker | 2.3.33 | HTML template engine for HTML outputs | |
+| Caffeine | 2.9.3 | In-memory caching | Caffeine **3.x** targets Java 11+; no known reason to stay on 2.9. |
+| ANTLR 4 runtime | 4.13.2 | Runtime for the ANTLR-generated CQL2 parser | |
+
+#### Logging and telemetry
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| SLF4J | 1.7.25 | Logging facade | SLF4J **2.x** is the current line (and Log4j 2.25 supports it.) |
+| Log4j 2 | 2.25.4 | Logging implementation: API, core, SLF4J bridge, and Jakarta servlet lifecycle integration | |
+
+#### Testing
+
+| Library | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| JUnit | 4.13.2 | Unit tests | JUnit **5** (Jupiter) is the current line. |
+| Mockito | 4.11.0 | Mocking framework | Mockito **5.x** is the current line (Java 11+ minimum). |
+| Jersey test framework | 3.1.11 | Jersey test container + in-memory test transport | |
+| JsonPath | 2.9.0 | JSONPath assertions in integration tests | |
+| json-schema-validator (networknt) | 3.0.1 | Validates JSON-FG output against the JSON-FG JSON Schema | |
+
+### Dependency graph
+
 This section introduces Hakunapi modules (named with prefix "hakunapi") by simplified dependency graphs with dependencies also to key external packages. 
 
 Graphs do not visualize all dependencies, for example `junit`, `log4j` and `slf4j-api` for logging were omitted. Also some output format modules are not visible in this graph.
