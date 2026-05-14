@@ -8,7 +8,7 @@
   <artifactId>hakunapi-telemetry-opentelemetry</artifactId>
   
   <properties>
-      <opentelemetry.version>1.34.1</opentelemetry.version>
+      <opentelemetry.version>1.62.0</opentelemetry.version>
   </properties>
    <dependencies>        
         <dependency>
