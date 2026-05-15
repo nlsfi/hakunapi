@@ -29,7 +29,7 @@ Hakunapi supports following data stores and output formats:
 Services implemented with Hakunapi can be deployed as [Jakarta EE](https://jakarta.ee/) based servlet web applications. Hakunapi provides `hakunapi-simple-servlet` modules for deploying "off-the-shelf" servlets by just adding geospatial data and feature type specific configuration. Alternatively you can also extend Hakunapi base servlet implementations with custom Java code.
 
 Minimum requirements for the deployment servlet environment:
-* Java 17+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
+* Java 21+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
 
 It's also possible to embed such Hakunapi services on a containerized environment, like Docker, however the support for this is not yet documented.
 
@@ -339,7 +339,7 @@ The `hakunapi-telemetry-opentelemetry` module (use `opentelemetry` for the mode 
 
 ### Java versions
 
-Hakunapi code modules require Java 17 as minimum, and Hakunapi officially supports Java 17 and 21 versions. Other Java versions are not currently tested.
+Hakunapi code modules require Java 21 as minimum. Other Java versions are not currently tested.
 
 The support for Java 8 was dropped in 2023, see issue [#17](https://github.com/nlsfi/hakunapi/issues/17).
 
@@ -364,7 +364,7 @@ See details in following sections.
 
 As described in the official [Javax to Jakarta](https://jakarta.ee/blogs/javax-jakartaee-namespace-ecosystem-progress/) namespace migration design document, Jakarta EE 8 was still fully compatible with the Java EE 8 specification. Jakarta EE 9 introduced the new namespace (*.jakarta) and that was completed in the Jakarta EE 10 specification.  
 
-Suggested minimum requirements for [Jakarta EE](https://jakarta.ee/) based Hakunapi web applications are Java 17 and Jakarta EE 10. Use Jakarta EE 10+ compliant servlet containers like [Apache Tomcat](https://tomcat.apache.org/) version 10+ (see also a more detailed summary of [Tomcat versions](https://tomcat.apache.org/whichversion.html)) or [Eclipse Jetty](https://jetty.org/) 12+.
+Suggested minimum requirements for [Jakarta EE](https://jakarta.ee/) based Hakunapi web applications are Java 21 and Jakarta EE 10. Use Jakarta EE 10+ compliant servlet containers like [Apache Tomcat](https://tomcat.apache.org/) version 10+ (see also a more detailed summary of [Tomcat versions](https://tomcat.apache.org/whichversion.html)) or [Eclipse Jetty](https://jetty.org/) 12+.
 
 Hakunapi modules (under `webapp-jakarta`) supporting Jakarta EE are described below.
 
