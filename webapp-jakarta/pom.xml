@@ -43,17 +43,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>fi.nls.hakunapi</groupId>
-                <artifactId>hakunapi-telemetry-opentelemetry</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-jakarta-web</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
@@ -107,7 +96,5 @@
         <module>hakunapi-simple-servlet-jakarta</module>
         <module>hakunapi-simple-webapp-jakarta</module>
         <module>hakunapi-simple-webapp-test-jakarta</module>
-        <module>hakunapi-oracle-webapp-jakarta</module>
-        <module>hakunapi-telemetry-webapp-jakarta</module>
     </modules>
 </project>
