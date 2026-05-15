@@ -19,6 +19,9 @@ public class PropertiesCRSRegistry implements CRSRegistry {
 
     @Override
     public SRIDCode detect(Properties config, int srid) {
+        if (SRIDCode.isKnown(srid)) {
+            return SRIDCode.getKnown(srid);
+        }
         String latLonStr = config.getProperty("srid." + srid + ".latLon", "false");
         String degreesStr = config.getProperty("srid." + srid + ".degrees", "false");
         String dimensionStr = config.getProperty("srid." + srid + ".geometryDimension", "XY");
