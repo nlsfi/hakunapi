@@ -13,7 +13,6 @@
 		<module>hakunapi-core</module>
 		<module>hakunapi-config-test</module>
 		<module>hakunapi-source-postgis</module>
-        <module>hakunapi-source-oracle</module>
 		<module>hakunapi-geojson</module>
 		<module>hakunapi-jsonfg</module>
 		<module>hakunapi-gpkg</module>
@@ -27,7 +26,6 @@
 		<module>hakunapi-cql2</module>
 		<module>hakunapi-cql2-functions</module>
         <module>hakunapi-telemetry</module>
-        <module>hakunapi-telemetry-opentelemetry</module>
 		<module>hakunapi-source-gpkg</module>
 		<module>hakunapi-crs-properties</module>
 	</modules>

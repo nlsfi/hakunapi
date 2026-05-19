@@ -29,7 +29,7 @@ Hakunapi supports following data stores and output formats:
 Services implemented with Hakunapi can be deployed as [Jakarta EE](https://jakarta.ee/) based servlet web applications. Hakunapi provides `hakunapi-simple-servlet` modules for deploying "off-the-shelf" servlets by just adding geospatial data and feature type specific configuration. Alternatively you can also extend Hakunapi base servlet implementations with custom Java code.
 
 Minimum requirements for the deployment servlet environment:
-* Java 17+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
+* Java 21+ with a servlet container like [Apache Tomcat](https://tomcat.apache.org/) version 10+ or [Eclipse Jetty](https://jetty.org/) 12+.
 
 It's also possible to embed such Hakunapi services on a containerized environment, like Docker, however the support for this is not yet documented.
 
@@ -104,17 +104,6 @@ graph TD
     
     %% Telemetry
     telemetry[hakunapi-telemetry] --> core
-    opentelemetry[hakunapi-telemetry-opentelemetry] --> core
-    opentelemetry --> telemetry
-    opentelemetry --> opentelemetry-api[opentelemetry-api]
-
-    %% Oracle 
-    oracle[hakunapi-source-oracle] --> core
-    oracle --> jts[jts-core]
-    oracle --> ojdbc8[ojdbc8]
-    oracle --> gt-main[gt-main]
-    oracle --> gt-jdbc-oracle[gt-jdbc-oracle]
-    oracle --> hikari
 ```
 
 And the last graph introduces some parts of servlet webapp implementation dependencies, but omits some of the internal dependencies on Hakunapi modules shown in previous graphs (just to keep the visualization simple) and exteranal packages are shown by combining artifacts.
@@ -143,12 +132,6 @@ graph TD
     webapp --> proj_gt[hakunapi-proj-gt]
     webapp --> proj_jhe[hakunapi-proj-jhe]
     webapp --> telemetry[hakunapi-telemetry]
-
-    telemetry-webapp[hakunapi-telemetry-webapp-jakarta] --> core
-    telemetry-webapp --> webapp
-    telemetry-webapp --> telemetry
-    telemetry-webapp --> opentelemetry-api[opentelemetry-api]
-    telemetry-webapp --> log4j-jakarta-web[log4j-jakarta-web]
 ```    
 
 The following sections describe Hakunapi modules introduced on the graph above in more details.
@@ -159,7 +142,7 @@ The following sections describe Hakunapi modules introduced on the graph above i
 
 The `hakunapi-core` module provides the essential building blocks for implementing [OGC API Features](https://ogcapi.ogc.org/features/) compliant services in Java. It handles HTTP request routing, feature collection management, and serialization to supported output formats such as GeoJSON, GeoPackage and GML.
 
-The module abstracts data access, allowing integration with various spatial databases like PostGIS, Oracle, and GeoPackage. It supports filtering and querying features using CQL2, and enables coordinate reference system transformations. The core also manages API metadata, conformance classes, and error handling.
+The module abstracts data access, allowing integration with various spatial databases like PostGIS and GeoPackage. It supports filtering and querying features using CQL2, and enables coordinate reference system transformations. The core also manages API metadata, conformance classes, and error handling.
 
 Telemetry and logging are integrated for monitoring and diagnostics. Comprehensive test utilities are included to facilitate robust API development.
 
@@ -227,10 +210,6 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 | SRID/Geometry Handling        | Flexible SRID, multiple geometry types per schema     | Layer-based geometry, SRID fixed per layer        |
 | Performance & Scalability     | High (large datasets, concurrency)                    | Limited by file access, best for small datasets   |
 | Deployment & Integration      | Server/multi-user, scalable                          | Portable/offline, single-user scenarios           |
-
-### Oracle
-
-The `hakunapi-source-oracle` module adds support for [Oracle Spatial databases](https://www.oracle.com/database/spatial-database/) in Hakunapi. It enables serving geospatial API features from Oracle tables and views, with functionality similar to the PostGIS module. You can map attributes, select geometry columns, and define feature types via configuration or custom Java code.
 
 ## Output data formats (stable)
 
@@ -329,17 +308,15 @@ Telemetry functionality in Hakunapi is meant for usage analysis. The logged data
 
 The core telemetry abstraction is defined in the `hakunapi-core` module through several key interfaces like `ServiceTelemetry`, `RequestTelemetry` and `TelemetryFactory`. 
 
-Hakunapi provides two different telemetry implementations, on separate modules, that can be configured using the `telemetry.mode` configuration property. When no configuration is set then the `ServiceTelemetry.NOP` implementation is used (that do not log anything).
+Hakunapi provides a telemetry implementation that can be configured using the `telemetry.mode` configuration property. When no configuration is set then the `ServiceTelemetry.NOP` implementation is used (that do not log anything).
 
 The `hakunapi-telemetry` module (use `log-json` for the mode in configuration) provides a simple JSON-based logging implementation that writes telemetry data to log files.
-
-The `hakunapi-telemetry-opentelemetry` module (use `opentelemetry` for the mode in configuration) provides integration with the OpenTelemetry ecosystem for distributed tracing and metrics based on OpenTelemetry SDK. See [opentelemetry.io](https://opentelemetry.io/) for more information.
 
 ## Webapps and servlets
 
 ### Java versions
 
-Hakunapi code modules require Java 17 as minimum, and Hakunapi officially supports Java 17 and 21 versions. Other Java versions are not currently tested.
+Hakunapi code modules require Java 21 as minimum. Other Java versions are not currently tested.
 
 The support for Java 8 was dropped in 2023, see issue [#17](https://github.com/nlsfi/hakunapi/issues/17).
 
@@ -349,14 +326,12 @@ Hakunapi targets [Jakarta EE](https://jakarta.ee/) for servlet webapp support. J
 
 ### Hakunapi webapp and servlet modules
 
-There are multiple modules in Hakunapi for both [Jakarta EE](https://jakarta.ee/) and [Java EE](https://www.oracle.com/java/technologies/java-ee-glance.html) frameworks.
-
-These modules can be categorized as:
+The webapp and servlet modules can be categorized as:
 * `hakunapi-simple-servlet`: core servlet classes, used for implementing customized web applications with logic written in Java code
 * `hakunapi-simple-webapp`: ready-to-deploy web application, add only configuration
 * `hakunapi-simple-webapp-test`: testing for the simple webapp
-* `hakunapi-oracle-webapp`: tailored web application for Oracle Spatial databases
-* `hakunapi-telemetry-webapp`: telemetry and monitoring capabilities
+
+`hakunapi-simple-webapp-jakarta` bundles a broad set of source, format and projection modules to cover the typical use case out of the box. If a deployment only needs a subset of those modules — for example just PostGIS + GeoJSON + HTML, without GeoPackage, JSON-FG, Smile, ES-bulk or CSV — it is recommended to build a custom `-webapp` project: depend on `hakunapi-simple-servlet-jakarta` (and `hakunapi-simple-webapp-jakarta:classes` if you want to reuse the bootstrap), and add only the source/format/projection modules you actually use. This keeps the deployable WAR small and avoids pulling in unused dependencies.
 
 See details in following sections.
 
@@ -364,7 +339,7 @@ See details in following sections.
 
 As described in the official [Javax to Jakarta](https://jakarta.ee/blogs/javax-jakartaee-namespace-ecosystem-progress/) namespace migration design document, Jakarta EE 8 was still fully compatible with the Java EE 8 specification. Jakarta EE 9 introduced the new namespace (*.jakarta) and that was completed in the Jakarta EE 10 specification.  
 
-Suggested minimum requirements for [Jakarta EE](https://jakarta.ee/) based Hakunapi web applications are Java 17 and Jakarta EE 10. Use Jakarta EE 10+ compliant servlet containers like [Apache Tomcat](https://tomcat.apache.org/) version 10+ (see also a more detailed summary of [Tomcat versions](https://tomcat.apache.org/whichversion.html)) or [Eclipse Jetty](https://jetty.org/) 12+.
+Suggested minimum requirements for [Jakarta EE](https://jakarta.ee/) based Hakunapi web applications are Java 21 and Jakarta EE 10. Use Jakarta EE 10+ compliant servlet containers like [Apache Tomcat](https://tomcat.apache.org/) version 10+ (see also a more detailed summary of [Tomcat versions](https://tomcat.apache.org/whichversion.html)) or [Eclipse Jetty](https://jetty.org/) 12+.
 
 Hakunapi modules (under `webapp-jakarta`) supporting Jakarta EE are described below.
 
@@ -377,13 +352,7 @@ This module provides a lightweight, ready-to-deploy Jakarta Servlet-based web ap
 `hakunapi-simple-webapp-test-jakarta`:
 A companion module focused on integration and functional testing for the simple webapp, including sample datasets, mock configurations, and test utilities.
 
-`hakunapi-telemetry-webapp-jakarta`:
-Adds telemetry and monitoring capabilities to Hakunapi Jakarta webapps, enabling collection of usage statistics, performance metrics, and service health data. This module is valuable for operational monitoring, reporting, and debugging in both development and production environments. It supports integration with external monitoring systems for enhanced visibility.
-
-`hakunapi-oracle-webapp-jakarta`:
-Supplies an application variant of the Hakunapi Jakarta webapp tailored for Oracle Database backends, implementing optimized feature type mapping, connection management, and SQL handling compatible with Oracle spatial extensions. Use this module when building OGC API services over Oracle databases, leveraging full Hakunapi and Jakarta Servlet integration.
-
-In summary these modules are intended to be assembled for building, testing, and operating Jakarta Servlet-based OGC API services with Hakunapi. The `simple-servlet` module supplies core servlet classes; `simple-webapp` wraps them into a complete, runnable webapp; `simple-webapp-test` enables thorough testing of that webapp; `telemetry-webapp` adds monitoring features; and `oracle-webapp` provides specialized support for Oracle Database deployments. Together, they streamline geospatial API development from prototype through production, with extensibility for different backend databases and operational needs.
+In summary these modules are intended to be assembled for building, testing, and operating Jakarta Servlet-based OGC API services with Hakunapi. The `simple-servlet` module supplies core servlet classes; `simple-webapp` wraps them into a complete, runnable webapp; `simple-webapp-test` enables thorough testing of that webapp. Together, they streamline geospatial API development from prototype through production.
 
 ## Testing
 
