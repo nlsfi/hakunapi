@@ -127,7 +127,8 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         register(ObjectMapperProvider.class);
         register(JacksonJsonProvider.class);
 
-        // Use custom body writer when serializing OpenAPI object
+        // Custom body writer for OpenApi types (mixin/extension flattening
+        // doesn't apply when JacksonJsonProvider wraps the mapper)
         register(OpenAPIMessageBodyWriter.class);
 
         OutputFormat html = service.getOutputFormat(OutputFormatHTML.ID);

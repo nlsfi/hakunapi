@@ -1,5 +1,7 @@
 package fi.nls.hakunapi.core.util;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,7 @@ public class GetCollectionItemsUtil {
                 continue;
             }
             String k = kvp.substring(0, j);
-            String v = kvp.substring(j + 1);
+            String v = URLDecoder.decode(kvp.substring(j + 1), StandardCharsets.UTF_8);
             qp.put(k, v);
         }
 

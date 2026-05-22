@@ -7,9 +7,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.either;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
+import java.net.URI;
+import java.util.List;
+
+import com.jayway.jsonpath.JsonPath;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.ws.rs.core.Application;
@@ -240,6 +245,30 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 				.assertThat("$.geometry", mapContainingKey(equalTo("type")));
 
 	}
+
+    @Test
+    public void testNextLinkIsFollowable() {
+        // Force pagination with limit=1; include a crs param with reserved chars
+        final String encodedCrs = "http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F4326";
+        final String firstPage = target("/collections/test_collection/items")
+                .queryParam("limit", "1")
+                .queryParam("crs", "http://www.opengis.net/def/crs/EPSG/0/4326")
+                .request().get(String.class);
+
+        List<String> nextHrefs = JsonPath.read(firstPage, "$.links[?(@.rel == 'next')].href");
+        assertEquals(1, nextHrefs.size());
+        String nextHref = nextHrefs.get(0);
+
+        // Follow the next link via the in-memory test client. The base URL configured
+        // for the server is https://localhost/hakuna; rewrite to the test base URI
+        // while keeping the raw (already-encoded) query string intact.
+        URI nextUri = URI.create(nextHref);
+        URI followUri = URI.create(getBaseUri().toString().replaceAll("/$", "")
+                + nextUri.getRawPath().replaceFirst("^/hakuna", "")
+                + "?" + nextUri.getRawQuery());
+        jakarta.ws.rs.core.Response r = client().target(followUri).request().get();
+        assertEquals(200, r.getStatus());
+    }
 
     @SuppressWarnings("unchecked")
     @Test
