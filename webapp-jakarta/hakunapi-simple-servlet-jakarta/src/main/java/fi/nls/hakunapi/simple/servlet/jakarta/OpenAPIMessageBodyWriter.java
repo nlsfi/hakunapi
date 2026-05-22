@@ -13,6 +13,8 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import fi.nls.hakunapi.core.schemas.SchemaDefinition;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -47,8 +49,8 @@ import io.swagger.v3.oas.models.servers.ServerVariables;
 import io.swagger.v3.oas.models.tags.Tag;
 
 @Provider
-@Produces(MediaTypes.APPLICATION_OPENAPI_V3)
-public class OpenAPIMessageBodyWriter implements MessageBodyWriter<OpenAPI> {
+@Produces({ MediaTypes.APPLICATION_OPENAPI_V3, MediaTypes.APPLICATION_SCHEMA })
+public class OpenAPIMessageBodyWriter implements MessageBodyWriter<Object> {
 
     private final ObjectMapper om = createMapper();
 
@@ -95,13 +97,13 @@ public class OpenAPIMessageBodyWriter implements MessageBodyWriter<OpenAPI> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return OpenAPI.class.isAssignableFrom(type);
+        return OpenAPI.class.isAssignableFrom(type) || SchemaDefinition.class.isAssignableFrom(type);
     }
 
     @Override
-    public void writeTo(OpenAPI openAPI, Class<?> type, Type genericType, Annotation[] annotations,
+    public void writeTo(Object entity, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
                     throws IOException, WebApplicationException {
-        om.writeValue(entityStream, openAPI);
+        om.writeValue(entityStream, entity);
     }
 }
