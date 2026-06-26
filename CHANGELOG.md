@@ -23,7 +23,12 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 ### Library updates
 
 - `org.postgresql:postgresql` 42.7.10 → 42.7.11
-- `org.apache.logging.log4j:log4j-core` 2.25.3 → 2.25.4
+- `org.apache.logging.log4j:log4j-core` 2.25.3 → 2.26.0
+- `org.geotools` 34.2 → 35.0
+- `org.slf4j:slf4j-api` 1.7.25 → 2.0.18 (log4j binding switched `log4j-slf4j-impl` → `log4j-slf4j2-impl`)
+- `com.zaxxer:HikariCP` 4.0.3 → 7.1.0
+- `com.github.ben-manes.caffeine:caffeine` 2.9.3 → 3.2.4
+- `org.xerial:sqlite-jdbc` 3.47.0.0 → 3.53.2.0
 
 ## < 1.7.1
 
