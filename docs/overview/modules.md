@@ -72,30 +72,30 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
 | JTS Topology Suite | 1.20.0 | Geometry model, spatial predicates | |
-| GeoTools | 34.2 | proj-gt: `gt-epsg-hsql` provides EPSG CRS database (HSQL-backed) for CRS definitions and reprojection | **To consider:** hakunapi-proj-proj (PROJ) [Issue #143](https://github.com/nlsfi/hakunapi/issues/143) to replace hakunapi-proj-gt for CRS definitions and reprojection? |
+| GeoTools | 35.0 | proj-gt: `gt-epsg-hsql` provides EPSG CRS database (HSQL-backed) for CRS definitions and reprojection | **To consider:** hakunapi-proj-proj (PROJ) [Issue #143](https://github.com/nlsfi/hakunapi/issues/143) to replace hakunapi-proj-gt for CRS definitions and reprojection? |
 
 #### Database connectivity
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
-| HikariCP | 4.0.3 | JDBC connection pool | 4.0.3 is the last Java 8 release; current line is **7.x** |
+| HikariCP | 7.1.0 | JDBC connection pool | |
 | PostgreSQL JDBC | 42.7.11 | PostgreSQL / PostGIS JDBC driver for source-postgis | Try to stay up to date |
-| SQLite JDBC | 3.47.0.0 | SQLite JDBC for reading GeoPackage files for source-gpkg | |
+| SQLite JDBC | 3.53.2.0 | SQLite JDBC for reading GeoPackage files for source-gpkg | |
 
 #### Output formats and parsing
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
 | FreeMarker | 2.3.33 | HTML template engine for HTML outputs | |
-| Caffeine | 2.9.3 | In-memory caching | Caffeine **3.x** targets Java 11+; no known reason to stay on 2.9. |
+| Caffeine | 3.2.4 | In-memory caching | |
 | ANTLR 4 runtime | 4.13.2 | Runtime for the ANTLR-generated CQL2 parser | |
 
 #### Logging and telemetry
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
-| SLF4J | 1.7.25 | Logging facade | SLF4J **2.x** is the current line (and Log4j 2.25 supports it.) |
-| Log4j 2 | 2.25.4 | Logging implementation: API, core, SLF4J bridge, and Jakarta servlet lifecycle integration | |
+| SLF4J | 2.0.18 | Logging facade | |
+| Log4j 2 | 2.26.0 | Logging implementation: API, core, SLF4J 2 bridge (`log4j-slf4j2-impl`), and Jakarta servlet lifecycle integration | |
 
 #### Testing
 
