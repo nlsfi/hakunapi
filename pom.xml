@@ -40,7 +40,7 @@
 
 	<properties>
 		<freemarker.version>2.3.33</freemarker.version>
-		<jackson.version>3.1.4</jackson.version>
+		<jackson.version>3.1.5</jackson.version>
 		<jackson-annotations.version>2.21</jackson-annotations.version>
 		<swagger.version>2.2.42</swagger.version>
 		<jts.version>1.20.0</jts.version>
