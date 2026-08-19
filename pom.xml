@@ -40,7 +40,7 @@
 	</scm>
 
 	<properties>
-		<freemarker.version>2.3.33</freemarker.version>
+		<freemarker.version>2.3.34</freemarker.version>
 		<jackson.version>2.17.1</jackson.version>
 		<jackson-databind.version>2.17.1</jackson-databind.version>
 		<swagger.version>2.2.42</swagger.version>
@@ -230,6 +230,11 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-1.2-api</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
