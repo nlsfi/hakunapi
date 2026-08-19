@@ -43,10 +43,6 @@
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-proj-jhe</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-gpkg</artifactId>
         </dependency>
         <dependency>
@@ -56,14 +52,6 @@
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>
             <artifactId>hakunapi-jsonfg</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-smile</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fi.nls.hakunapi</groupId>
-            <artifactId>hakunapi-esbulk</artifactId>
         </dependency>
         <dependency>
             <groupId>fi.nls.hakunapi</groupId>

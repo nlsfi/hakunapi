@@ -23,6 +23,23 @@ hakunapi can also be used as a "framework" for building your own customized impl
 support Complex Features). The framework is modular and the modules should fit together well, you are free to
 mix-and-match.
 
+## Community modules
+
+Core modules live under [src/](src) and are maintained and supported by the National Land Survey of
+Finland. Community modules live under [src-community/](src-community): they are built and tested
+together with the core, but are not actively developed, are not bundled in the reference webapp, and
+are maintained by their submitters.
+
+| Module | Description |
+| --- | --- |
+| [hakunapi-esbulk](src-community/hakunapi-esbulk) | ElasticSearch Bulk API output format (NDJSON, `application/x-ndjson`) |
+| [hakunapi-gml](src-community/hakunapi-gml) | Narrow GML 3.1.1 / WFS 1.1.0 output format, serving one specific use case rather than general GML support. **Legacy, no active submitters**, and currently not SPI-registered so it cannot be enabled as-is |
+| [hakunapi-proj-jhe](src-community/hakunapi-proj-jhe) | Dependency-free coordinate transformations for EUREF-FIN based systems |
+| [hakunapi-smile](src-community/hakunapi-smile) | Jackson Smile (GeoJSON) binary output format (`application/x-jackson-smile`) |
+
+To use one, add it as an explicit dependency of your own webapp. See
+[CONTRIBUTING.md](CONTRIBUTING.md#community-modules) for how to contribute a community module.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)

@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>src</module>
+		<module>src-community</module>
 		<module>webapp-jakarta</module>
 	</modules>
 
