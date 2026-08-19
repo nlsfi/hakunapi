@@ -72,7 +72,7 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
 | JTS Topology Suite | 1.20.0 | Geometry model, spatial predicates | |
-| GeoTools | 35.0 | proj-gt: `gt-epsg-hsql` provides EPSG CRS database (HSQL-backed) for CRS definitions and reprojection | **To consider:** hakunapi-proj-proj (PROJ) [Issue #143](https://github.com/nlsfi/hakunapi/issues/143) to replace hakunapi-proj-gt for CRS definitions and reprojection? |
+| GeoTools | 35.1 | proj-gt: `gt-epsg-hsql` provides EPSG CRS database (HSQL-backed) for CRS definitions and reprojection | **To consider:** hakunapi-proj-proj (PROJ) [Issue #143](https://github.com/nlsfi/hakunapi/issues/143) to replace hakunapi-proj-gt for CRS definitions and reprojection? |
 
 #### Database connectivity
 
