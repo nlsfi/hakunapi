@@ -47,7 +47,7 @@
 		<hikari.version>7.1.0</hikari.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<log4j.version>2.26.0</log4j.version>
-		<pgjdbc.version>42.7.11</pgjdbc.version>
+		<pgjdbc.version>42.7.12</pgjdbc.version>
 		<geotools.version>35.1</geotools.version>
 		<junit.version>4.13.2</junit.version>
 		<mockito.version>4.11.0</mockito.version>
