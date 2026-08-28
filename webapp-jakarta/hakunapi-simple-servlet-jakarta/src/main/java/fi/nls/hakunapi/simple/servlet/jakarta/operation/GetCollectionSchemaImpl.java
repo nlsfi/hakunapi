@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -20,12 +21,13 @@ import java.util.Map;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
-import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.core.i18n.LangNegotiation;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.HakunaPropertyType;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.schema.JsonSchemaUtil;
+import fi.nls.hakunapi.core.param.LangParam;
 import fi.nls.hakunapi.core.schemas.GeoJSONGeometrySchema;
 import fi.nls.hakunapi.core.schemas.OAS30toJsonSchema;
 import fi.nls.hakunapi.core.schemas.SchemaDefinition;
@@ -46,7 +48,7 @@ public class GetCollectionSchemaImpl {
     @ResponseClass(SchemaDefinition.class)
     public Response handle(
             @PathParam("collectionId") String collectionId,
-            @QueryParam("lang") String langParam,
+            @QueryParam("lang") @ParamClass(LangParam.class) String langParam,
             @Context UriInfo uriInfo,
             @Context HttpHeaders headers) {
         FeatureType ft = service.getCollection(collectionId);
@@ -56,22 +58,16 @@ public class GetCollectionSchemaImpl {
 
         String id = String.format("%s/collections/%s/schema", service.getCurrentServerURL(headers::getHeaderString), collectionId);
 
-        Map<String, Schema<?>> schemas = ft instanceof SimpleFeatureType
-                ? ((SimpleFeatureType) ft).getLangToSchema() : null;
+        Map<String, Schema<?>> schemas = ft.getLangToSchema();
 
         String resolvedLang = null;
         Schema<?> collectionSchema = null;
-        if (schemas != null && !schemas.isEmpty()) {
-            if (langParam != null) {
-                resolvedLang = resolveLang(schemas, langParam);
-            } else {
-                resolvedLang = headers.getAcceptableLanguages().stream()
-                        .filter(l -> !l.equals(Locale.ROOT))
-                        .map(l -> resolveLang(schemas, l.toLanguageTag()))
-                        .filter(s -> s != null)
-                        .findFirst()
-                        .orElse(schemas.keySet().iterator().next());
-            }
+        if (!schemas.isEmpty()) {
+            List<String> available = new ArrayList<>(schemas.keySet());
+            List<String> acceptable = headers.getAcceptableLanguages().stream()
+                    .map(Locale::toLanguageTag)
+                    .collect(Collectors.toList());
+            resolvedLang = LangNegotiation.resolve(available, langParam, acceptable);
             collectionSchema = schemas.get(resolvedLang);
         }
 
@@ -128,21 +124,6 @@ public class GetCollectionSchemaImpl {
             rb.header("Content-Language", resolvedLang);
         }
         return rb.build();
-    }
-
-    private static String resolveLang(Map<String, Schema<?>> schemas, String lang) {
-        String normalized = lang.toLowerCase();
-        if (schemas.containsKey(normalized)) {
-            return normalized;
-        }
-        int dash = normalized.indexOf('-');
-        if (dash > 0) {
-            String prefix = normalized.substring(0, dash);
-            if (schemas.containsKey(prefix)) {
-                return prefix;
-            }
-        }
-        return null;
     }
 
 }

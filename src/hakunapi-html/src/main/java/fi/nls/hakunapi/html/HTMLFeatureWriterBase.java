@@ -6,8 +6,11 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
+import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.FloatingPointFormatter;
 import fi.nls.hakunapi.core.GeometryWriter;
@@ -43,6 +46,10 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
     protected int srid;
     protected SRIDCode sridCode;
 
+    protected String lang;
+    protected List<String> availableLanguages = Collections.emptyList();
+    protected Function<FeatureType, FeatureType> localizer = ft -> ft;
+
     @Deprecated
     public HTMLFeatureWriterBase(Configuration configuration) {
         this(configuration, new OutputFormatHTMLSettings());
@@ -51,6 +58,25 @@ public abstract class HTMLFeatureWriterBase implements FeatureWriter {
     public HTMLFeatureWriterBase(Configuration configuration, OutputFormatHTMLSettings settings) {
         this.configuration = configuration;
         this.settings = settings;
+    }
+
+    public void setLanguage(String lang, List<String> availableLanguages) {
+        setLanguage(lang, availableLanguages, ft -> ft);
+    }
+
+    public void setLanguage(String lang, List<String> availableLanguages, Function<FeatureType, FeatureType> localizer) {
+        this.lang = lang;
+        this.availableLanguages = availableLanguages == null ? Collections.emptyList()
+                : List.copyOf(availableLanguages);
+        this.localizer = localizer == null ? ft -> ft : localizer;
+    }
+
+    /**
+     * @return the FeatureType to display, localized when a resolver was supplied
+     */
+    protected FeatureType forDisplay(FeatureType ft) {
+        FeatureType localized = localizer.apply(ft);
+        return localized == null ? ft : localized;
     }
 
     @Override

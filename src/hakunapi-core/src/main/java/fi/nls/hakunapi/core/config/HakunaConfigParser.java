@@ -1,6 +1,10 @@
 package fi.nls.hakunapi.core.config;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -39,6 +43,8 @@ import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.filter.Filter;
+import fi.nls.hakunapi.core.i18n.LocalizableKeys;
+import fi.nls.hakunapi.core.i18n.Localization;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
 import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
@@ -154,7 +160,8 @@ public class HakunaConfigParser {
             String rel = getRequired(prefix + "rel");
             String type = getRequired(prefix + "type");
             String title = getRequired(prefix + "title");
-            links.add(new Link(href, rel, type, title));
+            String hreflang = get(prefix + "hreflang");
+            links.add(new Link(href, rel, type, title, hreflang));
         }
         return links;
     }
@@ -728,7 +735,7 @@ public class HakunaConfigParser {
      * schema.fi.path=path/to/file_fi.json
      * schema.sv.path=path/to/file_sv.json
      *
-     * Returns a map from normalized lang to root Schema.
+     * @return root schemas keyed by normalized lang
      */
     public Map<String, Schema<?>> readSchemas(Path configPath) {
         String[] schemaNames = getMultiple("schema");
@@ -754,6 +761,98 @@ public class HakunaConfigParser {
             result.put(lang, rootSchema);
         }
         return result;
+    }
+
+    /**
+     * Reads localization catalogs from config:
+     * locale=fi,sv
+     * locale.fi.path=messages_fi.properties
+     * locale.sv.path=messages_sv.properties
+     * locale.sv.lang=sv-FI  (optional, defaults to the name)
+     *
+     * Catalogs are sparse overlays on the base config; a declared language with
+     * no catalog path is served entirely from it. The first declared language is
+     * the default, ordered by the locale= list.
+     *
+     * @return Localization with catalogs keyed by normalized lang, never null
+     */
+    public Localization readLocalization(Path configPath) {
+        String[] localeNames = getMultiple("locale");
+        if (localeNames.length == 0) {
+            return Localization.EMPTY;
+        }
+
+
+        List<String> languages = new ArrayList<>(localeNames.length);
+        Map<String, Map<String, String>> catalogs = new LinkedHashMap<>();
+        for (String name : localeNames) {
+            String lang = get("locale." + name + ".lang", name).toLowerCase(Locale.ROOT);
+            if (languages.contains(lang)) {
+                throw new IllegalArgumentException(
+                        "Duplicate language '" + lang + "' declared in locale=");
+            }
+            languages.add(lang);
+
+            String filePath = get("locale." + name + ".path");
+            if (filePath == null) {
+                // A language with no catalog is served from the base config
+                LOG.info("Locale '{}' has no catalog (locale.{}.path=...), serving it from the base config",
+                        name, name);
+                continue;
+            }
+
+            File file = new File(filePath);
+            Path path = file.isAbsolute() ? file.toPath() : configPath.getParent().resolve(filePath);
+            catalogs.put(lang, readCatalog(path));
+        }
+
+        checkSchemaLanguages(languages);
+
+        return new Localization(languages, catalogs, this::get);
+    }
+
+    /**
+     * A schema's language must also be declared in locale=, otherwise it is
+     * never negotiated and the schema file sits unread.
+     */
+    private void checkSchemaLanguages(List<String> languages) {
+        for (String name : getMultiple("schema")) {
+            String lang = get("schema." + name + ".lang", name).toLowerCase(Locale.ROOT);
+            if (!languages.contains(lang)) {
+                throw new IllegalArgumentException(String.format(
+                        "Schema '%s' resolves to language '%s', which is not declared in locale=%s. "
+                                + "Set schema.%s.lang to one of them.",
+                        name, lang, String.join(",", languages), name));
+            }
+        }
+    }
+
+    /**
+     * Read through an explicit UTF-8 Reader: Properties.load(InputStream) is
+     * Latin-1 and would mangle Finnish and Swedish.
+     */
+    private Map<String, String> readCatalog(Path path) {
+        Properties props = new Properties();
+        try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            props.load(reader);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read localization catalog " + path, e);
+        }
+
+        Map<String, String> catalog = new LinkedHashMap<>();
+        for (String key : props.stringPropertyNames()) {
+            if (!LocalizableKeys.isLocalizable(key)) {
+                throw new IllegalArgumentException(String.format(
+                        "Localization catalog %s contains key '%s', which is not localizable. "
+                                + "Localizable keys are: %s",
+                        path, key, LocalizableKeys.describe()));
+            }
+            String value = props.getProperty(key);
+            if (value != null && !value.isBlank()) {
+                catalog.put(key, value.trim());
+            }
+        }
+        return catalog;
     }
 
     public FeatureType applyJsonSchema(FeatureType ft, Map<String, Schema<?>> schemas) {

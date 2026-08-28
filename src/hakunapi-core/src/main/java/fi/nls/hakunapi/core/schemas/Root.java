@@ -65,27 +65,39 @@ public class Root implements Component {
         private final String description;
         private final String base;
         private final String query;
+        private final String lang;
         private final List<Link> links;
 
         public Builder(String title, String description, String url, String query, String contentType) {
+            this(title, description, url, query, contentType, null);
+        }
+
+        /**
+         * @param lang the language this document is being served in, or null when
+         *        the service is not localized. It is emitted as hreflang on the
+         *        links that represent this document, so a client can tell which
+         *        representation it received.
+         */
+        public Builder(String title, String description, String url, String query, String contentType, String lang) {
             this.title = title;
             this.description = description;
             this.base = url;
             this.query = query;
+            this.lang = lang;
             this.links = new ArrayList<>();
 
             String href = base + "/" + query;
             String rel = "self";
             String linkTitle = "This document";
 
-            this.links.add(new Link(href, rel, contentType, linkTitle));
+            this.links.add(new Link(href, rel, contentType, linkTitle, lang));
         }
 
         public Builder alternate(String contentType) {
             String href = base + "/" + query;
             String rel = "alternate";
             String title = "This document";
-            links.add(new Link(href, rel, contentType, title));
+            links.add(new Link(href, rel, contentType, title, lang));
             return this;
         }
 

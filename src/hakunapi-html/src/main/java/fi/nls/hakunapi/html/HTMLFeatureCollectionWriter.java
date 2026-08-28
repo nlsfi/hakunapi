@@ -56,7 +56,9 @@ public class HTMLFeatureCollectionWriter extends HTMLFeatureWriterBase implement
         this.model = new HTMLFeatureCollection();
         model.setSrid(srid);
         model.setSridCode(sridCode);
-        model.setFeatureType(ft);
+        model.setFeatureType(forDisplay(ft));
+        model.setLang(lang);
+        model.setAvailableLanguages(availableLanguages);
         OutputFormatHTMLSettings sridSpecific = sridSettings.getOrDefault(srid, settings);
         model.setSettings(sridSpecific);
         Template template = getTemplate(ft, srid);
