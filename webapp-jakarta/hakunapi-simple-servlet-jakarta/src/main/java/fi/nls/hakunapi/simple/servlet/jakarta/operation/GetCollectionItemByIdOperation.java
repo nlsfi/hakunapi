@@ -29,6 +29,8 @@ import fi.nls.hakunapi.core.FeatureProducer;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
 import fi.nls.hakunapi.core.FeatureStream;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.param.LangParam;
+import fi.nls.hakunapi.html.HTMLFeatureWriterBase;
 import fi.nls.hakunapi.core.FeatureWriter;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.SRIDCode;
@@ -125,6 +127,13 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
 
             OperationUtil.getQueryParams(service, uriInfo).forEach((k, v) -> request.addQueryParam(k, v));
 
+        // See GetCollectionItemsOperation: resolved here, read by the HTML writer
+        String lang = OperationUtil.resolveLang(service,
+                uriInfo.getQueryParameters().getFirst(LangParam.PARAM_NAME), headers);
+        if (lang != null) {
+            request.addQueryParam(LangParam.PARAM_NAME, lang);
+        }
+
             GetFeaturesUtil.modify(service, request, NON_DYNAMIC, uriInfo.getQueryParameters());
 
             GetCollectionItemsOperation.checkUnknownParameters(service, NON_DYNAMIC, uriInfo.getQueryParameters());
@@ -139,6 +148,13 @@ public class GetCollectionItemByIdOperation implements DynamicPathOperation, Dyn
         final RequestTelemetry ftt = fst.forRequest(request);
 
         try (SingleFeatureWriter writer = request.getFormat().getSingleFeatureWriter()) {
+            // See GetCollectionItemsOperation: HTML renders chrome that needs the
+            // negotiated language, the other formats ignore it
+            if (writer instanceof HTMLFeatureWriterBase) {
+                String lang = request.getQueryParam(LangParam.PARAM_NAME);
+                ((HTMLFeatureWriterBase) writer).setLanguage(lang, service.getLanguages(),
+                        t -> service.localized(lang).getCollection(t.getName()));
+            }
             return getResponse(writer, ft.getFeatureProducer(), request, c, ftt);
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);

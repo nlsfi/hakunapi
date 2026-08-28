@@ -1,6 +1,7 @@
 package fi.nls.hakunapi.html.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fi.nls.hakunapi.core.FeatureType;
@@ -86,6 +87,42 @@ public class HTMLFeatureCollection {
 
     public void setSettings(OutputFormatHTMLSettings settings) {
         this.settings = settings;
+    }
+
+
+    private final HTMLLanguageContext language = new HTMLLanguageContext();
+
+    /**
+     * @return the language chrome for the templates: resolved language,
+     *         switchable languages and the query fragment carrying it
+     */
+    public HTMLLanguageContext getLanguage() {
+        return language;
+    }
+
+    public void setLang(String lang) {
+        language.setLang(lang);
+    }
+
+    public void setAvailableLanguages(List<String> availableLanguages) {
+        language.setAvailableLanguages(availableLanguages);
+    }
+
+    /** @return shorthand for getLanguage().getLang(), for the html lang attribute */
+    public String getLang() {
+        return language.getLang();
+    }
+
+    public List<String> getAvailableLanguages() {
+        return language.getAvailableLanguages();
+    }
+
+    public List<String> getAlternateLanguages() {
+        return language.getAlternateLanguages();
+    }
+
+    public String getLangQuery() {
+        return language.getLangQuery();
     }
 
 }

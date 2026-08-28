@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="${lang!'en'}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +15,16 @@
         <li class="breadcrumb-item active" aria-current="page">Home</li>
       </ol>
       <ul class="nav">
+<#if availableLanguages?size gt 1>
+        <li class="nav-item d-flex align-items-center me-3">
+          <label class="visually-hidden" for="lang-select">Language</label>
+          <select class="form-select form-select-sm" id="lang-select" aria-label="Language">
+            <#list availableLanguages as available>
+            <option value="${available}"<#if available == lang!""> selected</#if> lang="${available}">${available}</option>
+            </#list>
+          </select>
+        </li>
+</#if>
         <li class="nav-item">
           <a class="navbar-brand" id="json-link" target="_blank">JSON</a>
         </li>
@@ -33,7 +43,7 @@
     
     <div class="row">
       <h2>Collections</h2>
-      <p><a href="collections">Access the data</a></p>
+      <p><a href="collections${langQuery}">Access the data</a></p>
     </div>
 
     <div class="row">
@@ -44,10 +54,12 @@
 
     <div class="row">
       <h2>Conformance</h2>
-      <p><a href="conformance">OGC API conformance classes implemented by this server</a></p>
+      <p><a href="conformance${langQuery}">OGC API conformance classes implemented by this server</a></p>
     </div>
 
 <#assign additionalLinks = model.links?filter(link ->
+  link.rel != "alternate" &&
+  link.rel != "self" &&
   !link.href?split("?")?first?ends_with("/") &&
   !link.href?split("?")?first?ends_with("/api") &&
   !link.href?split("?")?first?ends_with("/collections") &&
@@ -68,6 +80,17 @@
 const url = new URL(window.location.href);
 url.searchParams.set('f', 'json');
 document.getElementById("json-link").href = url.toString();
+
+// Navigating from the picker keeps every other query parameter, so switching
+// language does not drop f, bbox, limit and the like
+const langSelect = document.getElementById("lang-select");
+if (langSelect) {
+  langSelect.addEventListener("change", function () {
+    const target = new URL(window.location.href);
+    target.searchParams.set('lang', this.value);
+    window.location.assign(target.toString());
+  });
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 </body>

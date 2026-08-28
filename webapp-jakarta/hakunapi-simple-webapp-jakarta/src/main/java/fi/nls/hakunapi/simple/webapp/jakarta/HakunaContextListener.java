@@ -42,6 +42,7 @@ import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleSource;
 import fi.nls.hakunapi.core.config.HakunaApplicationJson;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
+import fi.nls.hakunapi.core.i18n.Localization;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetryConfigParser;
@@ -106,6 +107,7 @@ public class HakunaContextListener implements ServletContextListener {
             List<SRIDCode> knownSrids = getKnownSrids(config, parser);
 
             Map<String, Schema<?>> schemas = parser.readSchemas(configPath);
+            Localization localization = parser.readLocalization(configPath);
 
             Map<String, FeatureType> collections = new LinkedHashMap<>();
             for (String collectionId : parser.readCollectionIds()) {
@@ -169,6 +171,7 @@ public class HakunaContextListener implements ServletContextListener {
             service.setInfo(info);
             service.setServers(servers);
             service.setAdditionalLinks(parser.readAdditionalLinks());
+            service.setLocalization(localization);
             service.setLimitDefault(PropertyUtil.getInt(config, "getfeatures.limit.default", 1000));
             service.setLimitMaximum(PropertyUtil.getInt(config, "getfeatures.limit.max", 10000));
             service.setConformanceClasses(conformsTo);

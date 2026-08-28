@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="${lang!'en'}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,10 +12,20 @@
   <div class="container-lg py-4">
     <nav class="nav justify-content-between" aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="${basePathTrailingSlash}">Home</a></li>
+        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="${basePathTrailingSlash}${langQuery}">Home</a></li>
         <li class="breadcrumb-item active" aria-current="page">Conformance</li>
       </ol>
       <ul class="nav">
+<#if availableLanguages?size gt 1>
+        <li class="nav-item d-flex align-items-center me-3">
+          <label class="visually-hidden" for="lang-select">Language</label>
+          <select class="form-select form-select-sm" id="lang-select" aria-label="Language">
+            <#list availableLanguages as available>
+            <option value="${available}"<#if available == lang!""> selected</#if> lang="${available}">${available}</option>
+            </#list>
+          </select>
+        </li>
+</#if>
         <li class="nav-item">
           <a class="navbar-brand" id="json-link" target="_blank">JSON</a>
         </li>
@@ -45,6 +55,17 @@
 const url = new URL(window.location.href);
 url.searchParams.set('f', 'json');
 document.getElementById("json-link").href = url.toString();
+
+// Navigating from the picker keeps every other query parameter, so switching
+// language does not drop f, bbox, limit and the like
+const langSelect = document.getElementById("lang-select");
+if (langSelect) {
+  langSelect.addEventListener("change", function () {
+    const target = new URL(window.location.href);
+    target.searchParams.set('lang', this.value);
+    window.location.assign(target.toString());
+  });
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 </body>
