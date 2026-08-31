@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   <#if sridCode?? && sridCode.proj4??>
-  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4-src.min.js" integrity="sha512-HfgZgM0HUFax2GrHYLPg6BKnJk3k8mFzyWVDq+cCJY3GymqWXoQrEnYEUIOmnoxOfn50CY9bJy+58/gbcZhjSA==" crossorigin=""/></script>
-  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.min.js" integrity="sha512-wjJpCHc+MFPoF+WHrSjrlw6EY1pinfEgnVYN/eiClWCIkk3QEYX8QDJQXqPIAHnkS9wCIQy2apbrw5z61DeS4A==" crossorigin=""/></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4.js" integrity="sha512-MMmVaQGDVI3Wouc5zT5G7k/snN9gPqquIhZsHgIIHVDlRgYTYGxrwu6w482iIhAq8n5R6+pcBgpGgxFFBz7rZA==" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.js" integrity="sha512-NA+0vegFw6AiYXT23H+hk43LxqwpJkkviK/vHTESeu+jUpvWssfQRWWqSR07aUhGSKtfpkdlE8YFrVaHsnb3jw==" crossorigin=""></script>
   </#if>
   <title>${(featureType.title)!(featureType.name)} - Items</title>
 </head>

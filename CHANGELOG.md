@@ -17,6 +17,7 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - HTML `FeatureCollection` rendering revamped.
 - Bbox SRID is now always set.
 - Fixed HTML projection handling (incl. `bbox-crs` no-op projection case).
+- Fixed broken maps on HTML feature pages: the proj4 and proj4leaflet CDN URLs pointed at files the packages do not publish, so jsDelivr generated them on the fly and their SRI hashes drifted.
 - Removed obsolete `.github/workflows/deploy.yml` CI workflow.
 - README: added table of selected dependencies.
 
