@@ -300,4 +300,14 @@ public class LocalizedFeatureServiceConfig extends FeatureServiceConfig {
         service.setAdditionalLinks(additionalLinks);
     }
 
+    @Override
+    public List<Link> getCollectionsAdditionalLinks() {
+        return service.getCollectionsAdditionalLinks();
+    }
+
+    @Override
+    public void setCollectionsAdditionalLinks(List<Link> collectionsAdditionalLinks) {
+        service.setCollectionsAdditionalLinks(collectionsAdditionalLinks);
+    }
+
 }

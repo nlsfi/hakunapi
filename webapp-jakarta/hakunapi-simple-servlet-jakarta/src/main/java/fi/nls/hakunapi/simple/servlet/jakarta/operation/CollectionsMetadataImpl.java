@@ -99,6 +99,7 @@ public class CollectionsMetadataImpl {
         links.add(Links.getSelfLink(path, queryParams, contentType, lang));
         links.addAll(getAlternateLinks(path, queryParams, contentType));
         links.addAll(Links.getAlternateLangLinks(path, queryParams, contentType, available, lang));
+        links.addAll(service.getCollectionsAdditionalLinks());
 
         List<CollectionInfo> collections = new ArrayList<>();
         for (FeatureType ft : localizedService.getCollections()) {
