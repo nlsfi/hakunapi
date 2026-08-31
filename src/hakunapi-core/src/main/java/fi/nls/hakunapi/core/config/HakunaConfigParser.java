@@ -145,6 +145,10 @@ public class HakunaConfigParser {
         return readLinksWithPrefix("api.links");
     }
 
+    public List<Link> readCollectionsAdditionalLinks() {
+        return readLinksWithPrefix("api.collections.links");
+    }
+
     private List<Link> readLinksWithPrefix(String keyPrefix) {
         String[] names = getMultiple(keyPrefix);
         List<Link> links = new ArrayList<>();
