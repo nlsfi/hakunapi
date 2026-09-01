@@ -113,6 +113,12 @@ This section introduces Hakunapi modules (named with prefix "hakunapi") by simpl
 
 Graphs do not visualize all dependencies, for example `junit`, `log4j` and `slf4j-api` for logging were omitted. Also some output format modules are not visible in this graph.
 
+Hakunapi modules live in two top-level folders. Core modules are under `src/` and are
+maintained and supported by the National Land Survey of Finland. Community modules are
+under `src-community/`: they are built and tested together with the core modules, but
+they are not actively developed, are not bundled in the reference webapp, and are
+maintained by their submitters. Community modules are marked *(community)* below.
+
 The first graph shows modules related to ouput data formats and core API capabilities:
 
 ```mermaid
@@ -130,7 +136,7 @@ graph TD
     gpkg[hakunapi-gpkg] --> core
     gpkg --> sqlite[sqlite-jdbc]
     csv[hakunapi-csv] --> core
-    gml[hakunapi-gml] --> core
+    gml["hakunapi-gml (community)"] --> core
     jsonfg[hakunapi-jsonfg] --> core 
     jsonfg --> jackson
     jsonfg --> validator[json-schema-validator]
@@ -142,7 +148,7 @@ graph TD
     cql2f --> core
     
     %% Projection modules
-    proj_jhe[hakunapi-proj-jhe] --> core
+    proj_jhe["hakunapi-proj-jhe (community)"] --> core
 ```
 
 The second graph shows underlaying data stores, telemetry capabilities and key server functionality:
@@ -152,7 +158,7 @@ graph TD
     core[hakunapi-core]
 
     %% Projection modules
-    proj_jhe[hakunapi-proj-jhe] --> core
+    proj_jhe["hakunapi-proj-jhe (community)"] --> core
     proj_gt[hakunapi-proj-gt] --> core
     proj_gt --> epsg[gt-epsg-hsql]
     
@@ -193,7 +199,6 @@ graph TD
     webapp --> postgis[hakunapi-source-postgis]
     webapp --> gpkg_source[hakunapi-source-gpkg]
     webapp --> proj_gt[hakunapi-proj-gt]
-    webapp --> proj_jhe[hakunapi-proj-jhe]
     webapp --> telemetry[hakunapi-telemetry]
 ```    
 
@@ -319,19 +324,28 @@ In Hakunapi the `hakunapi-jsonfg` module extends the basic GeoJSON support (as p
 However the implementation is not final yet as the draft standard and there has been changes on it also in 2025 (see JSON-FG issue [#136 Path to 1.0](https://github.com/opengeospatial/ogc-feat-geo-json/issues/136)).
 
 
+## Output data formats (community modules)
+
+The formats below are provided by community modules under `src-community/`. They are not
+bundled in the reference `hakunapi-simple-webapp-jakarta` war since Hakunapi 2.0.0, so
+enabling one also requires adding the module as an explicit dependency of your own
+deployment. See each module's own README for details.
+
 ### GML (3.1.1/WFS 1.1.0)​
 
-A partial and unsupported capability for the Geography Markup Language (GML), version 3.1.1, is provided too (the media type `text/xml; subtype=3.1.1`). Only Point, LineString and Polygon geometries are supported. See the module `hakunapi-gml` for more information and use the `gml` id in the format configuration to enable if needed in your feature service.
+A partial and unsupported capability for the Geography Markup Language (GML), version 3.1.1, is provided too (the media type `text/xml; subtype=3.1.1`). Only Point, LineString and Polygon geometries are supported. See the module [`hakunapi-gml`](../../src-community/hakunapi-gml/README.md) for more information. Note that this module currently does not register its output format factory via `META-INF/services`, so the `gml` id cannot be enabled through the `formats` configuration as-is (see [issue #173](https://github.com/nlsfi/hakunapi/issues/173)).
+
+This is a legacy module with no active submitters, and it implements only one very specific GML 3.1.1 / WFS 1.1.0 encoding rather than general GML support. It still serves that single use case and is kept building, but it is not developed further and is not a supported capability - do not expect it to fit a different GML or WFS requirement without extending it.
 
 ### ElasticSearch Bulk API JSON
 
-[ElasticSearch Bulk API](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-bulk) expects newline-delimited JSON (NDJSON). Hakunapi has support for this variant, and it uses the media type `application/x-ndjson` when writing such content. See the module `hakunapi-esbulk` for details. The id `esbulk` can be used to enable this format in a feature service.
+[ElasticSearch Bulk API](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-bulk) expects newline-delimited JSON (NDJSON). Hakunapi has support for this variant, and it uses the media type `application/x-ndjson` when writing such content. See the module [`hakunapi-esbulk`](../../src-community/hakunapi-esbulk/README.md) for details. The id `esbulk` can be used to enable this format in a feature service.
 
 Common geometry types (Point, LineString, Polygon, MultiPoint, MultiLineString and MultiPolygon) are supported, but GeometryCollection is not.
 
 ### Jackson Smile (GeoJSON)
 
-The `hakunapi-smile` module provides an unofficial support for the Jackson Smile (GeoJSON) output format (the media type `application/x-jackson-smile`). Use a configuration like `formats=geojson,smile` to enable this format.
+The [`hakunapi-smile`](../../src-community/hakunapi-smile/README.md) module provides an unofficial support for the Jackson Smile (GeoJSON) output format (the media type `application/x-jackson-smile`). Use a configuration like `formats=geojson,smile` to enable this format.
 
 It's based on the [Jackson Smile](https://en.wikipedia.org/wiki/Smile_(data_interchange_format)) data interchange format, that according to the source *can also be considered a binary serialization of the generic JSON data model, which means tools that operate on JSON may be used with Smile as well, as long as a proper encoder/decoder exists for the tool*.
 
@@ -355,7 +369,8 @@ The two modules implementing this interface are shortly described below.
 - Hakunapi depends on the `gt-epsg-hsql` module of GeoTools 
 - in Hakunapi when using this module, coordinate transformations are fully based on GeoTools, but there are some logic coded to optimize how GeoTools transformations are called (for example related to CRS84 (WGS84) and ETRS89 geographic coordinates)
 
-`hakunapi-proj-jhe`
+[`hakunapi-proj-jhe`](../../src-community/hakunapi-proj-jhe/README.md) *(community module)*
+- not bundled in the reference webapp since Hakunapi 2.0.0; add it as an explicit dependency and select it with `proj=fi.nls.hakunapi.proj.jhe.JHeProjectionTransformerFactory`
 - custom coordinate tranformations with all code bundled on this module without external dependencies
 - supports EUREF-FIN based coordinate refence system commonly used in Finland, and transformations to/from the WGS84 reference too
   - EPSG:4258 (EUREF-FIN)
