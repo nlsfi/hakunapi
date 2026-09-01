@@ -110,6 +110,46 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
                 .assertThat("$.collections[1].id", equalTo("aallonmurtaja"));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCollectionsAdditionalLinks() {
+        final String response = target("/collections").request().get(String.class);
+        LOG.info(response);
+
+        with(response)
+                //
+                .assertThat("$.links[0].rel", equalTo("self"))
+                .assertThat("$.links[?(@.rel == 'describedby')]", is(collectionWithSize(equalTo(1))))
+                .assertThat("$.links[?(@.rel == 'describedby')].href",
+                        hasItems(equalTo("https://example.org/dataset-metadata")))
+                .assertThat("$.links[?(@.rel == 'describedby')].title",
+                        hasItems(equalTo("Data set metadata record")))
+                .assertThat("$.links[?(@.rel == 'license')].href", hasItems(equalTo("https://example.org/license")))
+                .assertThat("$.links[?(@.rel == 'license')].type", hasItems(equalTo("text/html")));
+
+        // The landing page link source must not leak into /collections
+        with(response)
+                .assertThat("$.links[?(@.href == 'https://example.org/api-metadata')]",
+                        is(collectionWithSize(equalTo(0))));
+
+        // Nor must the /collections links leak into the collection entries
+        with(response)
+                .assertThat("$.collections[*].links[?(@.rel == 'license')]", is(collectionWithSize(equalTo(0))));
+    }
+
+    @Test
+    public void testLandingPageAdditionalLinks() {
+        final String response = target("/").request().get(String.class);
+        LOG.info(response);
+
+        with(response)
+                //
+                .assertThat("$.links[?(@.href == 'https://example.org/api-metadata')]",
+                        is(collectionWithSize(equalTo(1))))
+                .assertThat("$.links[?(@.href == 'https://example.org/dataset-metadata')]",
+                        is(collectionWithSize(equalTo(0))));
+    }
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCollectionsAallonmurtaja() {

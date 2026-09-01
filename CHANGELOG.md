@@ -14,6 +14,7 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 
 ### Functional changes
 
+- New config key `api.collections.links.*` adds links to the top-level `links` array of the `/collections` response, in both JSON and HTML. Parallel to the existing `api.links.*` (landing page) and `default.collections.links.*` / `collections.<id>.links.*` (per-collection entries).
 - HTML `FeatureCollection` rendering revamped.
 - Bbox SRID is now always set.
 - Fixed HTML projection handling (incl. `bbox-crs` no-op projection case).
