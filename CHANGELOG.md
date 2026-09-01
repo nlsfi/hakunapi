@@ -20,17 +20,19 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - Fixed HTML projection handling (incl. `bbox-crs` no-op projection case).
 - Fixed broken maps on HTML feature pages: the proj4 and proj4leaflet CDN URLs pointed at files the packages do not publish, so jsDelivr generated them on the fly and their SRI hashes drifted.
 - Removed obsolete `.github/workflows/deploy.yml` CI workflow.
-- README: added table of selected dependencies.
+- Documentation: added a table of selected dependencies to [docs/overview/modules.md](docs/overview/modules.md).
 
 ### Library updates
 
-- `org.postgresql:postgresql` 42.7.10 → 42.7.11
-- `org.apache.logging.log4j:log4j-core` 2.25.3 → 2.26.0
-- `org.geotools` 34.2 → 35.1
+- `tools.jackson.core` 3.1.6 (see the Jackson 3 migration under breaking changes). `com.fasterxml.jackson.core:jackson-annotations` stays at 2.21 — Jackson 3.1.x reuses the 2.x annotation artifact.
+- `org.postgresql:postgresql` 42.7.10 → 42.7.13
+- `org.apache.logging.log4j:log4j-core` 2.25.3 → 2.26.1
+- `org.geotools` 34.5 → 35.1
 - `org.slf4j:slf4j-api` 1.7.25 → 2.0.18 (log4j binding switched `log4j-slf4j-impl` → `log4j-slf4j2-impl`)
 - `com.zaxxer:HikariCP` 4.0.3 → 7.1.0
 - `com.github.ben-manes.caffeine:caffeine` 2.9.3 → 3.2.4
-- `org.xerial:sqlite-jdbc` 3.47.0.0 → 3.53.2.0
+- `org.xerial:sqlite-jdbc` 3.47.0.0 → 3.53.4.0
+- `org.freemarker:freemarker` 2.3.33 → 2.3.34 (2.3.33 was the Google App Engine variant of the artifact; 2.3.34 is the standard build). `org.apache.logging.log4j:log4j-1.2-api` is now a dependency of `hakunapi-simple-webapp-jakarta`, added alongside the FreeMarker upgrade.
 
 ## < 1.7.1
 
