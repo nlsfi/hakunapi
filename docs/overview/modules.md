@@ -64,7 +64,7 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | --- | --- | --- | --- |
 | Jakarta EE APIs | servlet 6.0.0, ws.rs 3.1.0, validation 3.0.2 | Servlet API, JAX-RS API | **To consider:** Currently too much logic is implemented against JAX-RS APIs. Additional layer would allow for migration to another Web API layer ("Control" and "Service" layers are now somewhat intermingled) |
 | Jersey | 3.1.11 | JAX-RS implementation: servlet container integration + HK2 dependency injection | |
-| Jackson | 3.1.1 (annotations 2.21) | JSON streaming, object mapping and JAX-RS integration for Jersey. Jackson 3.1.x reuses the 2.21 annotation artifact. | |
+| Jackson | 3.1.6 (annotations 2.21) | JSON streaming, object mapping and JAX-RS integration for Jersey. Jackson 3.1.x reuses the 2.21 annotation artifact. | |
 | Swagger Core | 2.2.42 | OpenAPI 3 model classes and serialization for API description generation | |
 
 #### Spatial geometry and CRS
@@ -79,14 +79,14 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
 | HikariCP | 7.1.0 | JDBC connection pool | |
-| PostgreSQL JDBC | 42.7.11 | PostgreSQL / PostGIS JDBC driver for source-postgis | Try to stay up to date |
-| SQLite JDBC | 3.53.2.0 | SQLite JDBC for reading GeoPackage files for source-gpkg | |
+| PostgreSQL JDBC | 42.7.13 | PostgreSQL / PostGIS JDBC driver for source-postgis | Try to stay up to date |
+| SQLite JDBC | 3.53.4.0 | SQLite JDBC for reading GeoPackage files for source-gpkg | |
 
 #### Output formats and parsing
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
-| FreeMarker | 2.3.33 | HTML template engine for HTML outputs | |
+| FreeMarker | 2.3.34 | HTML template engine for HTML outputs | Pulls `log4j-1.2-api` into the reference webapp; see the Log4j 2 row |
 | Caffeine | 3.2.4 | In-memory caching | |
 | ANTLR 4 runtime | 4.13.2 | Runtime for the ANTLR-generated CQL2 parser | |
 
@@ -95,7 +95,7 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
 | SLF4J | 2.0.18 | Logging facade | |
-| Log4j 2 | 2.26.0 | Logging implementation: API, core, SLF4J 2 bridge (`log4j-slf4j2-impl`), and Jakarta servlet lifecycle integration | |
+| Log4j 2 | 2.26.1 | Logging implementation: API, core, SLF4J 2 bridge (`log4j-slf4j2-impl`), and Jakarta servlet lifecycle integration | `log4j-1.2-api` is also declared in `hakunapi-simple-webapp-jakarta`, added alongside the FreeMarker 2.3.34 upgrade |
 
 #### Testing
 
