@@ -5,6 +5,8 @@
 ### Functional changes
 
 - New community module `hakunapi-bytes` (Java 22+): a shared byte access layer for file-backed sources, covering local files (pread, or mmap or a whole-file in-memory copy as an opt-in) and HTTP Range with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive with random access, locally or over HTTP, and opens a location written in GDAL's `/vsizip/` / `/vsicurl/` syntax. No source uses it yet. It is built only on a 22+ JDK, via the new `ffm` profile in `src-community/pom.xml`.
+- GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
+- New `formatter.meters=fixed3` option for the `json` and `jsonfg` output formats: ordinates in projected coordinate reference systems get exactly three decimals (`123.400` rather than `123.4`), written about twice as fast, for ~0.8% more payload. Off by default.
 
 ## 2.0.0
 
@@ -27,8 +29,6 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - Fixed broken maps on HTML feature pages: the proj4 and proj4leaflet CDN URLs pointed at files the packages do not publish, so jsDelivr generated them on the fly and their SRI hashes drifted.
 - Removed obsolete `.github/workflows/deploy.yml` CI workflow.
 - Documentation: added a table of selected dependencies to [docs/overview/modules.md](docs/overview/modules.md).
-- GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
-- Added `FixedFloatingPoint3FormatterInt`, a `FloatingPointFormatter` for projected coordinate reference systems that emits a fixed three decimals (`123.400` rather than `123.4`) about twice as fast as the default `DToA` path. Opt-in: no output format uses it by default.
 
 ### Library updates
 
