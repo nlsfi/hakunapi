@@ -66,6 +66,8 @@ public class HakunaJsonWriterTest {
         for (Instant instant : instants) {
             assertEquals(quoted(instant.toString()), writeValue(json -> json.writeInstant(instant)));
         }
+        // The widest rendering there is, so the reused StringBuilder never grows
+        assertEquals(37, Instant.MAX.toString().length());
     }
 
     @Test

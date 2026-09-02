@@ -46,8 +46,8 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     private static final int STATE_OBJ_VALUE = 2;
     private static final int STATE_INIT = 3;
 
-    // "-999999999-12-31T23:59:59.999999999Z"
-    private static final int INSTANT_MAX_LEN = 36;
+    // Instant.MAX renders as "+1000000000-12-31T23:59:59.999999999Z"
+    private static final int INSTANT_MAX_LEN = 37;
 
     private final OutputStream out;
     private final FloatingPointFormatter numberPropertyFormatter;
