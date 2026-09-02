@@ -21,6 +21,8 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - Fixed broken maps on HTML feature pages: the proj4 and proj4leaflet CDN URLs pointed at files the packages do not publish, so jsDelivr generated them on the fly and their SRI hashes drifted.
 - Removed obsolete `.github/workflows/deploy.yml` CI workflow.
 - Documentation: added a table of selected dependencies to [docs/overview/modules.md](docs/overview/modules.md).
+- GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
+- Added `FixedFloatingPoint3FormatterInt`, a `FloatingPointFormatter` for projected coordinate reference systems that emits a fixed three decimals (`123.400` rather than `123.4`) about twice as fast as the default `DToA` path. Opt-in: no output format uses it by default.
 
 ### Library updates
 
