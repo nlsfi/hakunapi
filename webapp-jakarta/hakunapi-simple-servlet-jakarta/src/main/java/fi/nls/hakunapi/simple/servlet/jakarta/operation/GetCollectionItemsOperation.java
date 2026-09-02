@@ -46,6 +46,8 @@ import fi.nls.hakunapi.core.operation.DynamicPathOperation;
 import fi.nls.hakunapi.core.operation.DynamicResponseOperation;
 import fi.nls.hakunapi.core.param.FParam;
 import fi.nls.hakunapi.core.param.GetFeatureParam;
+import fi.nls.hakunapi.core.param.LangParam;
+import fi.nls.hakunapi.html.HTMLFeatureWriterBase;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
 import fi.nls.hakunapi.core.request.WriteReport;
@@ -210,6 +212,15 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
         OperationUtil.getQueryParams(service, uriInfo).forEach((k, v) -> request.addQueryParam(k, v));
 
+        // HTML renders chrome that needs the negotiated language. Resolved here,
+        // where both the lang parameter and Accept-Language are in hand, and put
+        // on the request so writeResponseBody can hand it to the HTML writer.
+        String lang = OperationUtil.resolveLang(service,
+                uriInfo.getQueryParameters().getFirst(LangParam.PARAM_NAME), headers);
+        if (lang != null) {
+            request.addQueryParam(LangParam.PARAM_NAME, lang);
+        }
+
         GetFeaturesUtil.modify(service, request, ParamUtil.getParameters(ft, service), uriInfo.getQueryParameters());
 
         checkUnknownParameters(service, ParamUtil.getParameters(ft, service), uriInfo.getQueryParameters());
@@ -234,6 +245,23 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
 
             writer.init(out, srid);
 
+            // HTML renders chrome (html lang, the language picker, lang on
+            // outgoing links) so it needs the negotiated language; the other
+            // formats carry no chrome and ignore it. The language was resolved
+            // in parseRequest and left on the request, so nothing extra has to
+            // be threaded through to get here.
+            String lang = request.getQueryParam(LangParam.PARAM_NAME);
+            if (writer instanceof HTMLFeatureWriterBase) {
+                // The page heads itself with the collection title and
+                // description, the same descriptive elements
+                // /collections/{collectionId} localizes, so the writer is given
+                // a resolver for the type it displays. The feature data below
+                // keeps the original type: a localized wrapper has no business
+                // on the data path.
+                ((HTMLFeatureWriterBase) writer).setLanguage(lang, service.getLanguages(),
+                        t -> service.localized(lang).getCollection(t.getName()));
+            }
+
             writer.startFeatureCollection(ft, c.getName());
             WriteReport report = SimpleFeatureWriter.writeFeatureCollection(writer, ft, c.getProperties(), features, request, c);
             writer.endFeatureCollection();
@@ -253,6 +281,15 @@ public class GetCollectionItemsOperation implements DynamicPathOperation, Dynami
                 .collect(Collectors.toSet());
         for (String key : queryParameters.keySet()) {
             if (key.equals(service.getApiKeyQueryParam())) {
+                continue;
+            }
+            // The metadata resources propagate lang into the items links they
+            // build, so a link handed out by /collections/{id} must not be
+            // rejected here. Feature data itself is not localized, so the
+            // parameter has no effect on the output; it is accepted only when
+            // the service declares languages at all, so an unlocalized service
+            // still reports it as unknown.
+            if (LangParam.PARAM_NAME.equals(key) && !service.getLanguages().isEmpty()) {
                 continue;
             }
             if (knownParameters.contains(key)) {

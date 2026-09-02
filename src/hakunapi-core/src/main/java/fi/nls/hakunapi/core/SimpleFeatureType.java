@@ -215,8 +215,9 @@ public abstract class SimpleFeatureType implements FeatureType {
         this.additionalLinks = additionalLinks;
     }
 
+    @Override
     public Map<String, Schema<?>> getLangToSchema() {
-        return langToSchema;
+        return langToSchema == null ? Collections.emptyMap() : langToSchema;
     }
 
     public void setLangToSchema(Map<String, Schema<?>> langToSchema) {

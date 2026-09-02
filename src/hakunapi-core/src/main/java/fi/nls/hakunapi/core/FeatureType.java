@@ -11,6 +11,7 @@ import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.schemas.Link;
+import io.swagger.v3.oas.models.media.Schema;
 
 public interface FeatureType {
 
@@ -60,6 +61,10 @@ public interface FeatureType {
 
     public default List<Link> getAdditionalLinks() {
         return Collections.emptyList();
+    }
+
+    public default Map<String, Schema<?>> getLangToSchema() {
+        return Collections.emptyMap();
     }
 
 }

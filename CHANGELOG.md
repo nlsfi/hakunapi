@@ -1,5 +1,63 @@
 # Changelog
 
+## 2.1.0
+
+### Internationalization / Localization
+
+- **Language negotiation for descriptive elements.** The landing page,
+  `/collections` and `/collections/{collectionId}` honour a `lang` query
+  parameter and the `Accept-Language` header, and report `Content-Language`.
+  `lang` wins over `Accept-Language`; an unsupported value falls back to the
+  first declared language. Titles and descriptions come from optional
+  per-language catalogs declared with `locale=`:
+
+  ```properties
+  locale=en,fi
+  locale.fi.path=messages_fi.properties
+  ```
+
+  A catalog is a sparse UTF-8 overlay on the main config, resolved per key, so
+  partial translations are fine and a declared language needs no catalog at all.
+  Only `api.title`, `api.description`, `collections.<id>.title` and
+  `collections.<id>.description` may be translated; any other key fails at
+  startup naming the key. Link titles are not localizable — declare one link per
+  language instead, each with its own `api.links.<name>.hreflang`, which is now
+  supported. See `docker/cfg/addresses.properties` for a worked example.
+
+  Multi-language resources emit `rel=alternate` links with `hreflang`, and
+  `lang` is propagated into generated links. `Link.hreflang` is now populated
+  (previously never set). `/collections` advertises the union of its
+  collections' languages.
+
+  Configuring one language or none is unchanged behaviour. Not yet localizable:
+  hakunapi's own English strings in JSON and HTML chrome, and the OpenAPI
+  document at `/api`.
+
+- Behaviour change to `/collections/{collectionId}/schema`: an unmatched `lang`
+  parameter previously fell through to the non-localized defaults. It now falls
+  back to the first configured language, as an unmatched `Accept-Language`
+  already did.
+
+- When `locale=` is configured, every `schema=` entry must resolve to a declared
+  language or startup fails naming the schema. The language is
+  `schema.<name>.lang`, defaulting to the schema's name, so `schema=en,fi`
+  alongside `locale=en,fi` needs no change while a schema named for anything
+  else must now declare its language:
+
+  ```properties
+  schema=my_schema
+  schema.my_schema.path=my_schema.json
+  schema.my_schema.lang=fi
+  ```
+
+  Services with no `locale=` are unaffected.
+
+### Functional changes
+
+- `collectionInfo.ftl` shows the collection id alongside its title and
+  description, and links to the collection's schema. `collections.ftl` lists
+  entries as `collection_id (Title)`.
+
 ## 2.0.0
 
 For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17

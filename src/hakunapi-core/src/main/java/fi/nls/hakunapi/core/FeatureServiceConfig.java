@@ -6,12 +6,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.nls.hakunapi.core.i18n.LocalizedFeatureServiceConfig;
+import fi.nls.hakunapi.core.i18n.Localization;
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
 import fi.nls.hakunapi.core.schemas.Link;
@@ -41,6 +44,9 @@ public abstract class FeatureServiceConfig {
     protected List<SRIDCode> knownSrids;
     protected ServiceTelemetry telemetry = ServiceTelemetry.NOP;
     protected List<Link> additionalLinks;
+    protected Localization localization;
+
+    private final Map<String, FeatureServiceConfig> localizedCache = new ConcurrentHashMap<>();
 
     public int getLimitDefault() {
         return limitDefault;
@@ -231,6 +237,38 @@ public abstract class FeatureServiceConfig {
 
     public void setAdditionalLinks(List<Link> additionalLinks) {
         this.additionalLinks = additionalLinks;
+    }
+
+    public Localization getLocalization() {
+        return localization == null ? Localization.EMPTY : localization;
+    }
+
+    public void setLocalization(Localization localization) {
+        this.localization = localization;
+        // Wrappers close over the old Localization, so drop them
+        this.localizedCache.clear();
+    }
+
+    /**
+     * @return declared languages in declared order, first is the default; empty
+     *         if this service is not localized
+     */
+    public List<String> getLanguages() {
+        return getLocalization().getLanguages();
+    }
+
+    /**
+     * Returns a localized view of this service.
+     *
+     * @param lang language to localize in
+     * @return a localized view, or this if nothing here can serve lang
+     * @see LocalizedFeatureServiceConfig
+     */
+    public FeatureServiceConfig localized(String lang) {
+        if (lang == null || !getLanguages().contains(lang)) {
+            return this;
+        }
+        return localizedCache.computeIfAbsent(lang, l -> new LocalizedFeatureServiceConfig(this, l));
     }
 
 }
