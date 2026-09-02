@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+### Functional changes
+
+- GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
+- New `formatter.meters=fixed3` option for the `json` and `jsonfg` output formats: ordinates in projected coordinate reference systems get exactly three decimals (`123.400` rather than `123.4`), written about twice as fast, for ~0.8% more payload. Off by default.
+
 ## 2.0.0
 
 For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
