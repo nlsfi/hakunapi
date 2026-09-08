@@ -11,7 +11,15 @@ import fi.nls.hakunapi.core.util.UTF8;
 
 public class HakunaJsonWriter implements AutoCloseable, Flushable {
 
-    private static final int BUF_LEN = 8192;
+    private static final int BUF_LEN = 65536;
+
+    // Every value except a string is shorter than this - the longest is a 4D
+    // coordinate, four doubles at their widest plus the separators - so those
+    // write paths check pos against FLUSH_AT once instead of each computing
+    // its own worst case. Flushing up to SLACK bytes early costs one write
+    // syscall in every few hundred.
+    private static final int SLACK = 128;
+    private static final int FLUSH_AT = BUF_LEN - SLACK;
 
     private static final byte QUOTE = '"';
     private static final byte COLON = ':';
@@ -67,7 +75,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     }
 
     public void writeStartObject() throws IOException {
-        if (pos + 2 >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
@@ -83,7 +91,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         if (state != STATE_OBJ_KEY) {
             throw new IllegalStateException();
         }
-        if (pos + 1 >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         buf[pos++] = END_OBJ;
@@ -93,7 +101,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     }
 
     public void writeStartArray() throws IOException {
-        if (pos + 2 >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
@@ -109,7 +117,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         if (state != STATE_ARRAY) {
             throw new IllegalStateException();
         }
-        if (pos + 1 >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         buf[pos++] = END_ARR;
@@ -146,7 +154,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeString(String s) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
@@ -196,7 +204,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeStringUnsafe(String s) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
@@ -229,7 +237,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeStringUnsafe(byte[] utf8, int off, int len) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
@@ -259,14 +267,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeNull() throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            if (pos + 4 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             System.arraycopy(NULL, 0, buf, pos, 4);
@@ -282,14 +290,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeBoolean(boolean b) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            if (pos + 5 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             byte[] a = b ? TRUE : FALSE;
@@ -307,14 +315,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeNumber(int v) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            if (pos + 11 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             pos = NumberOutput.outputInt(v, buf, pos);
@@ -329,14 +337,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeNumber(long v) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            if (pos + 21 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             pos = NumberOutput.outputLong(v, buf, pos);
@@ -351,7 +359,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeNumber(float v) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
@@ -359,7 +367,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             }
         case STATE_OBJ_VALUE:
             // max char length for long (21) + dot (1) + maxDecimals
-            if (pos + 22 + numberPropertyFormatter.maxDecimalsFloat() >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             pos = numberPropertyFormatter.writeFloat(v, buf, pos);
@@ -374,7 +382,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeNumber(double v) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
@@ -382,7 +390,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             }
         case STATE_OBJ_VALUE:
             // max char length for long (21) + dot (1) + maxDecimals
-            if (pos + 22 + numberPropertyFormatter.maxDecimalsDouble() >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             pos = numberPropertyFormatter.writeDouble(v, buf, pos);
@@ -398,8 +406,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         writeCoordinate(x, y, numberPropertyFormatter);
     }
     public void writeCoordinate(double x, double y, FloatingPointFormatter f) throws IOException {
-        //       ,[    x   ,    y   ]
-        if (pos + 2 + 22 + 1 + 22 + 1 +  2 * f.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
@@ -418,8 +425,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         writeCoordinate( x, y, z, numberPropertyFormatter);
     }
     public void writeCoordinate(double x, double y, double z, FloatingPointFormatter f) throws IOException {
-        //       ,[    x   ,    y   ,    z]
-        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 3 * f.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
@@ -440,8 +446,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         writeCoordinate(x, y, z, m, numberPropertyFormatter);
     }
     public void writeCoordinate(double x, double y, double z, double m, FloatingPointFormatter f) throws IOException {
-        //       ,[    x   ,    y   ,    z   ,    m]
-        if (pos + 2 + 22 + 1 + 22 + 1 + 22 + 1 + 22 + 4 * f.maxDecimalsOrdinate() >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         if (comma && state == STATE_ARRAY) {
@@ -557,7 +562,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     }
 
     public void writeRecordSeparator(byte b) throws IOException {
-        if (pos + 1 >= BUF_LEN) {
+        if (pos >= FLUSH_AT) {
             flush();
         }
         buf[pos++] = b;
@@ -567,7 +572,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         // write as is
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
