@@ -33,11 +33,10 @@ public class HakunaPropertyDouble extends HakunaPropertyDynamic {
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
         return (vp, vc) -> {
-            Double v = vp.getDouble(iValueProvider);
-            if (v == null) {
+            if (vp.isNull(iValueProvider)) {
                 vc.setNull(iValueContainer);
             } else {
-                vc.setDouble(iValueContainer, v);
+                vc.setDouble(iValueContainer, vp.getPrimitiveDouble(iValueProvider));
             }
         };
     }

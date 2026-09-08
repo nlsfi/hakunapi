@@ -516,7 +516,7 @@ public class HakunaConfigParser {
     public HakunaProperty getDynamicProperty(String name, String table, String column, List<HakunaPropertyType> typeChain, boolean nullable, boolean unique, boolean hidden) {
         if (typeChain.size() == 1) {
             HakunaPropertyType type = typeChain.get(0);
-            HakunaPropertyWriter writer = hidden ? HakunaPropertyWriters.HIDDEN : HakunaPropertyWriters.getSimplePropertyWriter(name, type);
+            HakunaPropertyWriter writer = hidden ? HakunaPropertyWriters.HIDDEN : HakunaPropertyWriters.getSimplePropertyWriter(name, type, nullable);
             switch (type) {
             case BOOLEAN:
                 return new HakunaPropertyBoolean(name, table, column, nullable, unique, writer);
