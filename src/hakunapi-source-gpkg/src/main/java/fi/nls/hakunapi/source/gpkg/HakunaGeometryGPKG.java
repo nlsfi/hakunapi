@@ -2,19 +2,18 @@ package fi.nls.hakunapi.source.gpkg;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBReader;
 
 import fi.nls.hakunapi.core.GeometryWriter;
-import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.geom.WKBBacked;
 import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
 import fi.nls.hakunapi.gpkg.GPKGGeometry;
 
-public class HakunaGeometryGPKG implements HakunaGeometry {
+public class HakunaGeometryGPKG implements WKBBacked {
 
     public final ByteBuffer bb;
     public final int wkbOffset;
@@ -160,9 +159,12 @@ public class HakunaGeometryGPKG implements HakunaGeometry {
 
     @Override
     public Geometry toJTSGeometry() {
+        // TODO: Optimize me
         try {
-            byte[] blob = bb.array();
-            byte[] wkb = Arrays.copyOfRange(blob, wkbOffset, blob.length);
+            ByteBuffer wkbBuf = bb.duplicate();
+            wkbBuf.position(wkbOffset);
+            byte[] wkb = new byte[wkbBuf.remaining()];
+            wkbBuf.get(wkb);
             return new WKBReader().read(wkb);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -265,18 +267,35 @@ public class HakunaGeometryGPKG implements HakunaGeometry {
     }
 
     @Override
+    public ByteBuffer getBuffer() {
+        return bb;
+    }
+
+    @Override
+    public int getDataStart() {
+        return dataStart;
+    }
+
+    @Override
+    public int getGeometryType() {
+        return type;
+    }
+
+    @Override
     public int getDimension() {
         return dimension;
     }
 
     @Override
     public int getWKBLength() {
-        return bb.array().length - wkbOffset;
+        return bb.limit() - wkbOffset;
     }
 
     @Override
     public void toWKB(byte[] wkb, int off) {
-        System.arraycopy(bb.array(), dataStart, wkb, off, bb.array().length - dataStart);
+        ByteBuffer src = bb.duplicate();
+        src.position(wkbOffset);
+        src.get(wkb, off, src.remaining());
     }
 
 }

@@ -10,7 +10,7 @@ import org.locationtech.jts.io.WKBReader;
 
 import fi.nls.hakunapi.core.GeometryWriter;
 
-public class HakunaGeometryEWKB implements HakunaGeometry {
+public class HakunaGeometryEWKB implements WKBBacked {
 
     public static final int EWKB_HAS_Z    = 0x80000000;
     public static final int EWKB_HAS_M    = 0x40000000;
@@ -168,7 +168,7 @@ public class HakunaGeometryEWKB implements HakunaGeometry {
     @Override
     public Geometry toJTSGeometry() {
         try {
-            return new WKBReader().read(bb.array());
+            return new WKBReader(HakunaGeometryFactory.GF).read(bb.array());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -286,6 +286,21 @@ public class HakunaGeometryEWKB implements HakunaGeometry {
 
     @Override
     public int getWKBType() {
+        return type;
+    }
+
+    @Override
+    public ByteBuffer getBuffer() {
+        return bb;
+    }
+
+    @Override
+    public int getDataStart() {
+        return dataStart;
+    }
+
+    @Override
+    public int getGeometryType() {
         return type;
     }
 

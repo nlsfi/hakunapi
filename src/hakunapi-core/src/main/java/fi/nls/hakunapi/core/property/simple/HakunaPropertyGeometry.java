@@ -12,6 +12,8 @@ import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
 import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
 import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.core.geom.WKBBacked;
+import fi.nls.hakunapi.core.projection.EWKBTransformer;
 import fi.nls.hakunapi.core.projection.JTSTransformer;
 import fi.nls.hakunapi.core.projection.ProjectionTransformer;
 import fi.nls.hakunapi.core.property.HakunaPropertyDynamic;
@@ -122,18 +124,30 @@ public class HakunaPropertyGeometry extends HakunaPropertyDynamic {
         }
         
         CoordinateSequenceFilter csq = new JTSTransformer(t);
+        // Holds per-query scratch state, so created with the mapper rather than shared.
+        EWKBTransformer wkbt = new EWKBTransformer(t);
 
         return (vp, vc) -> {
             HakunaGeometry hg = vp.getHakunaGeometry(iValueProvider);
             if (hg == null) {
                 vc.setNull(iValueContainer);
-            } else {
-                Geometry g = hg.toJTSGeometry();
-                g.apply(csq);
-                g.setSRID(t.getToSRID());
-                hg = new HakunaGeometryJTS(g);
-                vc.setObject(iValueContainer, hg);
+                return;
             }
+            // Per-geometry dimension: a column may advertise Z over plain XY bytes or mix both.
+            // GeometryCollection (type 7) is not walked in place; it takes the JTS path.
+            if (hg instanceof WKBBacked wkb && wkb.getDimension() == 2 && wkb.getGeometryType() <= 6) {
+                try {
+                    wkbt.transform(wkb);
+                } catch (Exception e) {
+                    throw new RuntimeException("Projection transform failed", e);
+                }
+                vc.setObject(iValueContainer, hg);
+                return;
+            }
+            Geometry g = hg.toJTSGeometry();
+            g.apply(csq);
+            g.setSRID(t.getToSRID());
+            vc.setObject(iValueContainer, new HakunaGeometryJTS(g));
         };
     }
 

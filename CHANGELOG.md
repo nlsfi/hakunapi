@@ -33,6 +33,9 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - Fixed broken maps on HTML feature pages: the proj4 and proj4leaflet CDN URLs pointed at files the packages do not publish, so jsDelivr generated them on the fly and their SRI hashes drifted.
 - Removed obsolete `.github/workflows/deploy.yml` CI workflow.
 - Documentation: added a table of selected dependencies to [docs/overview/modules.md](docs/overview/modules.md).
+- New `WKBBacked` / `NavigableHakunaGeometry` geometry API in `hakunapi-core`: a geometry whose coordinates are already WKB bytes can be walked in place, without materializing a JTS object tree. `HakunaGeometry.toNavigable()` has a JTS-based default, so every backing keeps working. `HakunaGeometryEWKB` and `HakunaGeometryGPKG` implement it.
+- Reprojection of 2D WKB-backed geometry now transforms the coordinates in place (`EWKBTransformer.transform`) instead of building and discarding a JTS tree per feature. Geometry with Z or M keeps the JTS path. The dimension is read per geometry from the WKB, so a column that declares Z but stores plain XY reprojects correctly.
+- `HakunaGeometryGPKG` reads its WKB through the `ByteBuffer` rather than its backing array, so it also works for a direct buffer. No change on the JDBC path, whose blobs are always heap-backed.
 
 ### Library updates
 

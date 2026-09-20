@@ -3,6 +3,8 @@ package fi.nls.hakunapi.core.projection;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import fi.nls.hakunapi.core.geom.WKBBacked;
+
 public class EWKBTransformer {
 
     private static final int XY_LEN = 128;
@@ -12,6 +14,17 @@ public class EWKBTransformer {
 
     public EWKBTransformer(ProjectionTransformer transformer) {
         this.t = transformer;
+    }
+
+    public void transform(WKBBacked geom) throws Exception {
+        if (geom.getDimension() != 2) {
+            throw new IllegalArgumentException("Expected 2D geometry");
+        }
+        ByteBuffer src = geom.getBuffer();
+        ByteBuffer bb = src.duplicate();
+        bb.order(src.order());
+        bb.position(geom.getDataStart());
+        reprojectEWKBGeometry2d(bb, geom.getGeometryType());
     }
 
     public void transformEWKB(byte[] ewkb) throws Exception {
@@ -53,9 +66,7 @@ public class EWKBTransformer {
         case 4:
             numGeoms = bb.getInt();
             for (int i = 0; i < numGeoms; i++) {
-                if (bb.get() != 0) {
-                    bb.order(ByteOrder.LITTLE_ENDIAN);
-                }
+                bb.order(bb.get() != 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
                 bb.getInt(); // skip type Point
                 reprojectRing(t, bb, 1);
             }
@@ -63,9 +74,7 @@ public class EWKBTransformer {
         case 5:
             numGeoms = bb.getInt();
             for (int i = 0; i < numGeoms; i++) {
-                if (bb.get() != 0) {
-                    bb.order(ByteOrder.LITTLE_ENDIAN);
-                }
+                bb.order(bb.get() != 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
                 bb.getInt(); // skip type LineString
                 numPoints = bb.getInt();
                 reprojectRing(t, bb, numPoints);
@@ -74,9 +83,7 @@ public class EWKBTransformer {
         case 6:
             numGeoms = bb.getInt();
             for (int i = 0; i < numGeoms; i++) {
-                if (bb.get() != 0) {
-                    bb.order(ByteOrder.LITTLE_ENDIAN);
-                }
+                bb.order(bb.get() != 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
                 bb.getInt(); // skip type Polygon
                 numRings = bb.getInt();
                 for (int j = 0; j < numRings; j++) {
