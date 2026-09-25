@@ -279,6 +279,10 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 | Performance & Scalability     | High (large datasets, concurrency)                    | Limited by file access, best for small datasets   |
 | Deployment & Integration      | Server/multi-user, scalable                          | Portable/offline, single-user scenarios           |
 
+### Byte access for file-backed sources (community)
+
+[`hakunapi-bytes`](../../src-community/hakunapi-bytes/README.md) *(community module)* is a shared layer through which file-backed sources read their bytes: a local file (pread by default, mmap or read whole into memory opt-in) or a remote one over HTTP Range requests, with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive in its uncompressed form, with random access, over either. Reads copy into a buffer the caller owns; a memory-mapped or in-memory file additionally offers zero-copy access. No source uses it yet. It requires Java 22+ (the FFM API) and is built only on a 22+ JDK; its only dependency is `slf4j-api`.
+
 ## Output data formats (stable)
 
 ### GeoJSON
@@ -395,6 +399,8 @@ The `hakunapi-telemetry` module (use `log-json` for the mode in configuration) p
 ### Java versions
 
 Hakunapi code modules require Java 21 as minimum. Other Java versions are not currently tested.
+
+Community modules built on the FFM API (currently `hakunapi-bytes`) require Java 22+. They are built only when Maven runs on a 22+ JDK (the `ffm` profile in `src-community/pom.xml`), so a Java 21 build skips them.
 
 The support for Java 8 was dropped in 2023, see issue [#17](https://github.com/nlsfi/hakunapi/issues/17).
 
