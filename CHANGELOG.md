@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Functional changes
+
+- New community module `hakunapi-bytes` (Java 22+): a shared byte access layer for file-backed sources, covering local files (pread, or mmap or a whole-file in-memory copy as an opt-in) and HTTP Range with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive with random access, locally or over HTTP, and opens a location written in GDAL's `/vsizip/` / `/vsicurl/` syntax. No source uses it yet. It is built only on a 22+ JDK, via the new `ffm` profile in `src-community/pom.xml`.
+
 ## 2.0.0
 
 For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17

@@ -15,4 +15,21 @@
 		<module>hakunapi-smile</module>
 		<module>hakunapi-esbulk</module>
 	</modules>
+
+	<profiles>
+		<!--
+			Modules built on the FFM API (Arena, MemorySegment), which is final in
+			Java 22. CI builds on 21 and 25, so these are built only where they
+			compile rather than raising the baseline for everything else.
+		-->
+		<profile>
+			<id>ffm</id>
+			<activation>
+				<jdk>[22,)</jdk>
+			</activation>
+			<modules>
+				<module>hakunapi-bytes</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
