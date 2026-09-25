@@ -49,6 +49,7 @@ public class CollectionsMetadataImpl {
         List<Link> links = new ArrayList<>();
         links.add(Links.getSelfLink(path, queryParams, contentType));
         links.addAll(getAlternateLinks(path, queryParams, contentType));
+        links.addAll(service.getCollectionsAdditionalLinks());
 
         List<CollectionInfo> collections = new ArrayList<>();
         for (FeatureType ft : service.getCollections()) {
