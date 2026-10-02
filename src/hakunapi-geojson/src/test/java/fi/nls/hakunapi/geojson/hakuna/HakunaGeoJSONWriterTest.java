@@ -27,7 +27,6 @@ import fi.nls.hakunapi.core.geom.HakunaGeometryEWKB;
 import fi.nls.hakunapi.core.geom.HakunaPoint2D;
 import fi.nls.hakunapi.core.schemas.Crs;
 import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
-import fi.nls.hakunapi.core.util.FixedFloatingPoint3FormatterInt;
 
 public class HakunaGeoJSONWriterTest {
     
@@ -253,14 +252,6 @@ public class HakunaGeoJSONWriterTest {
     }
 
     @Test
-    public void testParseFormatterFixed3() {
-        assertSame(FixedFloatingPoint3FormatterInt.INSTANCE,
-                OutputFormatFactoryGeoJSON.parseFormatter("fixed3", DefaultFloatingPointFormatter.DEFAULT_METERS));
-        assertSame(FixedFloatingPoint3FormatterInt.INSTANCE,
-                OutputFormatFactoryGeoJSON.parseFormatter("  FIXED3  ", DefaultFloatingPointFormatter.DEFAULT_METERS));
-    }
-
-    @Test
     public void testParseFormatterFallsBackWhenUnset() {
         FloatingPointFormatter fallback = DefaultFloatingPointFormatter.DEFAULT_METERS;
         assertSame(fallback, OutputFormatFactoryGeoJSON.parseFormatter(null, fallback));
@@ -279,26 +270,7 @@ public class HakunaGeoJSONWriterTest {
     }
 
     @Test
-    public void testWriteFeatureFixed3Meters() throws Exception {
-        OutputFormat fixed3 = new OutputFormatFactoryGeoJSON()
-                .create(Map.of("formatter.meters", "fixed3"));
-        SRIDCode tm35fin = new SRIDCode(3067, false, false, HakunaGeometryDimension.XY);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (SingleFeatureWriter fw = fixed3.getSingleFeatureWriter()) {
-            fw.init(baos, tm35fin);
-            fw.startFeature(null, null, 1L);
-            fw.writeGeometry("ignored", getPointGeom(500000, 6822000.4));
-            fw.endFeature();
-            fw.end(false, Collections.emptyList(), 1);
-        }
-        String json = baos.toString(StandardCharsets.UTF_8);
-        // Three decimals always, trailing zeros included
-        assertTrue(json, json.contains("[500000.000,6822000.400]"));
-    }
-
-    @Test
-    public void testWriteFeatureDefaultMetersStillTrims() throws Exception {
+    public void testWriteFeatureDefaultMetersTrims() throws Exception {
         SRIDCode tm35fin = new SRIDCode(3067, false, false, HakunaGeometryDimension.XY);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
