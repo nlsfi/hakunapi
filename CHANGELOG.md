@@ -4,6 +4,7 @@
 
 ### Functional changes
 
+- Fixed CSV output (`f=csv`) failing with a NullPointerException on the first geometry or floating-point value: no number formatter was ever set. CSV now uses the GeoJSON defaults: coordinates with 3 decimals for metres and 7 for degrees, double properties with up to 8 and float properties with up to 5.
 - New community module `hakunapi-bytes` (Java 22+): a shared byte access layer for file-backed sources, covering local files (pread, or mmap or a whole-file in-memory copy as an opt-in) and HTTP Range with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive with random access, locally or over HTTP, and opens a location written in GDAL's `/vsizip/` / `/vsicurl/` syntax. No source uses it yet. It is built only on a 22+ JDK, via the new `ffm` profile in `src-community/pom.xml`.
 
 ## 2.0.0
