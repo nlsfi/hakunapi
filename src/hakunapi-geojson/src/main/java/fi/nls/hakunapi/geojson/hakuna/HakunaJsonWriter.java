@@ -416,15 +416,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     public void writeLocalDate(LocalDate date) throws IOException {
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            //         "     date     "
-            if (pos + 1 + LocalDateOutput.MAX_BYTE_LEN + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             buf[pos++] = QUOTE;
@@ -447,15 +446,14 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
 
         switch (state) {
         case STATE_ARRAY:
-            if (pos + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             if (comma) {
                 buf[pos++] = COMMA;
             }
         case STATE_OBJ_VALUE:
-            //         "  instant  "
-            if (pos + 1 + len + 1 >= BUF_LEN) {
+            if (pos >= FLUSH_AT) {
                 flush();
             }
             buf[pos++] = QUOTE;
