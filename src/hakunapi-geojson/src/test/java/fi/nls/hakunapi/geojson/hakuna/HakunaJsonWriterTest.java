@@ -86,14 +86,15 @@ public class HakunaJsonWriterTest {
 
     @Test
     public void testWriteDatesFlushWhenBufferIsNearlyFull() throws IOException {
-        // The value must not straddle the buffer boundary
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
+        // The value must not straddle the buffer boundary: 46 bytes per round,
+        // so 3000 rounds cross the 64 kB write buffer twice
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1 << 18);
         LocalDate date = LocalDate.of(1987, 12, 31);
         Instant instant = Instant.parse("2026-09-02T12:00:00.123456789Z");
         StringBuilder expected = new StringBuilder("[");
         try (HakunaJsonWriter json = new HakunaJsonWriter(baos, null)) {
             json.writeStartArray();
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 3000; i++) {
                 json.writeLocalDate(date);
                 json.writeInstant(instant);
                 if (i > 0) {
