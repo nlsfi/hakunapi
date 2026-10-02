@@ -60,6 +60,11 @@ public class DefaultFloatingPointFormatter implements FloatingPointFormatter {
     }
 
     @Override
+    public int writeOrdinates(double x, double y, byte separator, byte[] b, int off) {
+        return DToA.dtoa(x, y, separator, b, off, minDecimalsOrdinate, maxDecimalsOrdinate);
+    }
+
+    @Override
     public int writeFloat(float f, char[] arr, int off) {
         return DToA.ftoa(f, arr, off, minDecimalsFloat, maxDecimalsFloat);
     }

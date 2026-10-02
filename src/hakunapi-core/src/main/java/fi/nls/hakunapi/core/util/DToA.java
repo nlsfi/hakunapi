@@ -9,7 +9,7 @@ import tools.jackson.core.io.NumberOutput;
 
 /**
  * The byte[] variants store whole 8-byte words, so they may write up to 18
- * bytes from off whatever offset they return. The
+ * bytes from off (37 for the x, y variant) whatever offset they return. The
  * caller must have that much room, or the full written length if longer.
  */
 public class DToA {
@@ -47,6 +47,7 @@ public class DToA {
 
     private static final VarHandle LONG_LE = MethodHandles.byteArrayViewVarHandle(long[].class, ByteOrder.LITTLE_ENDIAN);
     private static final long ASCII_ZEROS = 0x3030303030303030L;
+    private static final long LOW_LANE = 0xFFFFFFFFL;
 
     public static int ftoa(float v, byte[] b, int off, int minDecimals, int maxDecimals) {
         if (!(Math.abs(v) < SWAR_LIMIT) || maxDecimals > SWAR_MAX_DECIMALS || minDecimals > maxDecimals) {
@@ -84,6 +85,73 @@ public class DToA {
         }
         off = writeIntegral(l, b, off);
         return writeFraction(decimal, b, off, minDecimals, maxDecimals);
+    }
+
+    /**
+     * Writes x, separator and y - the same bytes as two dtoa calls, but two
+     * digit groups short enough to share a 64-bit word share one conversion:
+     * both integral parts when below 10^4 (degrees), both fractions when
+     * maxDecimals is at most 4 (metres).
+     */
+    public static int dtoa(double x, double y, byte separator, byte[] b, int off, int minDecimals, int maxDecimals) {
+        if (!(Math.abs(x) < SWAR_LIMIT) || !(Math.abs(y) < SWAR_LIMIT)
+                || maxDecimals > SWAR_MAX_DECIMALS || minDecimals > maxDecimals) {
+            off = dtoa(x, b, off, minDecimals, maxDecimals);
+            b[off++] = separator;
+            return dtoa(y, b, off, minDecimals, maxDecimals);
+        }
+        boolean negX = x < 0;
+        boolean negY = y < 0;
+        if (negX) {
+            x = -x;
+        }
+        if (negY) {
+            y = -y;
+        }
+        long exp = powerOfTen[maxDecimals];
+        long lx = (long) x;
+        long fx = (long) ((x - lx) * exp + 0.5);
+        if (fx == exp) {
+            fx = 0;
+            lx++;
+        }
+        long ly = (long) y;
+        long fy = (long) ((y - ly) * exp + 0.5);
+        if (fy == exp) {
+            fy = 0;
+            ly++;
+        }
+
+        boolean packIntegrals = (lx | ly) < 10_000;
+        long integrals = packIntegrals ? digits8(lx, ly) : 0;
+
+        // Fraction words hold the first decimal in the lowest byte
+        long fractionX;
+        long fractionY;
+        if (maxDecimals <= 4) {
+            long scale = powerOfTen[4 - maxDecimals];
+            long fractions = digits8(fx * scale, fy * scale);
+            fractionX = fractions & LOW_LANE;
+            fractionY = fractions >>> 32;
+        } else {
+            long scale = powerOfTen[8 - maxDecimals];
+            fractionX = digits8(fx * scale);
+            fractionY = digits8(fy * scale);
+        }
+
+        if (negX) {
+            b[off++] = '-';
+        }
+        // A packed integral sits in one lane; moved to the high lane it reads as
+        // eight digits with four leading zeros
+        off = packIntegrals ? writeIntegral8(integrals << 32, b, off) : writeIntegral(lx, b, off);
+        off = fx == 0 ? writeZeroFraction(b, off, minDecimals) : writeFraction8(fractionX, b, off, minDecimals);
+        b[off++] = separator;
+        if (negY) {
+            b[off++] = '-';
+        }
+        off = packIntegrals ? writeIntegral8(integrals & ~LOW_LANE, b, off) : writeIntegral(ly, b, off);
+        return fy == 0 ? writeZeroFraction(b, off, minDecimals) : writeFraction8(fractionY, b, off, minDecimals);
     }
 
     private static int ftoaLoop(float v, byte[] b, int off, int minDecimals, int maxDecimals) {

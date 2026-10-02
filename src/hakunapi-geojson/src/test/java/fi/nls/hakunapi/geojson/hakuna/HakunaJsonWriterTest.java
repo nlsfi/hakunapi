@@ -13,6 +13,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.util.DefaultFloatingPointFormatter;
+
 public class HakunaJsonWriterTest {
 
     @Test
@@ -105,6 +108,57 @@ public class HakunaJsonWriterTest {
             json.writeEndArray();
         }
         assertEquals(expected.append(']').toString(), baos.toString(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void testWriteCoordinateUsesTheGivenFormatter() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(64);
+        try (HakunaJsonWriter json = new HakunaJsonWriter(baos, DefaultFloatingPointFormatter.DEFAULT_METERS)) {
+            json.writeStartArray();
+            json.writeCoordinate(24.1234567, 60.1234567, 1.1234567, 2.1234567, DefaultFloatingPointFormatter.DEFAULT_DEGREES);
+            json.writeCoordinate(24.1234567, 60.1234567, 1.1234567, DefaultFloatingPointFormatter.DEFAULT_DEGREES);
+            json.writeCoordinate(24.1234567, 60.1234567, 1.1234567, 2.1234567);
+            json.writeEndArray();
+        }
+        assertEquals("[[24.1234567,60.1234567,1.1234567,2.1234567],[24.1234567,60.1234567,1.1234567],[24.123,60.123,1.123,2.123]]",
+                baos.toString(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void testWriteCoordinatesAcrossFlushes() throws IOException {
+        // Ordinates store whole 8-byte words past their end, so the coordinate
+        // closest to the buffer end must still fit and nothing may straddle it
+        FloatingPointFormatter[] formatters = {
+                DefaultFloatingPointFormatter.DEFAULT_METERS,
+                DefaultFloatingPointFormatter.DEFAULT_DEGREES,
+                new DefaultFloatingPointFormatter(0, 5, 0, 8, 0, 8)
+        };
+        Random random = new Random(7);
+        for (FloatingPointFormatter f : formatters) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1 << 20);
+            StringBuilder expected = new StringBuilder("[");
+            byte[] tmp = new byte[64];
+            try (HakunaJsonWriter json = new HakunaJsonWriter(baos, f)) {
+                json.writeStartArray();
+                for (int i = 0; i < 20_000; i++) {
+                    double x = random.nextDouble(-35_000_000, 35_000_000);
+                    double y = random.nextDouble(-180, 180);
+                    double z = random.nextDouble(-1000, 1000);
+                    double m = random.nextInt(1000);
+                    json.writeCoordinate(x, y, z, m);
+                    if (i > 0) {
+                        expected.append(',');
+                    }
+                    expected.append('[')
+                            .append(new String(tmp, 0, f.writeOrdinate(x, tmp, 0), StandardCharsets.US_ASCII)).append(',')
+                            .append(new String(tmp, 0, f.writeOrdinate(y, tmp, 0), StandardCharsets.US_ASCII)).append(',')
+                            .append(new String(tmp, 0, f.writeOrdinate(z, tmp, 0), StandardCharsets.US_ASCII)).append(',')
+                            .append(new String(tmp, 0, f.writeOrdinate(m, tmp, 0), StandardCharsets.US_ASCII)).append(']');
+                }
+                json.writeEndArray();
+            }
+            assertEquals(expected.append(']').toString(), baos.toString(StandardCharsets.UTF_8));
+        }
     }
 
     private String quoted(String s) {

@@ -105,22 +105,43 @@ public class DToATest {
     }
 
     @Test
+    public void testPairMatchesTwoOrdinates() {
+        Random r = new Random(2);
+        byte[] buf = new byte[128];
+        for (int maxDecimals = 0; maxDecimals <= 10; maxDecimals++) {
+            for (int minDecimals = 0; minDecimals <= maxDecimals; minDecimals++) {
+                for (int i = 0; i < 20_000; i++) {
+                    double x = randomOrdinate(r, maxDecimals);
+                    double y = randomOrdinate(r, maxDecimals);
+                    String expected = formatBytes(x, minDecimals, maxDecimals) + "," + formatBytes(y, minDecimals, maxDecimals);
+                    int n = DToA.dtoa(x, y, (byte) ',', buf, 0, minDecimals, maxDecimals);
+                    assertEquals(expected, new String(buf, 0, n, StandardCharsets.US_ASCII));
+                }
+            }
+        }
+    }
+
+    @Test
     public void testFitsDocumentedRoom() {
-        // Whole-word stores must stay within 18 bytes, however short the
-        // written number - an exactly sized array throws otherwise
+        // Whole-word stores must stay within 18 bytes (37 for x, y), however
+        // short the written number - an exactly sized array throws otherwise
         Random r = new Random(3);
         byte[] one = new byte[18];
+        byte[] two = new byte[37];
         for (int maxDecimals = 0; maxDecimals <= 8; maxDecimals++) {
             for (int i = 0; i < 20_000; i++) {
                 double x = randomOrdinate(r, maxDecimals);
-                if (Math.abs(x) < 1e8) {
+                double y = randomOrdinate(r, maxDecimals);
+                if (Math.abs(x) < 1e8 && Math.abs(y) < 1e8) {
                     DToA.dtoa(x, one, 0, 0, maxDecimals);
                     DToA.ftoa((float) x, one, 0, 0, maxDecimals);
+                    DToA.dtoa(x, y, (byte) ',', two, 0, 0, maxDecimals);
                 }
             }
         }
         DToA.dtoa(-99999999.99999999, one, 0, 8, 8);
         DToA.dtoa(-0.00000001, one, 0, 0, 8);
+        DToA.dtoa(-99999999.99999999, -0.00000001, (byte) ',', two, 0, 0, 8);
     }
 
     private String format(float f, int minDecimals, int maxDecimals) {

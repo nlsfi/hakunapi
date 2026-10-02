@@ -478,9 +478,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
+        pos = f.writeOrdinates(x, y, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
@@ -497,11 +495,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(z, buf, pos);
+        pos = f.writeOrdinates(x, y, z, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
@@ -518,13 +512,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(z, buf, pos);
-        buf[pos++] = COMMA;
-        pos = numberPropertyFormatter.writeOrdinate(m, buf, pos);
+        pos = f.writeOrdinates(x, y, z, m, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);

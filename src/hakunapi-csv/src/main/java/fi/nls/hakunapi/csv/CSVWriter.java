@@ -24,6 +24,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
     private static final byte QUOTE = '"';
     private static final byte COMMA = ',';
     private static final byte LF = '\n';
+    private static final byte SPACE = ' ';
 
     private static final byte[] POINT = "POINT".getBytes(StandardCharsets.US_ASCII);
     private static final byte[] LINESTRING = "LINESTRING".getBytes(StandardCharsets.US_ASCII);
@@ -367,9 +368,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
             if (comma) {
                 buf[pos++] = ',';
             }
-            pos = formatter.writeOrdinate(x, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(y, buf, pos);
+            pos = formatter.writeOrdinates(x, y, SPACE, buf, pos);
             comma = true;
         }
 
@@ -382,11 +381,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
             if (comma) {
                 buf[pos++] = ',';
             }
-            pos = formatter.writeOrdinate(x, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(y, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(z, buf, pos);
+            pos = formatter.writeOrdinates(x, y, z, SPACE, buf, pos);
         }
 
         @Override
@@ -398,13 +393,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
             if (comma) {
                 buf[pos++] = ',';
             }
-            pos = formatter.writeOrdinate(x, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(y, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(z, buf, pos);
-            buf[pos++] = ' ';
-            pos = formatter.writeOrdinate(m, buf, pos);
+            pos = formatter.writeOrdinates(x, y, z, m, SPACE, buf, pos);
         }
 
         @Override

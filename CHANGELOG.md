@@ -8,6 +8,8 @@
 - GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
 - New `formatter.meters=fixed3` option for the `json` and `jsonfg` output formats: ordinates in projected coordinate reference systems get exactly three decimals (`123.400` rather than `123.4`), written about twice as fast, for ~0.8% more payload. Off by default.
 - Ordinates and fixed-decimal numbers are formatted eight digits at a time (SWAR) instead of one at a time, for every output format writing through `DefaultFloatingPointFormatter` (GeoJSON, JSON-FG, HTML, CSV). Output bytes are unchanged, with one fix: a custom `formatter.*` setting whose minimum decimal count is 1 or more no longer keeps one extra trailing zero (`0.5` rather than `0.50` for minimum 1, maximum 2).
+- `FloatingPointFormatter` has new default `writeOrdinates` methods that format a coordinate's 2-4 ordinates in one call. `DefaultFloatingPointFormatter` uses them to convert two short digit groups at once (both integral parts in degrees, both fractions in metres). Existing implementations keep working unchanged.
+- JSON-FG: the m ordinate of a 4D `geometry` (CRS84) is now written with the degree formatter like x, y and z. When `place` was in a projected CRS, m used to get the metre formatter's decimals.
 
 ## 2.0.0
 
