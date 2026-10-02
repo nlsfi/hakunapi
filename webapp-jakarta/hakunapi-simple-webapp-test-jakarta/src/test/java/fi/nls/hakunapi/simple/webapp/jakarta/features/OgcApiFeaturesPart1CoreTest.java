@@ -6,6 +6,7 @@ import static com.jayway.jsonassert.JsonAssert.with;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.either;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -207,6 +208,61 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 				.assertThat("$.features[0].properties.kohdeluokka", equalTo("13")).and()
 				//
 				.assertThat("$.features[0].geometry.type", equalTo("Point"));
+
+	}
+
+	@Test
+	public void testCollectionsPrimitivesItems() {
+		final String response = target("/collections/primitives/items").request().get(String.class);
+		LOG.info(response);
+
+		with(response)
+				//
+				.assertThat("$.numberReturned", equalTo(2)).and()
+				//
+				// A LONG id is written as a JSON number, not a string
+				.assertThat("$.features[0].id", equalTo(1)).and()
+				//
+				.assertThat("$.features[0].properties.my_int", equalTo(42)).and()
+				//
+				.assertThat("$.features[0].properties.my_long", equalTo(9876543210L)).and()
+				//
+				.assertThat("$.features[0].properties.my_float", equalTo(2.5)).and()
+				//
+				.assertThat("$.features[0].properties.my_double", equalTo(1.5)).and()
+				//
+				.assertThat("$.features[0].properties.my_boolean", equalTo(true)).and()
+				//
+				.assertThat("$.features[1].properties.my_int", nullValue()).and()
+				//
+				.assertThat("$.features[1].properties.my_long", nullValue()).and()
+				//
+				.assertThat("$.features[1].properties.my_float", nullValue()).and()
+				//
+				.assertThat("$.features[1].properties.my_double", nullValue()).and()
+				//
+				.assertThat("$.features[1].properties.my_boolean", nullValue());
+
+	}
+
+	@Test
+	public void testCollectionsPrimitivesItem1() {
+		final String response = target("/collections/primitives/items/1").request().get(String.class);
+		LOG.info(response);
+
+		with(response)
+				//
+				.assertThat("$.type", equalTo("Feature")).and()
+				//
+				.assertThat("$.properties.my_int", equalTo(42)).and()
+				//
+				.assertThat("$.properties.my_long", equalTo(9876543210L)).and()
+				//
+				.assertThat("$.properties.my_float", equalTo(2.5)).and()
+				//
+				.assertThat("$.properties.my_double", equalTo(1.5)).and()
+				//
+				.assertThat("$.properties.my_boolean", equalTo(true));
 
 	}
 

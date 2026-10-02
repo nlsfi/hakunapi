@@ -58,11 +58,10 @@ public class HakunaPropertyLong extends HakunaPropertyDynamic {
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
         return (vp, vc) -> {
-            Long v = vp.getLong(iValueProvider);
-            if (v == null) {
+            if (vp.isNull(iValueProvider)) {
                 vc.setNull(iValueContainer);
             } else {
-                vc.setLong(iValueContainer, v);
+                vc.setLong(iValueContainer, vp.getPrimitiveLong(iValueProvider));
             }
         };
     }

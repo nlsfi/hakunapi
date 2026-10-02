@@ -56,47 +56,68 @@ public final class HakunaPropertyWriters {
     }
 
     public static HakunaPropertyWriter getSimplePropertyWriter(String name, HakunaPropertyType type) {
+        return getSimplePropertyWriter(name, type, true);
+    }
+
+    /**
+     * The writer for one property, with the null check resolved here instead of
+     * per row: a property declared non-nullable gets a variant that never calls
+     * {@link ValueProvider#isNull(int)}. For the primitive types the value is
+     * read through the {@code getPrimitive*} accessors, so a source that can
+     * hand out a primitive never has to box it.
+     */
+    public static HakunaPropertyWriter getSimplePropertyWriter(String name, HakunaPropertyType type, boolean nullable) {
         switch (type) {
         case BOOLEAN:
-            return (vp, i, writer) -> {
-                if (vp.isNull(i)) {
-                    writer.writeNullProperty(name);
-                } else {
-                    writer.writeProperty(name, vp.getBoolean(i));
-                }
-            };
+            return nullable
+                    ? (vp, i, writer) -> {
+                        if (vp.isNull(i)) {
+                            writer.writeNullProperty(name);
+                        } else {
+                            writer.writeProperty(name, vp.getPrimitiveBoolean(i));
+                        }
+                    }
+                    : (vp, i, writer) -> writer.writeProperty(name, vp.getPrimitiveBoolean(i));
         case INT:
-            return (vp, i, writer) -> {
-                if (vp.isNull(i)) {
-                    writer.writeNullProperty(name);
-                } else {
-                    writer.writeProperty(name, vp.getInt(i));
-                }
-            };
+            return nullable
+                    ? (vp, i, writer) -> {
+                        if (vp.isNull(i)) {
+                            writer.writeNullProperty(name);
+                        } else {
+                            writer.writeProperty(name, vp.getPrimitiveInt(i));
+                        }
+                    }
+                    : (vp, i, writer) -> writer.writeProperty(name, vp.getPrimitiveInt(i));
         case LONG:
-            return (vp, i, writer) -> {
-                if (vp.isNull(i)) {
-                    writer.writeNullProperty(name);
-                } else {
-                    writer.writeProperty(name, vp.getLong(i));
-                }
-            };
+            return nullable
+                    ? (vp, i, writer) -> {
+                        if (vp.isNull(i)) {
+                            writer.writeNullProperty(name);
+                        } else {
+                            writer.writeProperty(name, vp.getPrimitiveLong(i));
+                        }
+                    }
+                    : (vp, i, writer) -> writer.writeProperty(name, vp.getPrimitiveLong(i));
         case DOUBLE:
-            return (vp, i, writer) -> {
-                if (vp.isNull(i)) {
-                    writer.writeNullProperty(name);
-                } else {
-                    writer.writeProperty(name, vp.getDouble(i));
-                }
-            };
+            return nullable
+                    ? (vp, i, writer) -> {
+                        if (vp.isNull(i)) {
+                            writer.writeNullProperty(name);
+                        } else {
+                            writer.writeProperty(name, vp.getPrimitiveDouble(i));
+                        }
+                    }
+                    : (vp, i, writer) -> writer.writeProperty(name, vp.getPrimitiveDouble(i));
         case FLOAT:
-            return (vp, i, writer) -> {
-                if (vp.isNull(i)) {
-                    writer.writeNullProperty(name);
-                } else {
-                    writer.writeProperty(name, vp.getFloat(i));
-                }
-            };
+            return nullable
+                    ? (vp, i, writer) -> {
+                        if (vp.isNull(i)) {
+                            writer.writeNullProperty(name);
+                        } else {
+                            writer.writeProperty(name, vp.getPrimitiveFloat(i));
+                        }
+                    }
+                    : (vp, i, writer) -> writer.writeProperty(name, vp.getPrimitiveFloat(i));
         case DATE:
             return (vp, i, writer) -> {
                 if (vp.isNull(i)) {
@@ -153,57 +174,46 @@ public final class HakunaPropertyWriters {
     public static HakunaPropertyWriter getIdPropertyWriter(FeatureType ft, String layerName, String name, HakunaPropertyType type) {
         switch (type) {
         case INT:
-            return (vp, i, writer) -> {
-                writeStartFeature(ft, layerName, writer, type, vp.getInt(i));
-            };
+            return (vp, i, writer) -> writeStartFeature(ft, layerName, writer, vp.getPrimitiveInt(i));
         case LONG:
-            return (vp, i, writer) -> {
-                writeStartFeature(ft, layerName, writer, type, vp.getLong(i));
-            };
+            return (vp, i, writer) -> writeStartFeature(ft, layerName, writer, vp.getPrimitiveLong(i));
         case STRING:
         case UUID:
-            return (vp, i, writer) -> {
-                writeStartFeature(ft, layerName, writer, type, vp.getObject(i).toString());
-            };
+            return (vp, i, writer) -> writeStartFeature(ft, layerName, writer, vp.getObject(i).toString());
         case DOUBLE:
-            return (vp, i, writer) -> {
-                writeStartFeature(ft, layerName, writer, type, doubleAsID(vp.getDouble(i)));
-            };  
+            return (vp, i, writer) -> writeStartFeature(ft, layerName, writer, doubleAsID(vp.getPrimitiveDouble(i)));
         default:
             throw new IllegalArgumentException("Invalid type for id property");
         }
     }
 
-    protected static String doubleAsID(Double d) {      
+    protected static String doubleAsID(double d) {
         byte[] b = new byte[24];
         int len = DToA.dtoa(d, b, 0, 0, 8);
         return new String(b, 0, len);
     }
 
-    
-    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, HakunaPropertyType type, Object value) throws Exception {
+    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, int fid) throws Exception {
         if (writer instanceof FeatureCollectionWriter) {
-            FeatureCollectionWriter fcWriter = (FeatureCollectionWriter) writer;
-            if (type == HakunaPropertyType.INT) {
-                int fid = ((Number) value).intValue();
-                fcWriter.startFeature(fid);
-            } else if (type == HakunaPropertyType.LONG) {
-                long fid = ((Number) value).longValue();
-                fcWriter.startFeature(fid);
-            } else {
-                fcWriter.startFeature(value.toString());
-            }
+            ((FeatureCollectionWriter) writer).startFeature(fid);
         } else {
-            SingleFeatureWriter singleWriter = (SingleFeatureWriter) writer;
-            if (type == HakunaPropertyType.INT) {
-                int fid = ((Number) value).intValue();
-                singleWriter.startFeature(ft, layerName, fid);
-            } else if (type == HakunaPropertyType.LONG) {
-                long fid = ((Number) value).longValue();
-                singleWriter.startFeature(ft, layerName, fid);
-            } else {
-                singleWriter.startFeature(ft, layerName, value.toString());
-            }
+            ((SingleFeatureWriter) writer).startFeature(ft, layerName, fid);
+        }
+    }
+
+    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, long fid) throws Exception {
+        if (writer instanceof FeatureCollectionWriter) {
+            ((FeatureCollectionWriter) writer).startFeature(fid);
+        } else {
+            ((SingleFeatureWriter) writer).startFeature(ft, layerName, fid);
+        }
+    }
+
+    private static void writeStartFeature(FeatureType ft, String layerName, FeatureWriter writer, String fid) throws Exception {
+        if (writer instanceof FeatureCollectionWriter) {
+            ((FeatureCollectionWriter) writer).startFeature(fid);
+        } else {
+            ((SingleFeatureWriter) writer).startFeature(ft, layerName, fid);
         }
     }
 

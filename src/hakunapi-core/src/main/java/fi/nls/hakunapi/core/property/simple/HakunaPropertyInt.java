@@ -65,11 +65,10 @@ public class HakunaPropertyInt extends HakunaPropertyDynamic {
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
         return (vp, vc) -> {
-            Integer v = vp.getInt(iValueProvider);
-            if (v == null) {
+            if (vp.isNull(iValueProvider)) {
                 vc.setNull(iValueContainer);
             } else {
-                vc.setInt(iValueContainer, v);
+                vc.setInt(iValueContainer, vp.getPrimitiveInt(iValueProvider));
             }
         };
     }

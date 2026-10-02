@@ -33,11 +33,10 @@ public class HakunaPropertyBoolean extends HakunaPropertyDynamic {
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
         return (vp, vc) -> {
-            Boolean b = vp.getBoolean(iValueProvider);
-            if (b == null) {
+            if (vp.isNull(iValueProvider)) {
                 vc.setNull(iValueContainer);
             } else {
-                vc.setBoolean(iValueContainer, b);
+                vc.setBoolean(iValueContainer, vp.getPrimitiveBoolean(iValueProvider));
             }
         };
     }

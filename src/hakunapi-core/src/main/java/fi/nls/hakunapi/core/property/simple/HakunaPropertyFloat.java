@@ -33,11 +33,10 @@ public class HakunaPropertyFloat extends HakunaPropertyDynamic {
     @Override
     public BiConsumer<ValueProvider, ValueContainer> getMapperFunction(int iValueProvider, int iValueContainer, QueryContext ctx) {
         return (vp, vc) -> {
-            Float v = vp.getFloat(iValueProvider);
-            if (v == null) {
+            if (vp.isNull(iValueProvider)) {
                 vc.setNull(iValueContainer);
             } else {
-                vc.setFloat(iValueContainer, v);
+                vc.setFloat(iValueContainer, vp.getPrimitiveFloat(iValueProvider));
             }
         };
     }

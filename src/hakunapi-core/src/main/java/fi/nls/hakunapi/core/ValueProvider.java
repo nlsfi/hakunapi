@@ -25,5 +25,31 @@ public interface ValueProvider {
     public UUID getUUID(int i);
     public Object getObject(int i);
     public default byte[] getJSON(int i)  { return null; }
-    
+
+    /**
+     * Primitive accessors for values known to be non-null. The caller must have
+     * checked {@link #isNull(int)} first; the return value is unspecified for a
+     * null value. Implementations that can read a primitive without boxing
+     * should override these, the defaults merely unbox.
+     */
+    public default boolean getPrimitiveBoolean(int i) {
+        return getBoolean(i);
+    }
+
+    public default int getPrimitiveInt(int i) {
+        return getInt(i);
+    }
+
+    public default long getPrimitiveLong(int i) {
+        return getLong(i);
+    }
+
+    public default float getPrimitiveFloat(int i) {
+        return getFloat(i);
+    }
+
+    public default double getPrimitiveDouble(int i) {
+        return getDouble(i);
+    }
+
 }

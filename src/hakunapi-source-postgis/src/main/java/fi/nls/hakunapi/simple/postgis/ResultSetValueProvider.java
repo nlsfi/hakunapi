@@ -84,6 +84,51 @@ public class ResultSetValueProvider implements ValueProvider {
     }
 
     @Override
+    public boolean getPrimitiveBoolean(int i) {
+        try {
+            return rs.getBoolean(i + 1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int getPrimitiveInt(int i) {
+        try {
+            return rs.getInt(i + 1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public long getPrimitiveLong(int i) {
+        try {
+            return rs.getLong(i + 1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public float getPrimitiveFloat(int i) {
+        try {
+            return rs.getFloat(i + 1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public double getPrimitiveDouble(int i) {
+        try {
+            return rs.getDouble(i + 1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Object getObject(int i) {
         try {
             return rs.getObject(i + 1);
