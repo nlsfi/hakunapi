@@ -10,6 +10,7 @@
 - Ordinates and fixed-decimal numbers are formatted eight digits at a time (SWAR) instead of one at a time, for every output format writing through `DefaultFloatingPointFormatter` (GeoJSON, JSON-FG, HTML, CSV). Output bytes are unchanged, with one fix: a custom `formatter.*` setting whose minimum decimal count is 1 or more no longer keeps one extra trailing zero (`0.5` rather than `0.50` for minimum 1, maximum 2).
 - `FloatingPointFormatter` has new default `writeOrdinates` methods that format a coordinate's 2-4 ordinates in one call. `DefaultFloatingPointFormatter` uses them to convert two short digit groups at once (both integral parts in degrees, both fractions in metres). Existing implementations keep working unchanged.
 - JSON-FG: the m ordinate of a 4D `geometry` (CRS84) is now written with the degree formatter like x, y and z. When `place` was in a projected CRS, m used to get the metre formatter's decimals.
+- CSV: WKT geometries with Z or ZM coordinates now separate their coordinates with commas (`LINESTRING Z(1 2 3,4 5 6)`, previously `LINESTRING Z(1 2 34 5 6)`).
 
 ## 2.0.0
 

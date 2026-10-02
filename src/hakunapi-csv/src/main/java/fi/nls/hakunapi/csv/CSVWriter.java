@@ -382,6 +382,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
                 buf[pos++] = ',';
             }
             pos = formatter.writeOrdinates(x, y, z, SPACE, buf, pos);
+            comma = true;
         }
 
         @Override
@@ -394,6 +395,7 @@ public class CSVWriter implements AutoCloseable, Flushable {
                 buf[pos++] = ',';
             }
             pos = formatter.writeOrdinates(x, y, z, m, SPACE, buf, pos);
+            comma = true;
         }
 
         @Override
