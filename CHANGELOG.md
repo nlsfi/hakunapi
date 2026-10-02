@@ -7,6 +7,7 @@
 - New community module `hakunapi-bytes` (Java 22+): a shared byte access layer for file-backed sources, covering local files (pread, or mmap or a whole-file in-memory copy as an opt-in) and HTTP Range with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive with random access, locally or over HTTP, and opens a location written in GDAL's `/vsizip/` / `/vsicurl/` syntax. No source uses it yet. It is built only on a 22+ JDK, via the new `ffm` profile in `src-community/pom.xml`.
 - GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
 - New `formatter.meters=fixed3` option for the `json` and `jsonfg` output formats: ordinates in projected coordinate reference systems get exactly three decimals (`123.400` rather than `123.4`), written about twice as fast, for ~0.8% more payload. Off by default.
+- Ordinates and fixed-decimal numbers are formatted eight digits at a time (SWAR) instead of one at a time, for every output format writing through `DefaultFloatingPointFormatter` (GeoJSON, JSON-FG, HTML, CSV). Output bytes are unchanged, with one fix: a custom `formatter.*` setting whose minimum decimal count is 1 or more no longer keeps one extra trailing zero (`0.5` rather than `0.50` for minimum 1, maximum 2).
 
 ## 2.0.0
 

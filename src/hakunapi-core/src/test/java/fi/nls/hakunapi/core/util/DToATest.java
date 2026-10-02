@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -65,6 +66,63 @@ public class DToATest {
         assertEquals("4.320", format(d, minDecimals, maxDecimals));
     }
     
+    @Test
+    public void testTrimsDownToMinDecimals() {
+        assertEquals("0.5", format(0.5, 1, 2));
+        assertEquals("0.5", formatBytes(0.5, 1, 2));
+        assertEquals("0.5", format(0.5f, 1, 2));
+        assertEquals("1.25", formatBytes(1.25, 2, 4));
+        assertEquals("1.50", formatBytes(1.5, 2, 4));
+        assertEquals("1.000", formatBytes(1.0, 3, 5));
+        // Above the SWAR limit, through the loop path
+        assertEquals("123456789.5", formatBytes(123456789.5, 1, 2));
+        assertEquals("0.5", formatBytes(0.5, 1, 12));
+    }
+
+    @Test
+    public void testMatchesReference() {
+        Random r = new Random(1);
+        double[] edges = {
+                0.0, -0.0, 0.5, -0.5, 0.05, 1e-9, -1e-9, 0.99999999, -0.99999999,
+                99999999.4, 99999999.5, 99999999.99999999, 1e8, -1e8, 123456789.123, 1e15, 1e19, -1e19,
+                6822000.125, 25499999.9995, 180.0, -180.0, 0.0005, 2.0005,
+                Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.MAX_VALUE, Double.MIN_VALUE
+        };
+        for (int maxDecimals = 0; maxDecimals <= 15; maxDecimals++) {
+            for (int minDecimals = 0; minDecimals <= maxDecimals; minDecimals++) {
+                for (double d : edges) {
+                    assertEquals(reference(d, minDecimals, maxDecimals), formatBytes(d, minDecimals, maxDecimals));
+                    assertEquals(reference((float) d, minDecimals, maxDecimals), formatBytes((float) d, minDecimals, maxDecimals));
+                }
+                for (int i = 0; i < 20_000; i++) {
+                    double d = randomOrdinate(r, maxDecimals);
+                    assertEquals(reference(d, minDecimals, maxDecimals), formatBytes(d, minDecimals, maxDecimals));
+                    float f = (float) d;
+                    assertEquals(reference(f, minDecimals, maxDecimals), formatBytes(f, minDecimals, maxDecimals));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testFitsDocumentedRoom() {
+        // Whole-word stores must stay within 18 bytes, however short the
+        // written number - an exactly sized array throws otherwise
+        Random r = new Random(3);
+        byte[] one = new byte[18];
+        for (int maxDecimals = 0; maxDecimals <= 8; maxDecimals++) {
+            for (int i = 0; i < 20_000; i++) {
+                double x = randomOrdinate(r, maxDecimals);
+                if (Math.abs(x) < 1e8) {
+                    DToA.dtoa(x, one, 0, 0, maxDecimals);
+                    DToA.ftoa((float) x, one, 0, 0, maxDecimals);
+                }
+            }
+        }
+        DToA.dtoa(-99999999.99999999, one, 0, 8, 8);
+        DToA.dtoa(-0.00000001, one, 0, 0, 8);
+    }
+
     private String format(float f, int minDecimals, int maxDecimals) {
         byte[] buf = new byte[32];
         return new String(buf, 0, DToA.ftoa(f, buf, 0, minDecimals, maxDecimals), StandardCharsets.UTF_8);
@@ -74,5 +132,91 @@ public class DToATest {
         char[] buf = new char[32];
         return new String(buf, 0, DToA.dtoa(d, buf, 0, minDecimals, maxDecimals));
     }
-    
+
+    private String formatBytes(double d, int minDecimals, int maxDecimals) {
+        byte[] buf = new byte[64];
+        return new String(buf, 0, DToA.dtoa(d, buf, 0, minDecimals, maxDecimals), StandardCharsets.US_ASCII);
+    }
+
+    private String formatBytes(float f, int minDecimals, int maxDecimals) {
+        byte[] buf = new byte[64];
+        return new String(buf, 0, DToA.ftoa(f, buf, 0, minDecimals, maxDecimals), StandardCharsets.US_ASCII);
+    }
+
+    private double randomOrdinate(Random r, int maxDecimals) {
+        double sign = r.nextBoolean() ? 1 : -1;
+        switch (r.nextInt(6)) {
+        case 0: return r.nextDouble(-10_000_000, 10_000_000);
+        case 1: return r.nextDouble(-180, 180);
+        case 2: return r.nextDouble(-35_000_000, 35_000_000);
+        case 3: return sign * Math.scalb(r.nextDouble(), r.nextInt(-40, 60));
+        case 4: return Math.round(r.nextDouble(-1e7, 1e7) * Math.pow(10, Math.min(maxDecimals, 8))) / Math.pow(10, Math.min(maxDecimals, 8));
+        default: return r.nextInt(-1000, 1000);
+        }
+    }
+
+    // Independent of DToA: same rounding, digits via the JDK
+    private static String reference(double v, int minDecimals, int maxDecimals) {
+        if (Double.isNaN(v)) {
+            return "NaN";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (v < 0) {
+            sb.append('-');
+            v = -v;
+        }
+        if (Double.isInfinite(v)) {
+            return sb.append("Infinity").toString();
+        }
+        if (v > Long.MAX_VALUE) {
+            return sb.append(Double.toString(v)).toString();
+        }
+        long l = (long) v;
+        long exp = (long) Math.pow(10, maxDecimals);
+        long decimal = (long) ((v - l) * exp + 0.5);
+        if (decimal == exp) {
+            decimal = 0;
+            l++;
+        }
+        return appendFraction(sb.append(l), decimal, minDecimals, maxDecimals);
+    }
+
+    private static String reference(float v, int minDecimals, int maxDecimals) {
+        if (Float.isNaN(v)) {
+            return "NaN";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (v < 0) {
+            sb.append('-');
+            v = -v;
+        }
+        if (Float.isInfinite(v)) {
+            return sb.append("Infinity").toString();
+        }
+        if (v > Long.MAX_VALUE) {
+            return sb.append(Float.toString(v)).toString();
+        }
+        long l = (long) v;
+        long exp = (long) Math.pow(10, maxDecimals);
+        long decimal = (long) ((v - l) * exp + 0.5);
+        if (decimal == exp) {
+            decimal = 0;
+            l++;
+        }
+        return appendFraction(sb.append(l), decimal, minDecimals, maxDecimals);
+    }
+
+    private static String appendFraction(StringBuilder sb, long decimal, int minDecimals, int maxDecimals) {
+        String fraction = decimal == 0 ? "" : String.format("%0" + maxDecimals + "d", decimal);
+        int end = fraction.length();
+        while (end > minDecimals && fraction.charAt(end - 1) == '0') {
+            end--;
+        }
+        fraction = fraction.substring(0, end);
+        while (fraction.length() < minDecimals) {
+            fraction += "0";
+        }
+        return fraction.isEmpty() ? sb.toString() : sb.append('.').append(fraction).toString();
+    }
+
 }
