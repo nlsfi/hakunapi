@@ -6,12 +6,15 @@ public interface FloatingPointFormatter {
     public int maxDecimalsDouble();
     public int maxDecimalsOrdinate();
     
+    // The byte[] variants may write past the offset they return - an
+    // implementation is free to store whole words - so b must have room for the
+    // widest value, not just the bytes written (DToA: 18 bytes, 37 for x, y)
     public int writeFloat(float f, byte[] b, int off);
     public int writeDouble(double d, byte[] b, int off);
     public int writeOrdinate(double x, byte[] b, int off);
 
     // A coordinate's ordinates in one call, so that an implementation can share
-    // work between them; b needs room for each ordinate plus the separators
+    // work between them
     public default int writeOrdinates(double x, double y, byte separator, byte[] b, int off) {
         off = writeOrdinate(x, b, off);
         b[off++] = separator;
