@@ -12,13 +12,7 @@ public class LocalDateOutput {
 
     private LocalDateOutput() {}
 
-    /**
-     * Writes {@code date} as ISO-8601 into {@code buf} starting at {@code pos},
-     * producing the exact same bytes as {@link LocalDate#toString()}. The caller
-     * must ensure {@link #MAX_BYTE_LEN} bytes are available.
-     *
-     * @return offset just past the last byte written
-     */
+    // The same bytes as LocalDate#toString(); buf needs MAX_BYTE_LEN bytes of room
     public static int outputLocalDate(LocalDate date, byte[] buf, int pos) {
         return outputLocalDate(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), buf, pos);
     }

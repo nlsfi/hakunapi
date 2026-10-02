@@ -438,8 +438,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     }
 
     public void writeInstant(Instant instant) throws IOException {
-        // ISO_INSTANT is what Instant#toString uses; formatting into a reused
-        // StringBuilder avoids the String it would allocate
+        // ISO_INSTANT is what Instant#toString uses
         instantBuf.setLength(0);
         DateTimeFormatter.ISO_INSTANT.formatTo(instant, instantBuf);
         int len = instantBuf.length();

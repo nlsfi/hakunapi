@@ -8,9 +8,8 @@ import java.nio.charset.StandardCharsets;
 import tools.jackson.core.io.NumberOutput;
 
 /**
- * The byte[] variants store whole 8-byte words, so they may write up to 18
- * bytes from off (37 for the x, y variant) whatever offset they return. The
- * caller must have that much room, or the full written length if longer.
+ * The byte[] variants store whole 8-byte words and may write up to 18 bytes
+ * from off (37 for x, y) whatever offset they return.
  */
 public class DToA {
 
@@ -38,10 +37,7 @@ public class DToA {
             1000000000000000L
     };
 
-    // Values below SWAR_LIMIT with at most SWAR_MAX_DECIMALS decimals are written
-    // eight digits per 64-bit word (see digits8) instead of a digit at a time.
-    // Every real coordinate qualifies - TM35FIN, ETRS-GKn, EPSG:3857, degrees.
-    // NaN, Infinity and larger values fail the comparison and take the loop path
+    // Outside these the loop path is used; NaN and Infinity fail the comparison
     private static final double SWAR_LIMIT = 1e8;
     private static final int SWAR_MAX_DECIMALS = 8;
 
@@ -50,15 +46,13 @@ public class DToA {
     private static final long ASCII_ZEROS = 0x3030303030303030L;
     private static final long LOW_LANE = 0xFFFFFFFFL;
 
-    // Below CARRY_SAFE_LIMIT an integral part stays under 10^8 even after its
-    // fraction rounds up into it; dtoaMax7 packs two into one word, so there
-    // they must stay below 10^4
+    // Below CARRY_SAFE_LIMIT a rounding carry cannot reach 10^8. dtoaMax7 packs
+    // both integral parts into one word, so they must stay below 10^4
     private static final double CARRY_SAFE_LIMIT = 99_999_999;
     private static final double PACKED_INTEGRAL_LIMIT = 9999;
 
-    // The fraction of a value with at most three decimals, indexed by the
-    // rounded thousandths: '.' and the digits, trailing zeros trimmed, in the low
-    // four bytes and how many of those bytes count in the high half. 0 -> nothing
+    // Indexed by the rounded thousandths: '.' and the trimmed digits in the low
+    // four bytes, their count in the high half. 0 -> nothing
     private static final long[] FRACTION3 = new long[1000];
     static {
         for (int i = 1; i < 1000; i++) {
@@ -114,10 +108,8 @@ public class DToA {
     }
 
     /**
-     * Writes x, separator and y - the same bytes as two dtoa calls, but two
-     * digit groups short enough to share a 64-bit word share one conversion:
-     * both integral parts when below 10^4 (degrees), both fractions when
-     * maxDecimals is at most 4 (metres).
+     * Same bytes as two dtoa calls; both integral parts below 10^4, or both
+     * fractions with maxDecimals at most 4, share one digits8 conversion.
      */
     public static int dtoa(double x, double y, byte separator, byte[] b, int off, int minDecimals, int maxDecimals) {
         if (!(Math.abs(x) < SWAR_LIMIT) || !(Math.abs(y) < SWAR_LIMIT)
@@ -151,7 +143,6 @@ public class DToA {
         boolean packIntegrals = (lx | ly) < 10_000;
         long integrals = packIntegrals ? digits8(lx, ly) : 0;
 
-        // Fraction words hold the first decimal in the lowest byte
         long fractionX;
         long fractionY;
         if (maxDecimals <= 4) {
@@ -180,10 +171,7 @@ public class DToA {
         return fy == 0 ? writeZeroFraction(b, off, minDecimals) : writeFraction8(fractionY, b, off, minDecimals);
     }
 
-    /**
-     * dtoa(v, b, off, 0, 3) - the default metre formatter - with the decimals as
-     * constants and the fraction read from a table.
-     */
+    // dtoa(v, b, off, 0, 3), the default metre formatter
     public static int dtoaMax3(double v, byte[] b, int off) {
         if (!(Math.abs(v) < CARRY_SAFE_LIMIT)) {
             return dtoa(v, b, off, 0, 3);
@@ -191,10 +179,7 @@ public class DToA {
         return writeMax3(v, b, off);
     }
 
-    /**
-     * dtoa(x, y, separator, b, off, 0, 3); two short fractions gain nothing from
-     * sharing a word once each is a single table read.
-     */
+    // dtoa(x, y, separator, b, off, 0, 3); table reads leave nothing to pack
     public static int dtoaMax3(double x, double y, byte separator, byte[] b, int off) {
         if (!(Math.abs(x) < CARRY_SAFE_LIMIT) | !(Math.abs(y) < CARRY_SAFE_LIMIT)) {
             return dtoa(x, y, separator, b, off, 0, 3);
@@ -204,13 +189,12 @@ public class DToA {
         return writeMax3(y, b, off);
     }
 
-    // |v| < CARRY_SAFE_LIMIT, checked by the caller. Kept free of rare branches
-    // and calls: HakunaJsonWriter.writeCoordinate inlines two of these, and C2
-    // only inlines that into a ring loop while its code stays small
+    // |v| < CARRY_SAFE_LIMIT, checked by the caller. Keep this small: C2 inlines
+    // HakunaJsonWriter.writeCoordinate (two of these) into ring loops only while
+    // it compiles under InlineSmallCode (2500 bytes), and it is at ~2470
     private static int writeMax3(double v, byte[] b, int off) {
-        // Branch-free sign: '-' is always stored and kept only when the sign bit
-        // is set. Adding 0.0 turns -0.0 into 0.0 first, so it writes "0" like
-        // the general path (v < 0 is false for -0.0)
+        // Branch-free sign: '-' is stored always, kept only for the sign bit.
+        // + 0.0 turns -0.0 into 0.0, written "0" like the general path
         v += 0.0;
         b[off] = '-';
         off += (int) (Double.doubleToRawLongBits(v) >>> 63);
@@ -227,11 +211,7 @@ public class DToA {
         return off + (int) (fraction >>> 32);
     }
 
-    /**
-     * dtoa(x, y, separator, b, off, 0, 7) - the default degree formatter - with
-     * the decimals as constants; the integral parts always share one word, as
-     * any value outside +-9999 takes the general path.
-     */
+    // dtoa(x, y, separator, b, off, 0, 7), the default degree formatter
     public static int dtoaMax7(double x, double y, byte separator, byte[] b, int off) {
         if (!(Math.abs(x) < PACKED_INTEGRAL_LIMIT) | !(Math.abs(y) < PACKED_INTEGRAL_LIMIT)) {
             return dtoa(x, y, separator, b, off, 0, 7);
@@ -550,11 +530,9 @@ public class DToA {
         return digits8(hi, n - hi * 10_000);
     }
 
-    // The eight decimal digits of hi4 * 10^4 + lo4 (both below 10^4), one per
-    // byte, the most significant in the lowest byte, '0' not yet added.
-    // SWAR: the halves go into 32-bit lanes, each lane splits into 16-bit lanes
-    // of /100 and %100, those into bytes of /10 and %10 - each division by a
-    // constant done as a multiply and shift, in every lane at once
+    // The eight digits of hi4 * 10^4 + lo4 (both below 10^4), one per byte, most
+    // significant in the lowest byte, '0' not added. 32-bit lanes split into
+    // 16-bit lanes of /100 and %100, those into bytes of /10 and %10
     private static long digits8(long hi4, long lo4) {
         long merged = hi4 | (lo4 << 32);
         long top = ((merged * 10486L) >>> 20) & ((0x7FL << 32) | 0x7FL);
