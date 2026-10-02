@@ -46,8 +46,32 @@ public class DToA {
     private static final int SWAR_MAX_DECIMALS = 8;
 
     private static final VarHandle LONG_LE = MethodHandles.byteArrayViewVarHandle(long[].class, ByteOrder.LITTLE_ENDIAN);
+    private static final VarHandle INT_LE = MethodHandles.byteArrayViewVarHandle(int[].class, ByteOrder.LITTLE_ENDIAN);
     private static final long ASCII_ZEROS = 0x3030303030303030L;
     private static final long LOW_LANE = 0xFFFFFFFFL;
+
+    // dtoaMax7 packs both integral parts into one word, so they must stay below
+    // 10^4 even after a fraction rounds up into them
+    private static final double PACKED_INTEGRAL_LIMIT = 9999;
+
+    // The fraction of a value with at most three decimals, indexed by the
+    // rounded thousandths: '.' and the digits, trailing zeros trimmed, in the low
+    // four bytes and how many of those bytes count in the high half. 0 -> nothing
+    private static final long[] FRACTION3 = new long[1000];
+    static {
+        for (int i = 1; i < 1000; i++) {
+            int decimals = 3;
+            for (int v = i; v % 10 == 0; v /= 10) {
+                decimals--;
+            }
+            long ascii = '.';
+            for (int k = 0; k < decimals; k++) {
+                long digit = '0' + i / (int) powerOfTen[2 - k] % 10;
+                ascii |= digit << (8 * (k + 1));
+            }
+            FRACTION3[i] = ascii | ((long) (decimals + 1) << 32);
+        }
+    }
 
     public static int ftoa(float v, byte[] b, int off, int minDecimals, int maxDecimals) {
         if (!(Math.abs(v) < SWAR_LIMIT) || maxDecimals > SWAR_MAX_DECIMALS || minDecimals > maxDecimals) {
@@ -152,6 +176,88 @@ public class DToA {
         }
         off = packIntegrals ? writeIntegral8(integrals & ~LOW_LANE, b, off) : writeIntegral(ly, b, off);
         return fy == 0 ? writeZeroFraction(b, off, minDecimals) : writeFraction8(fractionY, b, off, minDecimals);
+    }
+
+    /**
+     * dtoa(v, b, off, 0, 3) - the default metre formatter - with the decimals as
+     * constants and the fraction read from a table.
+     */
+    public static int dtoaMax3(double v, byte[] b, int off) {
+        if (!(Math.abs(v) < SWAR_LIMIT)) {
+            return dtoa(v, b, off, 0, 3);
+        }
+        if (v < 0) {
+            b[off++] = '-';
+            v = -v;
+        }
+        long l = (long) v;
+        long decimal = (long) ((v - l) * 1000 + 0.5);
+        if (decimal == 1000) {
+            decimal = 0;
+            l++;
+        }
+        off = writeIntegral(l, b, off);
+        long fraction = FRACTION3[(int) decimal];
+        INT_LE.set(b, off, (int) fraction);
+        return off + (int) (fraction >>> 32);
+    }
+
+    /**
+     * dtoa(x, y, separator, b, off, 0, 3); two short fractions gain nothing from
+     * sharing a word once each is a single table read.
+     */
+    public static int dtoaMax3(double x, double y, byte separator, byte[] b, int off) {
+        off = dtoaMax3(x, b, off);
+        b[off++] = separator;
+        return dtoaMax3(y, b, off);
+    }
+
+    /**
+     * dtoa(x, y, separator, b, off, 0, 7) - the default degree formatter - with
+     * the decimals as constants; the integral parts always share one word, as
+     * any value outside +-9999 takes the general path.
+     */
+    public static int dtoaMax7(double x, double y, byte separator, byte[] b, int off) {
+        if (!(Math.abs(x) < PACKED_INTEGRAL_LIMIT) | !(Math.abs(y) < PACKED_INTEGRAL_LIMIT)) {
+            return dtoa(x, y, separator, b, off, 0, 7);
+        }
+        boolean negX = x < 0;
+        boolean negY = y < 0;
+        if (negX) {
+            x = -x;
+        }
+        if (negY) {
+            y = -y;
+        }
+        long lx = (long) x;
+        long fx = (long) ((x - lx) * 10_000_000 + 0.5);
+        if (fx == 10_000_000) {
+            fx = 0;
+            lx++;
+        }
+        long ly = (long) y;
+        long fy = (long) ((y - ly) * 10_000_000 + 0.5);
+        if (fy == 10_000_000) {
+            fy = 0;
+            ly++;
+        }
+        long integrals = digits8(lx, ly);
+        long fractionX = digits8(fx * 10);
+        long fractionY = digits8(fy * 10);
+
+        if (negX) {
+            b[off++] = '-';
+        }
+        off = writeIntegral8(integrals << 32, b, off);
+        if (fx != 0) {
+            off = writeFraction8(fractionX, b, off, 0);
+        }
+        b[off++] = separator;
+        if (negY) {
+            b[off++] = '-';
+        }
+        off = writeIntegral8(integrals & ~LOW_LANE, b, off);
+        return fy == 0 ? off : writeFraction8(fractionY, b, off, 0);
     }
 
     private static int ftoaLoop(float v, byte[] b, int off, int minDecimals, int maxDecimals) {

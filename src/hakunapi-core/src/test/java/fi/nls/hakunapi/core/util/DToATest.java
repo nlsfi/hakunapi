@@ -122,6 +122,28 @@ public class DToATest {
     }
 
     @Test
+    public void testSpecialisedPairsMatchGeneral() {
+        Random r = new Random(4);
+        byte[] expected = new byte[128];
+        byte[] actual = new byte[128];
+        double[] edges = {
+                0.0, -0.0, 0.0005, -0.0005, 0.9995, 0.99999995, 1.0005, 9998.99999995, 9999.0, -9999.0, 10_000.0,
+                99999999.9995, 1e8, -1e8, 6822000.125, 180.0, -180.0,
+                Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 1e19
+        };
+        for (double x : edges) {
+            for (double y : edges) {
+                assertPair(x, y, expected, actual);
+            }
+        }
+        for (int i = 0; i < 1_000_000; i++) {
+            double x = randomOrdinate(r, 3 + (i & 4));
+            double y = randomOrdinate(r, 3 + (i & 4));
+            assertPair(x, y, expected, actual);
+        }
+    }
+
+    @Test
     public void testFitsDocumentedRoom() {
         // Whole-word stores must stay within 18 bytes (37 for x, y), however
         // short the written number - an exactly sized array throws otherwise
@@ -142,6 +164,10 @@ public class DToATest {
         DToA.dtoa(-99999999.99999999, one, 0, 8, 8);
         DToA.dtoa(-0.00000001, one, 0, 0, 8);
         DToA.dtoa(-99999999.99999999, -0.00000001, (byte) ',', two, 0, 0, 8);
+        DToA.dtoaMax3(-99999999.9994, -0.001, (byte) ',', two, 0);
+        DToA.dtoaMax3(-1, -99999999.9994, (byte) ',', two, 0);
+        DToA.dtoaMax3(-99999999.9994, one, 0);
+        DToA.dtoaMax7(-9998.9999999, -0.0000001, (byte) ',', two, 0);
     }
 
     private String format(float f, int minDecimals, int maxDecimals) {
@@ -162,6 +188,18 @@ public class DToATest {
     private String formatBytes(float f, int minDecimals, int maxDecimals) {
         byte[] buf = new byte[64];
         return new String(buf, 0, DToA.ftoa(f, buf, 0, minDecimals, maxDecimals), StandardCharsets.US_ASCII);
+    }
+
+    private void assertPair(double x, double y, byte[] expected, byte[] actual) {
+        int n = DToA.dtoa(x, y, (byte) ',', expected, 0, 0, 3);
+        assertEquals(new String(expected, 0, n, StandardCharsets.US_ASCII),
+                new String(actual, 0, DToA.dtoaMax3(x, y, (byte) ',', actual, 0), StandardCharsets.US_ASCII));
+        n = DToA.dtoa(x, expected, 0, 0, 3);
+        assertEquals(new String(expected, 0, n, StandardCharsets.US_ASCII),
+                new String(actual, 0, DToA.dtoaMax3(x, actual, 0), StandardCharsets.US_ASCII));
+        n = DToA.dtoa(x, y, (byte) ',', expected, 0, 0, 7);
+        assertEquals(new String(expected, 0, n, StandardCharsets.US_ASCII),
+                new String(actual, 0, DToA.dtoaMax7(x, y, (byte) ',', actual, 0), StandardCharsets.US_ASCII));
     }
 
     private double randomOrdinate(Random r, int maxDecimals) {
