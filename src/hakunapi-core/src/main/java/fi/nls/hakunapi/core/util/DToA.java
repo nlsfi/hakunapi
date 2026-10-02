@@ -50,8 +50,10 @@ public class DToA {
     private static final long ASCII_ZEROS = 0x3030303030303030L;
     private static final long LOW_LANE = 0xFFFFFFFFL;
 
-    // dtoaMax7 packs both integral parts into one word, so they must stay below
-    // 10^4 even after a fraction rounds up into them
+    // Below CARRY_SAFE_LIMIT an integral part stays under 10^8 even after its
+    // fraction rounds up into it; dtoaMax7 packs two into one word, so there
+    // they must stay below 10^4
+    private static final double CARRY_SAFE_LIMIT = 99_999_999;
     private static final double PACKED_INTEGRAL_LIMIT = 9999;
 
     // The fraction of a value with at most three decimals, indexed by the
@@ -183,23 +185,10 @@ public class DToA {
      * constants and the fraction read from a table.
      */
     public static int dtoaMax3(double v, byte[] b, int off) {
-        if (!(Math.abs(v) < SWAR_LIMIT)) {
+        if (!(Math.abs(v) < CARRY_SAFE_LIMIT)) {
             return dtoa(v, b, off, 0, 3);
         }
-        if (v < 0) {
-            b[off++] = '-';
-            v = -v;
-        }
-        long l = (long) v;
-        long decimal = (long) ((v - l) * 1000 + 0.5);
-        if (decimal == 1000) {
-            decimal = 0;
-            l++;
-        }
-        off = writeIntegral(l, b, off);
-        long fraction = FRACTION3[(int) decimal];
-        INT_LE.set(b, off, (int) fraction);
-        return off + (int) (fraction >>> 32);
+        return writeMax3(v, b, off);
     }
 
     /**
@@ -207,9 +196,35 @@ public class DToA {
      * sharing a word once each is a single table read.
      */
     public static int dtoaMax3(double x, double y, byte separator, byte[] b, int off) {
-        off = dtoaMax3(x, b, off);
+        if (!(Math.abs(x) < CARRY_SAFE_LIMIT) | !(Math.abs(y) < CARRY_SAFE_LIMIT)) {
+            return dtoa(x, y, separator, b, off, 0, 3);
+        }
+        off = writeMax3(x, b, off);
         b[off++] = separator;
-        return dtoaMax3(y, b, off);
+        return writeMax3(y, b, off);
+    }
+
+    // |v| < CARRY_SAFE_LIMIT, checked by the caller. Kept free of rare branches
+    // and calls: HakunaJsonWriter.writeCoordinate inlines two of these, and C2
+    // only inlines that into a ring loop while its code stays small
+    private static int writeMax3(double v, byte[] b, int off) {
+        // Branch-free sign: '-' is always stored and kept only when the sign bit
+        // is set. Adding 0.0 turns -0.0 into 0.0 first, so it writes "0" like
+        // the general path (v < 0 is false for -0.0)
+        v += 0.0;
+        b[off] = '-';
+        off += (int) (Double.doubleToRawLongBits(v) >>> 63);
+        v = Math.abs(v);
+        long l = (long) v;
+        long decimal = (long) ((v - l) * 1000 + 0.5);
+        if (decimal == 1000) {
+            decimal = 0;
+            l++;
+        }
+        off = writeIntegral8(digits8(l), b, off);
+        long fraction = FRACTION3[(int) decimal];
+        INT_LE.set(b, off, (int) fraction);
+        return off + (int) (fraction >>> 32);
     }
 
     /**
@@ -496,8 +511,9 @@ public class DToA {
 
     // d holds the eight digits of an integer, most significant in the lowest byte
     private static int writeIntegral8(long d, byte[] b, int off) {
-        // Leading zero digits are the low zero bytes, keep at least one digit for 0
-        int lz = Math.min(Long.numberOfTrailingZeros(d) >>> 3, 7);
+        // Leading zero digits are the low zero bytes; the bit set in the last
+        // byte keeps at least one digit for 0
+        int lz = Long.numberOfTrailingZeros(d | (1L << 56)) >>> 3;
         LONG_LE.set(b, off, (d + ASCII_ZEROS) >>> (lz << 3));
         return off + 8 - lz;
     }
@@ -529,7 +545,9 @@ public class DToA {
     }
 
     private static long digits8(long n) {
-        return digits8(n / 10_000, n % 10_000);
+        // n / 10_000 as a multiply and shift, exact for every n below 10^8
+        long hi = (n * 109_951_163L) >>> 40;
+        return digits8(hi, n - hi * 10_000);
     }
 
     // The eight decimal digits of hi4 * 10^4 + lo4 (both below 10^4), one per
