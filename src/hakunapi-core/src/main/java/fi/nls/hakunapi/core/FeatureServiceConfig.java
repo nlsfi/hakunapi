@@ -41,6 +41,7 @@ public abstract class FeatureServiceConfig {
     protected List<SRIDCode> knownSrids;
     protected ServiceTelemetry telemetry = ServiceTelemetry.NOP;
     protected List<Link> additionalLinks;
+    protected List<Link> collectionsAdditionalLinks;
 
     public int getLimitDefault() {
         return limitDefault;
@@ -231,6 +232,14 @@ public abstract class FeatureServiceConfig {
 
     public void setAdditionalLinks(List<Link> additionalLinks) {
         this.additionalLinks = additionalLinks;
+    }
+
+    public List<Link> getCollectionsAdditionalLinks() {
+        return collectionsAdditionalLinks == null ? Collections.emptyList() : collectionsAdditionalLinks;
+    }
+
+    public void setCollectionsAdditionalLinks(List<Link> collectionsAdditionalLinks) {
+        this.collectionsAdditionalLinks = collectionsAdditionalLinks;
     }
 
 }
