@@ -42,4 +42,19 @@ public class HakunaConfigParserTest {
         }
     }
 
+    @Test
+    public void testReadCollectionIdsMissingIsEmpty() {
+        HakunaConfigParser parser = new HakunaConfigParser(new Properties());
+
+        assertArrayEquals(new String[0], parser.readCollectionIds());
+    }
+
+    @Test
+    public void testReadCollectionIds() {
+        Properties cfg = new Properties();
+        cfg.setProperty("collections", "a, b");
+
+        assertArrayEquals(new String[] { "a", "b" }, new HakunaConfigParser(cfg).readCollectionIds());
+    }
+
 }

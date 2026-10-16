@@ -39,7 +39,9 @@ import fi.nls.hakunapi.simple.servlet.jakarta.CatchAllExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.jakarta.CorsFilter;
 import fi.nls.hakunapi.simple.servlet.jakarta.GlobalFQueryParamFilter;
 import fi.nls.hakunapi.simple.servlet.jakarta.GzipFilter;
+import fi.nls.hakunapi.simple.servlet.jakarta.GunzipInterceptor;
 import fi.nls.hakunapi.simple.servlet.jakarta.GzipInterceptor;
+import fi.nls.hakunapi.simple.servlet.jakarta.PreEncodedBytesWriter;
 import fi.nls.hakunapi.simple.servlet.jakarta.NotAcceptableExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.jakarta.NotFoundExceptionMapper;
 import fi.nls.hakunapi.simple.servlet.jakarta.ObjectMapperProvider;
@@ -108,6 +110,8 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         if (Boolean.parseBoolean(parser.get("hakuna.gzip", "true"))) {
             register(GzipFilter.class);
             register(GzipInterceptor.class);
+            register(PreEncodedBytesWriter.class);
+            register(GunzipInterceptor.class);
         }
 
         final OpenAPI30ApiOperation api = new OpenAPI30ApiOperation(service, opToImpl);

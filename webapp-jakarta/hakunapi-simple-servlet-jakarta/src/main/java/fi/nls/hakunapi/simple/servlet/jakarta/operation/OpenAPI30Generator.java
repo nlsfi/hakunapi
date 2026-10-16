@@ -356,6 +356,8 @@ public class OpenAPI30Generator {
             }
         } else if (HTMLContext.class.equals(clazz)) {
             return new StringSchema();
+        } else if (byte[].class.equals(clazz)) {
+            return new StringSchema().format("binary");
         } else {
             Schema<?> contributed = OpenAPISchemaContributors.getSchema(clazz);
             if (contributed != null) {

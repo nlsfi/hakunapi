@@ -310,11 +310,7 @@ public class HakunaConfigParser {
     public String[] readCollectionIds() {
     	String rawCollectionId = get("collections");
     	LOG.info("collectionIds "+rawCollectionId);
-        String[] collectionsIds = getMultiple("collections");
-        if (collectionsIds.length == 0) {
-            throw new IllegalArgumentException("Missing required config property 'collections'");
-        }
-        return collectionsIds;
+        return getMultiple("collections");
     }
 
     public FeatureType readCollection(Path path, Map<String, SimpleSource> sourcesByType, String collectionId) throws Exception {
