@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.nls.hakunapi.core.extension.ApiExtension;
 import fi.nls.hakunapi.core.schemas.ConformanceClasses;
 import fi.nls.hakunapi.core.schemas.FunctionsContent;
 import fi.nls.hakunapi.core.schemas.Link;
@@ -156,6 +157,10 @@ public abstract class FeatureServiceConfig {
     public abstract Collection<FeatureType> getCollections();
 
     public abstract FeatureType getCollection(String name);
+
+    public List<ApiExtension> getApiExtensions() {
+        return List.of();
+    }
 
     public abstract OutputFormat getOutputFormat(String f);
 

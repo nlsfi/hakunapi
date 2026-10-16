@@ -2,6 +2,7 @@ package fi.nls.hakunapi.simple.webapp.jakarta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.ApplicationPath;
@@ -25,6 +26,7 @@ import fi.nls.hakunapi.core.operation.GetFeaturesOperation;
 import fi.nls.hakunapi.core.operation.GetQueryablesOperation;
 import fi.nls.hakunapi.core.operation.GetSchemaOperation;
 import fi.nls.hakunapi.core.operation.LandingPageOperation;
+import fi.nls.hakunapi.core.extension.ApiExtension;
 import fi.nls.hakunapi.core.operation.OperationImpl;
 import fi.nls.hakunapi.core.schemas.CollectionInfo;
 import fi.nls.hakunapi.core.schemas.CollectionsContent;
@@ -85,6 +87,10 @@ public class SimpleFeaturesApplication extends ResourceConfig {
         // Experimental
         opToImpl.add(new OperationImpl(new GetFeaturesOperation(), GetItemsOperation.class));
 
+        for (ApiExtension extension : service.getApiExtensions()) {
+            opToImpl.addAll(extension.getOperations());
+        }
+
         for (OperationImpl p : opToImpl) {
             register(p.implementation);
         }
@@ -117,6 +123,16 @@ public class SimpleFeaturesApplication extends ResourceConfig {
                 bind(api).to(OpenAPI30ApiOperation.class);
                 bind(fParamFilter).to(GlobalFQueryParamFilter.class);
                 bind(cacheManager).to(CacheManager.class);
+                for (ApiExtension extension : service.getApiExtensions()) {
+                    for (Map.Entry<Class<?>, Object> injectable : extension.getInjectables().entrySet()) {
+                        bindInjectable(injectable.getKey(), injectable.getValue());
+                    }
+                }
+            }
+
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            private void bindInjectable(Class<?> type, Object instance) {
+                bind(instance).to((Class) type);
             }
         });
 

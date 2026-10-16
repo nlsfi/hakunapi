@@ -18,6 +18,7 @@ import fi.nls.hakunapi.core.schemas.SpatialExtent;
 import fi.nls.hakunapi.core.schemas.TemporalExtent;
 import fi.nls.hakunapi.core.schemas.Trs;
 import fi.nls.hakunapi.core.util.CrsUtil;
+import fi.nls.hakunapi.core.extension.ApiExtension;
 import fi.nls.hakunapi.core.util.U;
 
 public class CollectionMetadataUtil {
@@ -44,6 +45,11 @@ public class CollectionMetadataUtil {
 
         links.add(getDescribedByLink(headers, service, queryParams, ft));
         links.add(getQueryablesLinks(headers, service, queryParams, ft));
+
+        String baseUrl = service.getCurrentServerURL(headers::getHeaderString);
+        for (ApiExtension extension : service.getApiExtensions()) {
+            links.addAll(extension.getCollectionLinks(ft, baseUrl, queryParams));
+        }
 
         // Add configured additional links
         links.addAll(ft.getAdditionalLinks());

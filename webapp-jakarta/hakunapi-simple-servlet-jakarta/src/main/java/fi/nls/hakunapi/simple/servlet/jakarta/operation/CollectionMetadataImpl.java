@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.extension.ApiExtension;
 import fi.nls.hakunapi.core.schemas.CollectionInfo;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
@@ -31,12 +32,16 @@ public class CollectionMetadataImpl {
             @PathParam("collectionId") String collectionId,
             @Context UriInfo uriInfo,
             @Context HttpHeaders headers) {
-        FeatureType ft = service.getCollection(collectionId);
-        if (ft == null) {
-            throw new NotFoundException("Unknown collection");
-        }
         Map<String, String> queryParams = OperationUtil.getQueryParams(service, uriInfo);
-        return CollectionMetadataUtil.toCollectionInfo(headers, service, ft, queryParams);
+        FeatureType ft = service.getCollection(collectionId);
+        if (ft != null) {
+            return CollectionMetadataUtil.toCollectionInfo(headers, service, ft, queryParams);
+        }
+        CollectionInfo extra = findExtraCollection(headers, collectionId, queryParams);
+        if (extra != null) {
+            return extra;
+        }
+        throw new NotFoundException("Unknown collection");
     }
     
     @GET
@@ -48,6 +53,19 @@ public class CollectionMetadataImpl {
             @Context HttpHeaders headers) {
         String basePath = service.getCurrentServerURL(headers::getHeaderString);
         return new HTMLContext<>(service, basePath, handle(collectionId, uriInfo, headers));
+    }
+
+    private CollectionInfo findExtraCollection(HttpHeaders headers, String collectionId,
+            Map<String, String> queryParams) {
+        String baseUrl = service.getCurrentServerURL(headers::getHeaderString);
+        for (ApiExtension extension : service.getApiExtensions()) {
+            for (CollectionInfo info : extension.getCollections(baseUrl, queryParams)) {
+                if (collectionId.equals(info.getId())) {
+                    return info;
+                }
+            }
+        }
+        return null;
     }
 
 }

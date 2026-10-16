@@ -21,6 +21,7 @@ import fi.nls.hakunapi.core.schemas.CollectionInfo;
 import fi.nls.hakunapi.core.schemas.CollectionsContent;
 import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.util.Links;
+import fi.nls.hakunapi.core.extension.ApiExtension;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
 @Path("/collections")
@@ -54,6 +55,10 @@ public class CollectionsMetadataImpl {
         for (FeatureType ft : service.getCollections()) {
             CollectionInfo info = CollectionMetadataUtil.toCollectionInfo(headers, service, ft, queryParams);
             collections.add(info);
+        }
+        String baseUrl = service.getCurrentServerURL(headers::getHeaderString);
+        for (ApiExtension extension : service.getApiExtensions()) {
+            collections.addAll(extension.getCollections(baseUrl, queryParams));
         }
 
         return new CollectionsContent(links, collections);

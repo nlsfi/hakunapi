@@ -18,6 +18,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.extension.OpenAPISchemaContributors;
 import fi.nls.hakunapi.core.operation.ApiOperation;
 import fi.nls.hakunapi.core.operation.ApiTag;
 import fi.nls.hakunapi.core.operation.DynamicPathOperation;
@@ -355,8 +356,11 @@ public class OpenAPI30Generator {
             }
         } else if (HTMLContext.class.equals(clazz)) {
             return new StringSchema();
-            
         } else {
+            Schema<?> contributed = OpenAPISchemaContributors.getSchema(clazz);
+            if (contributed != null) {
+                return contributed;
+            }
             throw new IllegalArgumentException("Server error");
         }
     }
