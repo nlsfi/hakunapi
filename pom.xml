@@ -81,6 +81,11 @@
 			</dependency>
 			<dependency>
 				<groupId>fi.nls.hakunapi</groupId>
+				<artifactId>hakunapi-tiles-source-vectortile</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fi.nls.hakunapi</groupId>
 				<artifactId>hakunapi-config-test</artifactId>
 				<version>${project.version}</version>
 				<scope>test</scope>
