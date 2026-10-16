@@ -12,12 +12,14 @@ import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.OutputFormat;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.extension.ApiExtension;
 
 public class SimpleFeatureServiceConfig extends FeatureServiceConfig {
 
     private final Map<String, FeatureType> collections;
     private final Map<String, OutputFormat> outputFormats;
     private final Map<String, FilterParser> filterParsers;
+    private List<ApiExtension> apiExtensions = List.of();
 
     public SimpleFeatureServiceConfig(Map<String, FeatureType> collections,
             List<OutputFormat> outputFormats,
@@ -48,6 +50,15 @@ public class SimpleFeatureServiceConfig extends FeatureServiceConfig {
     @Override
     public FeatureType getCollection(String name) {
         return collections.get(name);
+    }
+
+    @Override
+    public List<ApiExtension> getApiExtensions() {
+        return apiExtensions;
+    }
+
+    public void setApiExtensions(List<ApiExtension> apiExtensions) {
+        this.apiExtensions = apiExtensions;
     }
 
     @Override

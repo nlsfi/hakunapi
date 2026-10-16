@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,9 @@ import fi.nls.hakunapi.core.schemas.FunctionsContent;
 import fi.nls.hakunapi.core.telemetry.ServiceTelemetry;
 import fi.nls.hakunapi.core.telemetry.TelemetryConfigParser;
 import fi.nls.hakunapi.core.telemetry.TelemetryProvider;
+import fi.nls.hakunapi.core.extension.ApiExtension;
+import fi.nls.hakunapi.core.extension.ApiExtensionContext;
+import fi.nls.hakunapi.core.extension.ApiExtensionFactory;
 import fi.nls.hakunapi.core.util.PropertyUtil;
 import fi.nls.hakunapi.cql2.function.CQL2Functions;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
@@ -111,6 +115,8 @@ public class HakunaContextListener implements ServletContextListener {
                 collections.put(collectionId, ft);
             }
 
+            List<ApiExtension> extensions = loadApiExtensions(parser, configPath, collections);
+
             List<ConformanceClass> conformsTo = new ArrayList<>();
             conformsTo.add(ConformanceClass.Core);
             conformsTo.add(ConformanceClass.OpenAPI30);
@@ -134,6 +140,13 @@ public class HakunaContextListener implements ServletContextListener {
             conformsTo.add(ConformanceClass.SPATIAL_FUNCTIONS);
             conformsTo.add(ConformanceClass.FUNCTIONS);
 
+            for (ApiExtension extension : extensions) {
+                List<ConformanceClass> extensionClasses = extension.getConformanceClasses();
+                LOG.info("API extension {} conforms to {}", extension.getName(), extensionClasses);
+                conformsTo.addAll(extensionClasses);
+            }
+
+
             List<OutputFormat> outputFormats = getOutputFormats(parser);
 
             List<FilterParser> filterParsers = Arrays.asList(CQL2Text.INSTANCE);
@@ -141,6 +154,7 @@ public class HakunaContextListener implements ServletContextListener {
             FunctionsContent functionsMetadata = CQL2Functions.INSTANCE.toFunctionsMetadata();
 
             SimpleFeatureServiceConfig service = new SimpleFeatureServiceConfig(collections, outputFormats, filterParsers);
+            service.setApiExtensions(extensions);
             service.setInfo(info);
             service.setServers(servers);
             service.setAdditionalLinks(parser.readAdditionalLinks());
@@ -225,6 +239,24 @@ public class HakunaContextListener implements ServletContextListener {
                         + " which is missing from the global 'srid' property");
             }
         }
+    }
+
+    private List<ApiExtension> loadApiExtensions(HakunaConfigParser config, Path configPath,
+            Map<String, FeatureType> collections) throws Exception {
+        ApiExtensionContext context = new ApiExtensionContext(config, configPath, collections);
+        List<ApiExtension> extensions = new ArrayList<>();
+        for (ApiExtensionFactory factory : ServiceLoader.load(ApiExtensionFactory.class)) {
+            // ServiceLoader gives no order; a null result means nothing is configured for the factory
+            ApiExtension extension = factory.create(context);
+            if (extension == null) {
+                LOG.info("API extension factory {} published nothing", factory.getClass().getName());
+                continue;
+            }
+            // registered before the next factory runs so a later throw still closes earlier ones
+            toClose.add(extension);
+            extensions.add(extension);
+        }
+        return extensions;
     }
 
 	private static List<SRIDCode> getKnownSrids(Properties p, HakunaConfigParser config) {

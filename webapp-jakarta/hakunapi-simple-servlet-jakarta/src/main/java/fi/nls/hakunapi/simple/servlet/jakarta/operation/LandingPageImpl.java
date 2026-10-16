@@ -1,5 +1,9 @@
 package fi.nls.hakunapi.simple.servlet.jakarta.operation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -10,7 +14,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.extension.ApiExtension;
+import fi.nls.hakunapi.core.schemas.Link;
 import fi.nls.hakunapi.core.schemas.Root;
+import fi.nls.hakunapi.core.util.U;
 import fi.nls.hakunapi.html.model.HTMLContext;
 
 @Path("/")
@@ -36,8 +43,14 @@ public class LandingPageImpl {
         String title = service.getTitle();
         String description = service.getDescription();
         String url = service.getCurrentServerURL(headers::getHeaderString);
-        String query = OperationUtil.getQuery(service, uriInfo);
-        
+        Map<String, String> queryParams = OperationUtil.getQueryParams(service, uriInfo);
+        String query = U.toQuery(queryParams);
+
+        List<Link> additionalLinks = new ArrayList<>(service.getAdditionalLinks());
+        for (ApiExtension extension : service.getApiExtensions()) {
+            additionalLinks.addAll(extension.getLandingPageLinks(url, queryParams));
+        }
+
         return new Root.Builder(title, description, url, query, contentType)
                 .alternate(alternateContentType)
                 .api("application/vnd.oai.openapi+json;version=3.0")
@@ -45,7 +58,7 @@ public class LandingPageImpl {
                 .collections(MediaType.TEXT_HTML)
                 .conformance(MediaType.APPLICATION_JSON)
                 .conformance(MediaType.TEXT_HTML)
-                .additionalLinks(service.getAdditionalLinks())
+                .additionalLinks(additionalLinks)
                 .build();
     }
 
