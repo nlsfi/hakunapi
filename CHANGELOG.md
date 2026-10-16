@@ -4,6 +4,7 @@
 
 ### Functional changes
 
+- An unknown `crs`, `bbox-crs` or `filter-crs` SRID returns 400 instead of 500, and a collection `srid` missing from the global `srid` fails startup with a message naming both.
 - Fixed CSV output (`f=csv`) failing with a NullPointerException on the first geometry or floating-point value: no number formatter was ever set. CSV now uses the GeoJSON defaults: coordinates with 3 decimals for metres and 7 for degrees, double properties with up to 8 and float properties with up to 5.
 - New community module `hakunapi-bytes` (Java 22+): a shared byte access layer for file-backed sources, covering local files (pread, or mmap or a whole-file in-memory copy as an opt-in) and HTTP Range with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive with random access, locally or over HTTP, and opens a location written in GDAL's `/vsizip/` / `/vsicurl/` syntax. No source uses it yet. It is built only on a 22+ JDK, via the new `ffm` profile in `src-community/pom.xml`.
 - GeoJSON date and timestamp properties are written straight into the output buffer instead of via an intermediate `String`, cutting ~17% off the write time of a date-bearing feature collection. Output bytes are unchanged.
@@ -24,6 +25,7 @@ For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
 - **Oracle source removed.** Modules `hakunapi-source-oracle` and `hakunapi-oracle-webapp-jakarta` dropped. Users needing Oracle Spatial data sources should pin hakunapi ≤ 1.x or maintain the module out-of-tree.
 - **OpenTelemetry removed.** Modules `hakunapi-telemetry-opentelemetry` and `hakunapi-telemetry-webapp-jakarta` dropped. The `hakunapi-telemetry` JSON-log mode and NOP telemetry remain available; the `ServiceTelemetry`/`RequestTelemetry`/`TelemetryFactory` SPI in `hakunapi-core` is unchanged.
 - **Community modules moved and unbundled.** Modules `hakunapi-smile`, `hakunapi-esbulk`, `hakunapi-gml` and `hakunapi-proj-jhe` moved from `src/` to the new `src-community/` folder and are no longer bundled in the reference `features.war` (`hakunapi-simple-webapp-jakarta`). Maven coordinates and Java packages are unchanged, and versions are still managed by the root POM. Deployments that enable `formats=...,smile` or `formats=...,esbulk`, or select the projection factory `fi.nls.hakunapi.proj.jhe.JHeProjectionTransformerFactory` via the `proj` configuration key, must now add the corresponding dependency to their own webapp and rebuild. `hakunapi-proj-gt` remains the bundled default for coordinate transformations. See [CONTRIBUTING.md](CONTRIBUTING.md#community-modules).
+- **Global `srid` must list every collection SRID.** The global `srid` property is the CRS registry, and every SRID in `collections.<x>.srid` or `default.collections.srid` must be found in it. Otherwise a request using that CRS failed with HTTP 500. Add the missing SRIDs to the global `srid` list.
 
 ### Functional changes
 
