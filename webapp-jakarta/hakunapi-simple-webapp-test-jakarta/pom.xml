@@ -46,6 +46,12 @@
 		</dependency>
 		<dependency>
 			<groupId>fi.nls.hakunapi</groupId>
+			<artifactId>hakunapi-tiles-source-vectortile</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fi.nls.hakunapi</groupId>
 			<artifactId>hakunapi-simple-webapp-jakarta</artifactId>
 			<classifier>classes</classifier>
 			<version>${project.version}</version>

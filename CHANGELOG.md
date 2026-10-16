@@ -19,6 +19,7 @@
 - New community module `hakunapi-tiles-servlet-jakarta`: serves OGC API - Tiles (tile matrix sets, vector tilesets and tiles of a collection or the dataset, map tilesets and tiles) through an `ApiExtensionFactory`, so it is enabled by being on the classpath and publishes nothing when no tile layer is configured. No tile source implements the SPIs yet.
 - `hakunapi-simple-servlet-jakarta` supports pre-encoded responses: an entity of `PreEncodedBytes` or `PreEncodedOutput` is sent as is, skipped by the gzip interceptor, and `byte[]` is described as a binary string in OpenAPI.
 - A service no longer needs a `collections` property: with none, it starts as a collectionless service, serving the common conformance classes and whatever API extensions publish.
+- New community module `hakunapi-tiles-source-vectortile`: a `VectorTileSource` that renders Mapbox Vector Tiles in-JVM from the configured feature collections, one layer per collection, with no new third-party dependencies. Not part of the reference webapp.
 
 ## 2.0.0
 

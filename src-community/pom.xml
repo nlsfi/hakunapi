@@ -16,6 +16,7 @@
 		<module>hakunapi-esbulk</module>
 		<module>hakunapi-tiles-core</module>
 		<module>hakunapi-tiles-servlet-jakarta</module>
+		<module>hakunapi-tiles-source-vectortile</module>
 	</modules>
 
 	<profiles>
