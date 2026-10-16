@@ -20,7 +20,7 @@ public class HakunaGeometryGPKG implements WKBBacked {
     public final int dataStart;
     public final int type;
     public final int dimension;
-    public final int srid;
+    public int srid;
 
     public HakunaGeometryGPKG(byte[] b) {
         this(ByteBuffer.wrap(b));
@@ -259,6 +259,12 @@ public class HakunaGeometryGPKG implements WKBBacked {
     @Override
     public int getSrid() {
         return srid;
+    }
+
+    @Override
+    public void setSrid(int srid) {
+        this.srid = srid;
+        bb.duplicate().order(GPKGGeometry.getByteOrder(bb.get(3))).putInt(4, srid);
     }
 
     @Override

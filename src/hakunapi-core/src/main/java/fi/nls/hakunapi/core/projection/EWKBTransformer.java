@@ -25,6 +25,7 @@ public class EWKBTransformer {
         bb.order(src.order());
         bb.position(geom.getDataStart());
         reprojectEWKBGeometry2d(bb, geom.getGeometryType());
+        geom.setSrid(t.getToSRID());
     }
 
     public void transformEWKB(byte[] ewkb) throws Exception {

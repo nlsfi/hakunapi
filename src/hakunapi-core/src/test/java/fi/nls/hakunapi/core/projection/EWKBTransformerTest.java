@@ -184,7 +184,8 @@ public class EWKBTransformerTest {
 
             byte[] headerAfter = new byte[envelopeBytes];
             System.arraycopy(blob, 0, headerAfter, 0, envelopeBytes);
-            assertArrayEquals(msg + " header untouched", headerBefore, headerAfter);
+            ByteBuffer.wrap(headerBefore, 4, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(3857);
+            assertArrayEquals(msg + " header differs only by srid", headerBefore, headerAfter);
 
             assertStructureAndCoordinates(bare.toNavigable(), geom.toNavigable(), msg);
         }
@@ -199,6 +200,35 @@ public class EWKBTransformerTest {
         ByteBuffer.wrap(blob, 4, 4).order(ByteOrder.LITTLE_ENDIAN).putInt(3067);
         System.arraycopy(body, 0, blob, headerBytes, body.length);
         return blob;
+    }
+
+    @Test public void transformReportsTargetSridInFieldBytesAndWriter() throws Exception {
+        for (int order : new int[] { ByteOrderValues.BIG_ENDIAN, ByteOrderValues.LITTLE_ENDIAN }) {
+            Geometry jts = g("LINESTRING(30 10, 10 30)");
+            jts.setSRID(3067);
+            byte[] ewkb = new WKBWriter(2, order, true).write(jts);
+            HakunaGeometryEWKB geom = new HakunaGeometryEWKB(ewkb);
+
+            new EWKBTransformer(SHIFT).transform(geom);
+
+            assertEquals(3857, geom.getSrid());
+            assertEquals(3857, new HakunaGeometryEWKB(ewkb).getSrid());
+            int[] written = new int[1];
+            geom.write(new fi.nls.hakunapi.core.GeometryWriter() {
+                @Override public void init(fi.nls.hakunapi.core.geom.HakunaGeometryType type, int srid, int dimension) { written[0] = srid; }
+                @Override public void end() { }
+                @Override public void writeCoordinate(double x, double y) { }
+                @Override public void writeCoordinate(double x, double y, double z) { }
+                @Override public void writeCoordinate(double x, double y, double z, double m) { }
+                @Override public void startRing() { }
+                @Override public void endRing() { }
+            });
+            assertEquals(3857, written[0]);
+        }
+
+        HakunaGeometryEWKB noSrid = new HakunaGeometryEWKB(new WKBWriter(2, ByteOrderValues.LITTLE_ENDIAN).write(g("POINT(1 2)")));
+        new EWKBTransformer(SHIFT).transform(noSrid);
+        assertEquals(3857, noSrid.getSrid());
     }
 
     @Test public void rejectsNon2dGeometry() throws Exception {
@@ -232,6 +262,7 @@ public class EWKBTransformerTest {
         @Override public int getDataStart() { return dataStart; }
         @Override public int getGeometryType() { return type; }
         @Override public int getDimension() { return 2; }
+        @Override public void setSrid(int srid) { bb.order(ByteOrder.LITTLE_ENDIAN).putInt(4, srid); }
 
         @Override public byte[] toEWKB() { throw new UnsupportedOperationException(); }
         @Override public Geometry toJTSGeometry() { throw new UnsupportedOperationException(); }
