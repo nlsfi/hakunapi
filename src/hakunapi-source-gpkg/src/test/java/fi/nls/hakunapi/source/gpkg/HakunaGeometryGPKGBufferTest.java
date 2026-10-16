@@ -11,7 +11,11 @@ import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.WKTReader;
 
+import fi.nls.hakunapi.core.GeometryWriter;
 import fi.nls.hakunapi.core.geom.HakunaGeometryFactory;
+import fi.nls.hakunapi.core.geom.HakunaGeometryType;
+import fi.nls.hakunapi.core.projection.EWKBTransformer;
+import fi.nls.hakunapi.core.projection.ProjectionTransformer;
 import fi.nls.hakunapi.gpkg.GPKGGeometry;
 
 public class HakunaGeometryGPKGBufferTest {
@@ -69,6 +73,33 @@ public class HakunaGeometryGPKGBufferTest {
 
         assertEquals(heap.toJTSGeometry(), direct.toJTSGeometry());
         assertEquals(heap.boundedBy(), direct.boundedBy());
+    }
+
+    @Test
+    public void transformReportsTargetSridInFieldHeaderAndWriter() throws Exception {
+        for (boolean direct : new boolean[] { false, true }) {
+            HakunaGeometryGPKG g = gpkg(WKT, direct);
+            new EWKBTransformer(new ProjectionTransformer() {
+                @Override public int getDimension() { return 2; }
+                @Override public void transformInPlace(double[] coords, int off, int n) { }
+                @Override public int getFromSRID() { return SRID; }
+                @Override public int getToSRID() { return 3857; }
+            }).transform(g);
+
+            assertEquals(3857, g.getSrid());
+            assertEquals(3857, new HakunaGeometryGPKG(g.getBuffer().duplicate().position(0)).getSrid());
+            int[] written = new int[1];
+            g.write(new GeometryWriter() {
+                @Override public void init(HakunaGeometryType type, int srid, int dimension) { written[0] = srid; }
+                @Override public void end() { }
+                @Override public void writeCoordinate(double x, double y) { }
+                @Override public void writeCoordinate(double x, double y, double z) { }
+                @Override public void writeCoordinate(double x, double y, double z, double m) { }
+                @Override public void startRing() { }
+                @Override public void endRing() { }
+            });
+            assertEquals(3857, written[0]);
+        }
     }
 
     private HakunaGeometryGPKG gpkg(String wkt, boolean direct) throws Exception {

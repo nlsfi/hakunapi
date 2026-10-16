@@ -16,6 +16,8 @@ public interface WKBBacked extends HakunaGeometry {
     @Override
     public int getDimension();
 
+    public void setSrid(int srid);
+
     @Override
     public default NavigableHakunaGeometry toNavigable() {
         return new NavigableEWKB(this);

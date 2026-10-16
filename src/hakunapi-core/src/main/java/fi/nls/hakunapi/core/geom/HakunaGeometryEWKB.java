@@ -29,7 +29,7 @@ public class HakunaGeometryEWKB implements WKBBacked {
     public final boolean hasZ;
     public final boolean hasM;
     public final boolean hasSrid;
-    public final int srid;
+    public int srid;
 
     public HakunaGeometryEWKB(byte[] b) {
         this(ByteBuffer.wrap(b));
@@ -262,6 +262,14 @@ public class HakunaGeometryEWKB implements WKBBacked {
     @Override
     public int getSrid() {
         return srid;
+    }
+
+    @Override
+    public void setSrid(int srid) {
+        this.srid = srid;
+        if (hasSrid) {
+            bb.duplicate().order(bb.get(0) == 0 ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN).putInt(5, srid);
+        }
     }
 
     public static int getType(byte[] wkb) {
