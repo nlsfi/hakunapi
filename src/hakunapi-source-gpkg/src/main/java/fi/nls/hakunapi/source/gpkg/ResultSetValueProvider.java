@@ -1,5 +1,6 @@
 package fi.nls.hakunapi.source.gpkg;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.ResultSet;
@@ -19,15 +20,27 @@ public class ResultSetValueProvider implements ValueProvider {
 
     private final ResultSet rs;
     private final int numCols;
+    private final SqliteBlobReader blobReader;
+    private final SqliteColumnType columnType;
 
     public ResultSetValueProvider(ResultSet rs, int numCols) {
-        this.rs = rs;
-        this.numCols = numCols;
+        this(rs, numCols, null);
     }
 
+    public ResultSetValueProvider(ResultSet rs, int numCols, SqliteBlobReader blobReader) {
+        this.rs = rs;
+        this.numCols = numCols;
+        this.blobReader = blobReader;
+        this.columnType = SqliteColumnType.of(rs);
+    }
+
+    // column_type is zero-based, JDBC one-based
     @Override
     public boolean isNull(int i) {
         try {
+            if (columnType != null) {
+                return columnType.isNull(i);
+            }
             return rs.getObject(i + 1) == null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -207,6 +220,10 @@ public class ResultSetValueProvider implements ValueProvider {
     @Override
     public HakunaGeometry getHakunaGeometry(int i) {
         try {
+            if (blobReader != null) {
+                ByteBuffer bb = blobReader.read(i);
+                return bb == null ? null : new HakunaGeometryGPKG(bb);
+            }
             byte[] blob = rs.getBytes(i + 1);
             if (blob == null) {
                 return null;
