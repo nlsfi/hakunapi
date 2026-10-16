@@ -283,6 +283,12 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 
 [`hakunapi-bytes`](../../src-community/hakunapi-bytes/README.md) *(community module)* is a shared layer through which file-backed sources read their bytes: a local file (pread by default, mmap or read whole into memory opt-in) or a remote one over HTTP Range requests, with a shared block cache and adaptive read-ahead. It also reads an entry of a SOZip (seek-optimized ZIP) archive in its uncompressed form, with random access, over either. Reads copy into a buffer the caller owns; a memory-mapped or in-memory file additionally offers zero-copy access. No source uses it yet. It requires Java 22+ (the FFM API) and is built only on a 22+ JDK; its only dependency is `slf4j-api`.
 
+## OGC API - Tiles (community)
+
+[`hakunapi-tiles-core`](../../src-community/hakunapi-tiles-core/README.md) *(community module)* holds the OGC API - Tiles model, the `tiles.*` configuration parsing and the `VectorTileSource` and `MapTileSource` extension points.
+
+[`hakunapi-tiles-servlet-jakarta`](../../src-community/hakunapi-tiles-servlet-jakarta/README.md) *(community module)* serves the tiles over HTTP. It plugs into `hakunapi-simple-servlet-jakarta` through the `ApiExtensionFactory` extension point, so it is enabled by being on the classpath, and publishes nothing when no tile layer is configured. It depends on `hakunapi-tiles-core`, `hakunapi-simple-servlet-jakarta`, `swagger-models` and `slf4j-api`.
+
 ## Output data formats (stable)
 
 ### GeoJSON

@@ -15,6 +15,7 @@
 		<module>hakunapi-smile</module>
 		<module>hakunapi-esbulk</module>
 		<module>hakunapi-tiles-core</module>
+		<module>hakunapi-tiles-servlet-jakarta</module>
 	</modules>
 
 	<profiles>

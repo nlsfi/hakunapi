@@ -21,7 +21,10 @@ public class GzipInterceptor implements WriterInterceptor {
     public void aroundWriteTo(WriterInterceptorContext context)
             throws IOException, WebApplicationException {
         String contentEncoding = (String) context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
-        if ("gzip".equals(contentEncoding)) {
+        Object entity = context.getEntity();
+        boolean alreadyEncoded = entity instanceof PreEncodedOutput
+                || entity instanceof PreEncodedBytes;
+        if ("gzip".equals(contentEncoding) && !alreadyEncoded) {
             context.setOutputStream(new GzipOutputStream(context.getOutputStream(), new Deflater(5, true), 8192));
         }
         context.proceed();

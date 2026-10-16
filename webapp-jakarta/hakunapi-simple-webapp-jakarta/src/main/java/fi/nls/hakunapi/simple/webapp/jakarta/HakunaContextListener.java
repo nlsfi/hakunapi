@@ -116,29 +116,40 @@ public class HakunaContextListener implements ServletContextListener {
             }
 
             List<ApiExtension> extensions = loadApiExtensions(parser, configPath, collections);
+            if (collections.isEmpty() && extensions.isEmpty()) {
+                LOG.warn("No collections configured and no API extension published anything");
+            }
 
             List<ConformanceClass> conformsTo = new ArrayList<>();
-            conformsTo.add(ConformanceClass.Core);
-            conformsTo.add(ConformanceClass.OpenAPI30);
-            conformsTo.add(ConformanceClass.GeoJSON);
-            conformsTo.add(ConformanceClass.HTML);
-            conformsTo.add(ConformanceClass.CRS);
-            conformsTo.add(ConformanceClass.GPKG);
+            conformsTo.add(ConformanceClass.COMMON_CORE);
+            conformsTo.add(ConformanceClass.COMMON_JSON);
+            conformsTo.add(ConformanceClass.COMMON_HTML);
+            conformsTo.add(ConformanceClass.COMMON_OAS30);
+            conformsTo.add(ConformanceClass.COMMON_COLLECTIONS);
 
-            conformsTo.add(ConformanceClass.QUERYABLES);
-            conformsTo.add(ConformanceClass.QUERYABLES_QUERY_PARAMETERS);
-            conformsTo.add(ConformanceClass.FILTER);
-            conformsTo.add(ConformanceClass.FEATURES_FILTER);
+            if (!collections.isEmpty()) {
+                conformsTo.add(ConformanceClass.Core);
+                conformsTo.add(ConformanceClass.OpenAPI30);
+                conformsTo.add(ConformanceClass.GeoJSON);
+                conformsTo.add(ConformanceClass.HTML);
+                conformsTo.add(ConformanceClass.CRS);
+                conformsTo.add(ConformanceClass.GPKG);
 
-            conformsTo.add(ConformanceClass.CQL2_TEXT);
-            // conformsTo.add(ConformanceClass.CQL2_JSON_ENCODING);
-            conformsTo.add(ConformanceClass.BASIC_CQL2);
-            conformsTo.add(ConformanceClass.ADVANCED_COMPARISON_OPERATORS);
-            conformsTo.add(ConformanceClass.CASE_INSENSITIVE_COMPARISON);
-            conformsTo.add(ConformanceClass.BASIC_SPATIAL_FUNCTIONS);
-            conformsTo.add(ConformanceClass.BAISC_SPATIAL_FUNCTIONS_PLUS);
-            conformsTo.add(ConformanceClass.SPATIAL_FUNCTIONS);
-            conformsTo.add(ConformanceClass.FUNCTIONS);
+                conformsTo.add(ConformanceClass.QUERYABLES);
+                conformsTo.add(ConformanceClass.QUERYABLES_QUERY_PARAMETERS);
+                conformsTo.add(ConformanceClass.FILTER);
+                conformsTo.add(ConformanceClass.FEATURES_FILTER);
+
+                conformsTo.add(ConformanceClass.CQL2_TEXT);
+                // conformsTo.add(ConformanceClass.CQL2_JSON_ENCODING);
+                conformsTo.add(ConformanceClass.BASIC_CQL2);
+                conformsTo.add(ConformanceClass.ADVANCED_COMPARISON_OPERATORS);
+                conformsTo.add(ConformanceClass.CASE_INSENSITIVE_COMPARISON);
+                conformsTo.add(ConformanceClass.BASIC_SPATIAL_FUNCTIONS);
+                conformsTo.add(ConformanceClass.BAISC_SPATIAL_FUNCTIONS_PLUS);
+                conformsTo.add(ConformanceClass.SPATIAL_FUNCTIONS);
+                conformsTo.add(ConformanceClass.FUNCTIONS);
+            }
 
             for (ApiExtension extension : extensions) {
                 List<ConformanceClass> extensionClasses = extension.getConformanceClasses();

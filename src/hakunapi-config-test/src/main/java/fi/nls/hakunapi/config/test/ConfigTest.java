@@ -108,6 +108,9 @@ public class ConfigTest {
         if (verbose) {
             System.out.println("collectionIds :" + Arrays.toString(collectionIds));
         }
+        if (collectionIds.length == 0) {
+            System.err.println("WARNING: no collections configured");
+        }
         for (String id : collectionIds) {
             try {
                 if (verbose) {

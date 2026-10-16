@@ -1,5 +1,9 @@
 package fi.nls.hakunapi.simple.servlet.jakarta.operation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -13,17 +17,34 @@ import jakarta.ws.rs.core.UriInfo;
 
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FeatureServiceConfig;
+import fi.nls.hakunapi.core.operation.DynamicPathOperation;
+import fi.nls.hakunapi.core.param.APIParam;
 import fi.nls.hakunapi.core.property.HakunaProperty;
 import fi.nls.hakunapi.core.schemas.Queryables;
 import fi.nls.hakunapi.html.model.HTMLContext;
 import fi.nls.hakunapi.simple.servlet.jakarta.MediaTypes;
 
 @Path("/collections/{collectionId}/queryables")
-public class GetCollectionQueryablesImpl {
+public class GetCollectionQueryablesImpl implements DynamicPathOperation {
 
 
     @Inject
     private FeatureServiceConfig service;
+
+    @Override
+    public List<String> getValidPaths(FeatureServiceConfig service) {
+        Collection<FeatureType> collections = service.getCollections();
+        List<String> paths = new ArrayList<>(collections.size());
+        for (FeatureType collection : collections) {
+            paths.add("/collections/" + collection.getName() + "/queryables");
+        }
+        return paths;
+    }
+
+    @Override
+    public List<? extends APIParam> getParameters(String path, FeatureServiceConfig service) {
+        return List.of();
+    }
 
     @GET
     @Produces(MediaTypes.APPLICATION_SCHEMA)

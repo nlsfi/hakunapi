@@ -5,6 +5,13 @@ import java.util.Map;
 
 public enum ConformanceClass {
 	
+    // OGC API - Common
+    COMMON_CORE("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core"),
+    COMMON_JSON("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json"),
+    COMMON_HTML("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html"),
+    COMMON_OAS30("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30"),
+    COMMON_COLLECTIONS("http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections"),
+
 	// OGC API - Features - Part 1: Core
     Core("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core"),
     OpenAPI30("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30"),
