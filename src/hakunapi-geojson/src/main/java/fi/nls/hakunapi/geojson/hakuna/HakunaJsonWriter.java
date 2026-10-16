@@ -3,10 +3,14 @@ package fi.nls.hakunapi.geojson.hakuna;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import tools.jackson.core.io.NumberOutput;
 
 import fi.nls.hakunapi.core.FloatingPointFormatter;
+import fi.nls.hakunapi.core.util.LocalDateOutput;
 import fi.nls.hakunapi.core.util.UTF8;
 
 public class HakunaJsonWriter implements AutoCloseable, Flushable {
@@ -50,6 +54,9 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     private static final int STATE_OBJ_VALUE = 2;
     private static final int STATE_INIT = 3;
 
+    // Instant.MAX renders as "+1000000000-12-31T23:59:59.999999999Z"
+    private static final int INSTANT_MAX_LEN = 37;
+
     private final OutputStream out;
     private final FloatingPointFormatter numberPropertyFormatter;
 
@@ -60,6 +67,9 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
     private long stack;
     private boolean comma;
 
+    // Reused by writeInstant, which cannot format straight into buf
+    private final StringBuilder instantBuf;
+
     public HakunaJsonWriter(OutputStream out, FloatingPointFormatter formatter) {
         this.out = out;
         this.numberPropertyFormatter = formatter;
@@ -68,6 +78,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         this.state = STATE_INIT;
         this.stack = state;
         this.comma = false;
+        this.instantBuf = new StringBuilder(INSTANT_MAX_LEN);
     }
 
     public boolean insideArray() {
@@ -402,6 +413,59 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
+    public void writeLocalDate(LocalDate date) throws IOException {
+        switch (state) {
+        case STATE_ARRAY:
+            if (pos >= FLUSH_AT) {
+                flush();
+            }
+            if (comma) {
+                buf[pos++] = COMMA;
+            }
+        case STATE_OBJ_VALUE:
+            if (pos >= FLUSH_AT) {
+                flush();
+            }
+            buf[pos++] = QUOTE;
+            pos = LocalDateOutput.outputLocalDate(date, buf, pos);
+            buf[pos++] = QUOTE;
+            comma = true;
+            state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
+            break;
+        default:
+            throw new IllegalStateException();
+        }
+    }
+
+    public void writeInstant(Instant instant) throws IOException {
+        // ISO_INSTANT is what Instant#toString uses
+        instantBuf.setLength(0);
+        DateTimeFormatter.ISO_INSTANT.formatTo(instant, instantBuf);
+        int len = instantBuf.length();
+
+        switch (state) {
+        case STATE_ARRAY:
+            if (pos >= FLUSH_AT) {
+                flush();
+            }
+            if (comma) {
+                buf[pos++] = COMMA;
+            }
+        case STATE_OBJ_VALUE:
+            if (pos >= FLUSH_AT) {
+                flush();
+            }
+            buf[pos++] = QUOTE;
+            writeASCII(instantBuf, len);
+            buf[pos++] = QUOTE;
+            comma = true;
+            state >>>= 1; // STATE_ARRAY => STATE_ARRAY, STATE_OBJ_VALUE => STATE_OBJ_KEY
+            break;
+        default:
+            throw new IllegalStateException();
+        }
+    }
+
     public void writeCoordinate(double x, double y) throws IOException {
         writeCoordinate(x, y, numberPropertyFormatter);
     }
@@ -413,9 +477,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
+        pos = f.writeOrdinates(x, y, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
@@ -432,11 +494,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(z, buf, pos);
+        pos = f.writeOrdinates(x, y, z, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
@@ -453,13 +511,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
             buf[pos++] = COMMA;
         }
         buf[pos++] = START_ARR;
-        pos = f.writeOrdinate(x, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(y, buf, pos);
-        buf[pos++] = COMMA;
-        pos = f.writeOrdinate(z, buf, pos);
-        buf[pos++] = COMMA;
-        pos = numberPropertyFormatter.writeOrdinate(m, buf, pos);
+        pos = f.writeOrdinates(x, y, z, m, COMMA, buf, pos);
         buf[pos++] = END_ARR;
         comma = true;
         state = (int) (stack & 1L);
@@ -542,7 +594,7 @@ public class HakunaJsonWriter implements AutoCloseable, Flushable {
         }
     }
 
-    protected void writeASCII(String s, int len) {
+    protected void writeASCII(CharSequence s, int len) {
         for (int i = 0; i < len; i++) {
             buf[pos++] = (byte) s.charAt(i);
         }
