@@ -20,6 +20,7 @@
 - `hakunapi-simple-servlet-jakarta` supports pre-encoded responses: an entity of `PreEncodedBytes` or `PreEncodedOutput` is sent as is, skipped by the gzip interceptor, and `byte[]` is described as a binary string in OpenAPI.
 - A service no longer needs a `collections` property: with none, it starts as a collectionless service, serving the common conformance classes and whatever API extensions publish.
 - New community module `hakunapi-tiles-source-vectortile`: a `VectorTileSource` that renders Mapbox Vector Tiles in-JVM from the configured feature collections, one layer per collection, with no new third-party dependencies. Not part of the reference webapp.
+- New community module `hakunapi-tiles-source-gpkg`: a `MapTileSource` and a `VectorTileSource` serving the tiles stored in a GeoPackage tile pyramid, read through `sqlite-jdbc`. Not part of the reference webapp.
 
 ## 2.0.0
 
