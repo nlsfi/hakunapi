@@ -14,6 +14,7 @@
 - `FloatingPointFormatter` has new default `writeOrdinates` methods that format a coordinate's 2-4 ordinates in one call. `DefaultFloatingPointFormatter` uses them to convert two short digit groups at once (both integral parts in degrees, both fractions in metres). The default metre (0-3 decimals) and degree (0-7 decimals) settings take specialised paths, metres with the fraction read from a table. Existing implementations keep working unchanged. Callers of the `byte[]` methods must leave room for the widest value, not just the bytes written: `DefaultFloatingPointFormatter` now stores whole 8-byte words and may write up to 18 bytes from the offset (37 for an x, y pair) whatever offset it returns. All writers in this repository already reserve more than that.
 - JSON-FG: the m ordinate of a 4D `geometry` (CRS84) is now written with the degree formatter like x, y and z. When `place` was in a projected CRS, m used to get the metre formatter's decimals.
 - CSV: WKT geometries with Z or ZM coordinates now separate their coordinates with commas (`LINESTRING Z(1 2 3,4 5 6)`, previously `LINESTRING Z(1 2 34 5 6)`).
+- `hakunapi-source-gpkg` reads rows one at a time into a reused container instead of batches of 250 (`BufferedResultSet` is removed from this module; `hakunapi-source-postgis` has its own copy). Geometry blobs are read through SQLite's own buffer instead of a `byte[]` per feature, and NULL checks are asked of SQLite by storage class. Output is unchanged.
 
 ## 2.0.0
 

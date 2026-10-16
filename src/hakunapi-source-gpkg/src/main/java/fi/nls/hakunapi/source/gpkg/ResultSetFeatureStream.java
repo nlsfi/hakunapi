@@ -15,56 +15,49 @@ import fi.nls.hakunapi.core.ValueMapper;
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.util.U;
 
-public class BufferedResultSet implements FeatureStream {
+/** Streams rows one at a time; the returned ValueProvider is valid until the next hasNext(). */
+public class ResultSetFeatureStream implements FeatureStream {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BufferedResultSet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResultSetFeatureStream.class);
 
     private final Connection c;
     private final PreparedStatement ps;
     private final ResultSet rs;
     private final ResultSetValueProvider valueProvider;
     private final List<ValueMapper> mappers;
-    private final ValueContainer[] buffer;
+    private final ValueContainer container;
 
-    private int i;
-    private int j;
+    private boolean ready;
     private boolean closed;
 
-    public BufferedResultSet(Connection c, PreparedStatement ps, ResultSet rs, int numColsRs, List<ValueMapper> mappers, int bufSize) {
+    public ResultSetFeatureStream(Connection c, PreparedStatement ps, ResultSet rs, int numColsRs,
+            List<ValueMapper> mappers) {
         this.c = c;
         this.ps = ps;
         this.rs = rs;
-        this.valueProvider = new ResultSetValueProvider(rs, numColsRs);
+        this.valueProvider = new ResultSetValueProvider(rs, numColsRs, SqliteBlobReader.of(ps));
         this.mappers = mappers;
-        this.buffer = new ValueContainer[bufSize];
+        this.container = new ObjectArrayValueContainer(mappers.size());
     }
 
     @Override
     public boolean hasNext() {
-        if (i < j) {
+        if (ready) {
             return true;
         }
         if (closed) {
             return false;
         }
-
-        i = 0;
-        j = 0;
         try {
-            for (; j < buffer.length; j++) {
-                if (!rs.next()) {
-                    close();
-                    break;
-                }
-                ValueContainer container = buffer[j];
-                if (container == null) {
-                    buffer[j] = container = new ObjectArrayValueContainer(mappers.size());
-                }
-                for (ValueMapper mapper : mappers) {
-                    mapper.accept(valueProvider, container);
-                }
+            if (!rs.next()) {
+                close();
+                return false;
             }
-            return j > 0;
+            for (ValueMapper mapper : mappers) {
+                mapper.accept(valueProvider, container);
+            }
+            ready = true;
+            return true;
         } catch (Exception e) {
             LOG.error("Failed to retrieve more features", e);
             close();
@@ -74,7 +67,8 @@ public class BufferedResultSet implements FeatureStream {
 
     @Override
     public ValueProvider next() {
-        return buffer[i++];
+        ready = false;
+        return container;
     }
 
     @Override

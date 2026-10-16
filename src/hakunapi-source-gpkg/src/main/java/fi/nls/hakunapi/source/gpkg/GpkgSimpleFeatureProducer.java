@@ -23,12 +23,10 @@ import fi.nls.hakunapi.core.util.U;
 
 /**
  * Streaming implementation
- * Reads a batch of BATCH_SIZE rows at a time
  */
 public class GpkgSimpleFeatureProducer implements FeatureProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(GpkgSimpleFeatureProducer.class);
-    private static final int BATCH_SIZE = 250;
 
     @Override
     public FeatureStream getFeatures(GetFeatureRequest request, GetFeatureCollection col) throws Exception {
@@ -64,12 +62,13 @@ public class GpkgSimpleFeatureProducer implements FeatureProducer {
             c.setAutoCommit(false);
             ps = c.prepareStatement(query);
             GpkgQueryUtil.bind(c, ps, filters);
-            LOG.info("{}", ps.toString());
-            int bufSize = BATCH_SIZE;
-            ps.setFetchSize(bufSize);
+            // guarded because toString renders every bound value
+            if (LOG.isInfoEnabled()) {
+                LOG.info("{}", ps.toString());
+            }
             rs = ps.executeQuery();
             int numColsRs = rs.getMetaData().getColumnCount();
-            return new BufferedResultSet(c, ps, rs, numColsRs, mappers, bufSize);
+            return new ResultSetFeatureStream(c, ps, rs, numColsRs, mappers);
         } catch (Exception e) {
             U.closeSilent(rs);
             U.closeSilent(ps);
@@ -98,7 +97,9 @@ public class GpkgSimpleFeatureProducer implements FeatureProducer {
         try (Connection c = ft.getDatabase().getConnection();
                 PreparedStatement ps = c.prepareStatement(query)) {
             GpkgQueryUtil.bind(c, ps, filters);
-            LOG.debug(ps.toString());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(ps.toString());
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
                     return -1;
