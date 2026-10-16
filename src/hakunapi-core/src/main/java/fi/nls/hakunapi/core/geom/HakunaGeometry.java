@@ -40,5 +40,14 @@ public interface HakunaGeometry {
     public default Envelope boundedBy() {
         return new HakunaGeometryEWKB(toEWKB()).boundedBy();
     }
-    
+
+    /** Fills {@code xyxy} (minX, minY, maxX, maxY) only if the bbox is already stored; false otherwise. */
+    public default boolean readEnvelopeIfCheap(double[] xyxy) {
+        return false;
+    }
+
+    public default NavigableHakunaGeometry toNavigable() {
+        return new HakunaGeometryJTS(toJTSGeometry()).toNavigable();
+    }
+
 }
