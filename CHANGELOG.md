@@ -15,6 +15,7 @@
 - JSON-FG: the m ordinate of a 4D `geometry` (CRS84) is now written with the degree formatter like x, y and z. When `place` was in a projected CRS, m used to get the metre formatter's decimals.
 - CSV: WKT geometries with Z or ZM coordinates now separate their coordinates with commas (`LINESTRING Z(1 2 3,4 5 6)`, previously `LINESTRING Z(1 2 34 5 6)`).
 - `hakunapi-source-gpkg` reads rows one at a time into a reused container instead of batches of 250 (`BufferedResultSet` is removed from this module; `hakunapi-source-postgis` has its own copy). Geometry blobs are read through SQLite's own buffer instead of a `byte[]` per feature, and NULL checks are asked of SQLite by storage class. Output is unchanged.
+- New community module `hakunapi-tiles-core`: the OGC API - Tiles model (tilesets, tile matrix sets, tile and layer types, the `VectorTileSource` and `MapTileSource` extension points), `tiles.*` configuration parsing and a `zoom-routed-vector` source that picks a backing source by zoom. Nothing serves tiles yet. `ConformanceClass` gains the OGC API - Tiles and tile matrix set URIs, and `HakunaConfigParser` a `getProperties()` accessor.
 
 ## 2.0.0
 

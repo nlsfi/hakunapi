@@ -91,6 +91,11 @@ public class HakunaConfigParser {
 
     protected final Properties cfg;
 
+    /** Do not mutate: the parser is shared across the whole service configuration. */
+    public Properties getProperties() {
+        return cfg;
+    }
+
     public HakunaConfigParser(Properties cfg) {
         this.cfg = HakunapiPlaceholder.replacePlaceholders(cfg);
     }
