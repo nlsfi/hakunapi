@@ -16,6 +16,17 @@ public enum ConformanceClass {
     GPKG("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gpkg"),
     DIRECT_TILE("http://www.opengis.net/spec/wfs/3.0/vt/req/core/direct-tile-access-path-api"),
 
+    // OGC API - Tiles - Part 1: Core
+    TILES_CORE("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core"),
+    TILES_TILESET("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"),
+    TILES_TILESETS_LIST("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list"),
+    TILES_DATASET_TILESETS("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/dataset-tilesets"),
+    TILES_GEODATA_TILESETS("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets"),
+    TILES_OAS30("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/oas30"),
+    TILES_MVT("http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/mvt"),
+    // OGC Two Dimensional Tile Matrix Set (shared resource)
+    TILEMATRIXSET("http://www.opengis.net/spec/tms/2.0/conf/tilematrixset"),
+
     //OGC API - Features - Part 2: Coordinate Reference Systems by Reference
     CRS("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs"),
 

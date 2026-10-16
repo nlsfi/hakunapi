@@ -14,6 +14,7 @@
 		<module>hakunapi-proj-jhe</module>
 		<module>hakunapi-smile</module>
 		<module>hakunapi-esbulk</module>
+		<module>hakunapi-tiles-core</module>
 	</modules>
 
 	<profiles>
