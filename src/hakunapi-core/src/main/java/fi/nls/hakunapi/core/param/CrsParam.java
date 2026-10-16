@@ -34,6 +34,9 @@ public class CrsParam implements GetFeatureParam {
             throws IllegalArgumentException {
         if (value != null && !value.isEmpty()) {
             int srid = CrsUtil.parseSRID(value, getParamName());
+            if (service.getSridCode(srid).isEmpty()) {
+                throw new IllegalArgumentException(CrsUtil.ERR_UNSUPPORTED_CRS);
+            }
             for (GetFeatureCollection c : request.getCollections()) {
                 HakunaPropertyGeometry geom = c.getFt().getGeom();
                 if (geom != null && !geom.isSRIDSupported(srid)) {

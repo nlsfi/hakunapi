@@ -247,6 +247,40 @@ public class OgcApiFeaturesPart1CoreTest extends JerseyTest {
 	}
 
     @Test
+    public void testConfiguredCrs() {
+        jakarta.ws.rs.core.Response r = target("/collections/test_collection/items")
+                .queryParam("crs", "http://www.opengis.net/def/crs/EPSG/0/3067")
+                .request().get();
+        assertEquals(200, r.getStatus());
+    }
+
+    @Test
+    public void testUnconfiguredCrsIsBadRequest() {
+        jakarta.ws.rs.core.Response r = target("/collections/test_collection/items")
+                .queryParam("crs", "http://www.opengis.net/def/crs/EPSG/0/3857")
+                .request().get();
+        assertEquals(400, r.getStatus());
+    }
+
+    @Test
+    public void testUnconfiguredBboxCrsIsBadRequest() {
+        jakarta.ws.rs.core.Response r = target("/collections/test_collection/items")
+                .queryParam("bbox-crs", "http://www.opengis.net/def/crs/EPSG/0/3857")
+                .queryParam("bbox", "0,0,1,1")
+                .request().get();
+        assertEquals(400, r.getStatus());
+    }
+
+    @Test
+    public void testUnconfiguredFilterCrsIsBadRequest() {
+        jakarta.ws.rs.core.Response r = target("/collections/test_collection/items")
+                .queryParam("filter-crs", "http://www.opengis.net/def/crs/EPSG/0/3857")
+                .queryParam("filter", "S_INTERSECTS(geom,POINT(0 0))")
+                .request().get();
+        assertEquals(400, r.getStatus());
+    }
+
+    @Test
     public void testNextLinkIsFollowable() {
         // Force pagination with limit=1; include a crs param with reserved chars
         final String encodedCrs = "http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F4326";

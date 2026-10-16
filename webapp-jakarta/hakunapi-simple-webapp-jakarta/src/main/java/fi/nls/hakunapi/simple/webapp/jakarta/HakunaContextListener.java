@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import fi.nls.hakunapi.core.CRSRegistryProvider;
 import fi.nls.hakunapi.core.ConformanceClass;
 import fi.nls.hakunapi.core.FeatureType;
+import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.MetadataFormat;
 import fi.nls.hakunapi.core.OutputFormat;
@@ -106,6 +107,7 @@ public class HakunaContextListener implements ServletContextListener {
             for (String collectionId : parser.readCollectionIds()) {
                 FeatureType ft = parser.readCollection(configPath, sourcesByType, collectionId);
                 ft = parser.applyJsonSchema(ft, schemas);
+                checkSridsKnown(collectionId, ft, knownSrids);
                 collections.put(collectionId, ft);
             }
 
@@ -212,6 +214,19 @@ public class HakunaContextListener implements ServletContextListener {
 		return sources;
 	}
 	
+	private static void checkSridsKnown(String collectionId, FeatureType ft, List<SRIDCode> knownSrids) {
+        HakunaPropertyGeometry geom = ft.getGeom();
+        if (geom == null) {
+            return;
+        }
+        for (int srid : geom.getSrid()) {
+            if (knownSrids.stream().noneMatch(it -> it.getSrid() == srid)) {
+                throw new IllegalArgumentException("Collection '" + collectionId + "' has srid " + srid
+                        + " which is missing from the global 'srid' property");
+            }
+        }
+    }
+
 	private static List<SRIDCode> getKnownSrids(Properties p, HakunaConfigParser config) {
         List<Integer> codes = config.getKnownSrids();
 	    return CRSRegistryProvider.getCRSRegistry()
