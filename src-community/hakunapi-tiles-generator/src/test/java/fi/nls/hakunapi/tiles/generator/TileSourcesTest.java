@@ -63,6 +63,8 @@ public class TileSourcesTest {
         assertRejected(cfg("sources", "vesi", "vesi.collections", "jarvi, meri"),
                 control("jarvi"), "meri", "no zoom range renders");
         assertRejected(cfg("sources", "vesi"), control("jarvi"), "vesi.collections");
+        assertRejected(cfg("sources", "all", "all.collections", "jarvi"),
+                control("jarvi"), "same id as a zoom range");
         assertRejected(cfg("sources", "vesi, vesi", "vesi.collections", "jarvi"),
                 control("jarvi"), "declared twice");
     }
