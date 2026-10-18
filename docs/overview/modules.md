@@ -291,6 +291,8 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 
 [`hakunapi-tiles-source-vectortile`](../../src-community/hakunapi-tiles-source-vectortile/README.md) *(community module)* is a `VectorTileSource` that renders Mapbox Vector Tiles in-JVM from the feature collections of a layer, one MVT layer per collection. It is found with `ServiceLoader`, so it is enabled by being on the classpath, and is not bundled in the reference webapp. It depends on `hakunapi-tiles-core` and `slf4j-api`; it adds no new third-party dependency.
 
+[`hakunapi-tiles-source-gpkg`](../../src-community/hakunapi-tiles-source-gpkg/README.md) *(community module)* is a `MapTileSource` and a `VectorTileSource` serving the tiles stored in a GeoPackage tile pyramid, read through `sqlite-jdbc`. It is found with `ServiceLoader`, so it is enabled by being on the classpath, and is not bundled in the reference webapp. It depends on `hakunapi-tiles-core`, `slf4j-api` and `sqlite-jdbc` (already used by `hakunapi-gpkg`).
+
 ## Output data formats (stable)
 
 ### GeoJSON
