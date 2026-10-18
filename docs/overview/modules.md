@@ -295,6 +295,8 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 
 [`hakunapi-tiles-source-pmtiles`](../../src-community/hakunapi-tiles-source-pmtiles/README.md) *(community module)* is a `MapTileSource` and a `VectorTileSource` serving the tiles of a PMTiles v3 archive, read in place from a local file or over HTTP range requests. It is found with `ServiceLoader`, so it is enabled by being on the classpath, and is not bundled in the reference webapp. It depends on `hakunapi-tiles-core` and `slf4j-api`; it adds no new third-party dependency.
 
+[`hakunapi-tiles-generator`](../../src-community/hakunapi-tiles-generator/README.md) *(community module)* is a command-line seed tool, not a server module: `TilesGenerator` writes a vector tile pyramid into a GeoPackage from the feature sources of a service configuration, and `PMTilesConvert` turns such a pyramid into a PMTiles v3 archive. Run `TilesGenerator` with its jar (`java -cp <jar> fi.nls.hakunapi.tiles.generator.TilesGenerator <service.properties> <control.properties> <output.gpkg>`), and `PMTilesConvert` the same way with its main class and `<pyramid.gpkg> <table> <output.pmtiles>`. It depends at compile time on `hakunapi-tiles-core`, `hakunapi-tiles-source-vectortile`, `hakunapi-gpkg`, `hakunapi-cql2` and `hakunapi-tiles-source-pmtiles`, and at runtime on `hakunapi-crs-properties`, which is loaded with `ServiceLoader` and not imported. Its only test dependency is `junit`. It is not bundled in the reference webapp.
+
 ## Output data formats (stable)
 
 ### GeoJSON
