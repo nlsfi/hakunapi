@@ -293,6 +293,8 @@ Key differences between PostGIS and GeoPackage support in Hakunapi:
 
 [`hakunapi-tiles-source-gpkg`](../../src-community/hakunapi-tiles-source-gpkg/README.md) *(community module)* is a `MapTileSource` and a `VectorTileSource` serving the tiles stored in a GeoPackage tile pyramid, read through `sqlite-jdbc`. It is found with `ServiceLoader`, so it is enabled by being on the classpath, and is not bundled in the reference webapp. It depends on `hakunapi-tiles-core`, `slf4j-api` and `sqlite-jdbc` (already used by `hakunapi-gpkg`).
 
+[`hakunapi-tiles-source-pmtiles`](../../src-community/hakunapi-tiles-source-pmtiles/README.md) *(community module)* is a `MapTileSource` and a `VectorTileSource` serving the tiles of a PMTiles v3 archive, read in place from a local file or over HTTP range requests. It is found with `ServiceLoader`, so it is enabled by being on the classpath, and is not bundled in the reference webapp. It depends on `hakunapi-tiles-core` and `slf4j-api`; it adds no new third-party dependency.
+
 ## Output data formats (stable)
 
 ### GeoJSON

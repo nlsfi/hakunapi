@@ -18,6 +18,7 @@
 		<module>hakunapi-tiles-servlet-jakarta</module>
 		<module>hakunapi-tiles-source-vectortile</module>
 		<module>hakunapi-tiles-source-gpkg</module>
+		<module>hakunapi-tiles-source-pmtiles</module>
 	</modules>
 
 	<profiles>
