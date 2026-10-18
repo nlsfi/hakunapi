@@ -70,12 +70,28 @@ public class PMTilesConvert {
             if (parsed.centerZoom < 0) {
                 parsed.centerZoom = (int) addresses.get(0)[1];
             }
+            if (parsed.bboxE7 == null) {
+                parsed.bboxE7 = toE7(PyramidBounds.wgs84(c, parsed.table, parsed.flip));
+            }
+            if (parsed.centerE7 == null) {
+                parsed.centerE7 = new int[] {
+                        (int) (((long) parsed.bboxE7[0] + parsed.bboxE7[2]) / 2),
+                        (int) (((long) parsed.bboxE7[1] + parsed.bboxE7[3]) / 2) };
+            }
             written = convert(c, parsed, addresses);
         }
         long seconds = (System.currentTimeMillis() - started) / 1000;
         System.out.printf("Wrote %s (%,d bytes) in %d s%n",
                 parsed.outputPath, written, seconds);
         return 0;
+    }
+
+    private static int[] toE7(double[] degrees) {
+        int[] e7 = new int[degrees.length];
+        for (int i = 0; i < e7.length; i++) {
+            e7[i] = (int) Math.round(degrees[i] * 1e7);
+        }
+        return e7;
     }
 
     /** The PMTiles tile id is a Hilbert index over a 2^z square grid. */
@@ -238,7 +254,9 @@ public class PMTilesConvert {
         System.err.println("                   (default: gzip, which is what the generator stores)");
         System.err.println("  --flip           the pyramid counts tile_row from the bottom (TMS)");
         System.err.println("  --bbox <minLon,minLat,maxLon,maxLat>");
-        System.err.println("                   WGS84 extent recorded in the header (default: Finland, 19,59.4,31.8,70.1)");
+        System.err.println("                   WGS84 extent recorded in the header (default: the extent of the tiles");
+        System.err.println("                   at the finest zoom)");
+        System.err.println("  --center <lon,lat> point a viewer should open at (default: the middle of the extent)");
         System.err.println("  --center-zoom <n>  zoom a viewer should open at (default: the lowest zoom in the pyramid)");
     }
 
@@ -249,8 +267,8 @@ public class PMTilesConvert {
         Path outputPath;
         byte tileCompression = Compression.GZIP;
         boolean flip;
-        int[] bboxE7 = { 190000000, 594000000, 318000000, 701000000 };
-        int[] centerE7 = { 250000000, 645000000 };
+        int[] bboxE7;
+        int[] centerE7;
         int centerZoom = -1;
 
         static Args parse(String[] args) {
@@ -258,7 +276,8 @@ public class PMTilesConvert {
             List<String> positional = new ArrayList<>(3);
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
-                if (("--bbox".equals(arg) || "--center-zoom".equals(arg)) && i + 1 >= args.length) {
+                if (("--bbox".equals(arg) || "--center".equals(arg) || "--center-zoom".equals(arg))
+                        && i + 1 >= args.length) {
                     System.err.println("Option " + arg + " needs a value");
                     return null;
                 }
@@ -270,10 +289,10 @@ public class PMTilesConvert {
                     a.flip = true;
                     break;
                 case "--bbox":
-                    a.bboxE7 = parseBboxE7(args[++i]);
-                    a.centerE7 = new int[] {
-                            (int) (((long) a.bboxE7[0] + a.bboxE7[2]) / 2),
-                            (int) (((long) a.bboxE7[1] + a.bboxE7[3]) / 2) };
+                    a.bboxE7 = parseE7(args[++i], 4, "--bbox must be minLon,minLat,maxLon,maxLat");
+                    break;
+                case "--center":
+                    a.centerE7 = parseE7(args[++i], 2, "--center must be lon,lat");
                     break;
                 case "--center-zoom":
                     a.centerZoom = Integer.parseInt(args[++i]);
@@ -295,16 +314,16 @@ public class PMTilesConvert {
             return a;
         }
 
-        private static int[] parseBboxE7(String csv) {
+        private static int[] parseE7(String csv, int n, String message) {
             String[] parts = csv.split(",");
-            if (parts.length != 4) {
-                throw new IllegalArgumentException("--bbox must be minLon,minLat,maxLon,maxLat");
+            if (parts.length != n) {
+                throw new IllegalArgumentException(message);
             }
-            int[] bbox = new int[4];
-            for (int i = 0; i < 4; i++) {
-                bbox[i] = (int) Math.round(Double.parseDouble(parts[i].trim()) * 1e7);
+            int[] e7 = new int[n];
+            for (int i = 0; i < n; i++) {
+                e7[i] = (int) Math.round(Double.parseDouble(parts[i].trim()) * 1e7);
             }
-            return bbox;
+            return e7;
         }
 
     }

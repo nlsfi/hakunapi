@@ -265,6 +265,12 @@ public class PyramidGeneratorTest {
                     assertEquals(1024.0, rs.getDouble(2), 0);
                     assertEquals(1024.0, rs.getDouble(3), 0);
                 }
+                try (ResultSet rs = st.executeQuery(
+                        "SELECT extension_name, column_name FROM gpkg_extensions WHERE table_name = 'tieviiva'")) {
+                    assertTrue(rs.next());
+                    assertEquals("hakunapi_mvt", rs.getString(1));
+                    assertEquals("tile_data", rs.getString(2));
+                }
             }
         }
     }

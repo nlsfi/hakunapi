@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import fi.nls.hakunapi.gpkg.GPKG;
 import fi.nls.hakunapi.gpkg.GPKGTileMatrix;
 import fi.nls.hakunapi.gpkg.GPKGTilesTable;
+import fi.nls.hakunapi.gpkg.extension.MvtTilesExtension;
 import fi.nls.hakunapi.tiles.TileMatrix;
 import fi.nls.hakunapi.tiles.TileMatrixSet;
 
@@ -54,6 +55,7 @@ public class TilePyramidWriter implements AutoCloseable {
         GPKG.createTilePyramidTable(c, tableName);
         GPKG.insertTilesTableEntry(c, table);
         GPKG.insertTileMatrixSet(c, table);
+        new MvtTilesExtension(tableName).createExtension(c);
 
         for (int zoom = minZoom; zoom <= maxZoom; zoom++) {
             TileMatrix tm = matrices.get(zoom);

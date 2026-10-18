@@ -109,6 +109,13 @@ public class GeneratorControlTest {
                 a.collections = maastoalue
                 a.maastoalue.filter = this is not CQL2 (((
                 """);
+        assertRejected("functions", """
+                tileMatrixSet = T
+                ranges = a
+                a.zoom = 0-2
+                a.collections = maastoalue
+                a.maastoalue.filter = nosuchfunction(kohdeluokka)
+                """);
         assertRejected("inverted", """
                 tileMatrixSet = T
                 ranges = a

@@ -98,7 +98,8 @@ public class GeneratorControl {
             return parser.parse(ft, cql2, srid);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("control file: range " + rangeName + " filter for collection '"
-                    + collectionId + "' is not valid " + parser.getCode() + ": " + e.getMessage());
+                    + collectionId + "' is not valid " + parser.getCode() + ": " + e.getMessage()
+                    + (String.valueOf(e.getMessage()).contains("Unmapped Function") ? " (the generator registers no functions)" : ""));
         }
     }
 

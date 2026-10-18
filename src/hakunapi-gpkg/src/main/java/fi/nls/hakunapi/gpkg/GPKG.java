@@ -104,7 +104,7 @@ public class GPKG {
 
     private static void createExtensionsTable(Connection c) throws SQLException {
         String sql = ""
-                + "CREATE TABLE gpkg_extensions ("
+                + "CREATE TABLE IF NOT EXISTS gpkg_extensions ("
                 + "table_name TEXT,"
                 + "column_name TEXT,"
                 + "extension_name TEXT NOT NULL,"
@@ -134,6 +134,7 @@ public class GPKG {
     
     /** Separate from init: a feature-only GeoPackage must not carry empty tile tables. */
     public static void initTiles(Connection c) throws SQLException {
+        createExtensionsTable(c);
         createTileMatrixSetTable(c);
         createTileMatrixTable(c);
     }

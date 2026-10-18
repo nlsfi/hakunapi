@@ -40,6 +40,13 @@ public class TileSources {
             if (sourceIds.contains(sourceId)) {
                 throw new IllegalArgumentException("control file: source '" + sourceId + "' is declared twice");
             }
+            for (ZoomRange range : control.getRanges()) {
+                if (range.name().equals(sourceId)) {
+                    throw new IllegalArgumentException("control file: source '" + sourceId
+                            + "' has the same id as a zoom range; both are configured by " + sourceId
+                            + ".collections, so rename one");
+                }
+            }
             sourceIds.add(sourceId);
             String[] collectionIds = cfg.getMultiple(sourceId + ".collections");
             if (collectionIds.length == 0) {
