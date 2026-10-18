@@ -19,6 +19,7 @@
 		<module>hakunapi-tiles-source-vectortile</module>
 		<module>hakunapi-tiles-source-gpkg</module>
 		<module>hakunapi-tiles-source-pmtiles</module>
+		<module>hakunapi-tiles-generator</module>
 	</modules>
 
 	<profiles>

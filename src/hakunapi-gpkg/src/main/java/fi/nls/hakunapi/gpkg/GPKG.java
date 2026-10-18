@@ -132,6 +132,109 @@ public class GPKG {
         }
     }
     
+    /** Separate from init: a feature-only GeoPackage must not carry empty tile tables. */
+    public static void initTiles(Connection c) throws SQLException {
+        createTileMatrixSetTable(c);
+        createTileMatrixTable(c);
+    }
+
+    private static void createTileMatrixSetTable(Connection c) throws SQLException {
+        String sql = ""
+                + "CREATE TABLE IF NOT EXISTS gpkg_tile_matrix_set ("
+                + "table_name TEXT NOT NULL PRIMARY KEY,"
+                + "srs_id INTEGER NOT NULL,"
+                + "min_x DOUBLE NOT NULL,"
+                + "min_y DOUBLE NOT NULL,"
+                + "max_x DOUBLE NOT NULL,"
+                + "max_y DOUBLE NOT NULL,"
+                + "CONSTRAINT fk_gtms_table_name FOREIGN KEY (table_name) REFERENCES gpkg_contents(table_name),"
+                + "CONSTRAINT fk_gtms_srs FOREIGN KEY (srs_id) REFERENCES gpkg_spatial_ref_sys(srs_id)"
+                + ")";
+        execute(c, sql);
+    }
+
+    private static void createTileMatrixTable(Connection c) throws SQLException {
+        String sql = ""
+                + "CREATE TABLE IF NOT EXISTS gpkg_tile_matrix ("
+                + "table_name TEXT NOT NULL,"
+                + "zoom_level INTEGER NOT NULL,"
+                + "matrix_width INTEGER NOT NULL,"
+                + "matrix_height INTEGER NOT NULL,"
+                + "tile_width INTEGER NOT NULL,"
+                + "tile_height INTEGER NOT NULL,"
+                + "pixel_x_size DOUBLE NOT NULL,"
+                + "pixel_y_size DOUBLE NOT NULL,"
+                + "CONSTRAINT pk_ttm PRIMARY KEY (table_name, zoom_level),"
+                + "CONSTRAINT fk_tmm_table_name FOREIGN KEY (table_name) REFERENCES gpkg_contents(table_name)"
+                + ")";
+        execute(c, sql);
+    }
+
+    public static void createTilePyramidTable(Connection c, String tableName) throws SQLException {
+        String sql = ""
+                + "CREATE TABLE " + quote(tableName) + " ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "zoom_level INTEGER NOT NULL,"
+                + "tile_column INTEGER NOT NULL,"
+                + "tile_row INTEGER NOT NULL,"
+                + "tile_data BLOB NOT NULL,"
+                + "UNIQUE (zoom_level, tile_column, tile_row)"
+                + ")";
+        execute(c, sql);
+    }
+
+    public static int insertTilesTableEntry(Connection c, GPKGTilesTable tilesTable) throws SQLException {
+        String sql = "INSERT INTO gpkg_contents (table_name, data_type, identifier, description, min_x, min_y, max_x, max_y, srs_id)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, tilesTable.getTableName());
+            ps.setString(2, GPKGTilesTable.DATA_TYPE);
+            ps.setString(3, tilesTable.getIdentifier());
+            ps.setString(4, tilesTable.getDescription());
+            ps.setDouble(5, tilesTable.getMinX());
+            ps.setDouble(6, tilesTable.getMinY());
+            ps.setDouble(7, tilesTable.getMaxX());
+            ps.setDouble(8, tilesTable.getMaxY());
+            ps.setInt(9, tilesTable.getSrid());
+            return ps.executeUpdate();
+        }
+    }
+
+    public static int insertTileMatrixSet(Connection c, GPKGTilesTable tilesTable) throws SQLException {
+        String sql = "INSERT INTO gpkg_tile_matrix_set (table_name, srs_id, min_x, min_y, max_x, max_y)"
+                + " VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, tilesTable.getTableName());
+            ps.setInt(2, tilesTable.getSrid());
+            ps.setDouble(3, tilesTable.getMinX());
+            ps.setDouble(4, tilesTable.getMinY());
+            ps.setDouble(5, tilesTable.getMaxX());
+            ps.setDouble(6, tilesTable.getMaxY());
+            return ps.executeUpdate();
+        }
+    }
+
+    public static int insertTileMatrix(Connection c, GPKGTileMatrix tileMatrix) throws SQLException {
+        String sql = "INSERT INTO gpkg_tile_matrix"
+                + " (table_name, zoom_level, matrix_width, matrix_height, tile_width, tile_height, pixel_x_size, pixel_y_size)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, tileMatrix.getTableName());
+            ps.setInt(2, tileMatrix.getZoomLevel());
+            ps.setInt(3, tileMatrix.getMatrixWidth());
+            ps.setInt(4, tileMatrix.getMatrixHeight());
+            ps.setInt(5, tileMatrix.getTileWidth());
+            ps.setInt(6, tileMatrix.getTileHeight());
+            ps.setDouble(7, tileMatrix.getPixelXSize());
+            ps.setDouble(8, tileMatrix.getPixelYSize());
+            return ps.executeUpdate();
+        }
+    }
+
+    public static String quote(String identifier) {
+        return '"' + identifier.replace("\"", "\"\"") + '"';
+    }
+
     public static int insertGeometryColumn(Connection c, GPKGGeometryColumn geometryColumn) throws SQLException {
         String sql = "INSERT INTO gpkg_geometry_columns (table_name, column_name, geometry_type_name, srs_id, z, m)"
                 + " VALUES (?, ?, ?, ?, ?, ?)";
