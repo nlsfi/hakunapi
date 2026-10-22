@@ -80,6 +80,9 @@
 - The HTML collection page links to the collection schema and shows the spatial and temporal extent when available (#185).
 - HTML templates: Bootstrap 5.0.0-beta3 -> 5.3.8, Leaflet 1.7.1 -> 1.9.4, proj4 2.7.5 -> 2.22.0 and swagger-ui 3.45.1 -> 5.29.1 (still loaded from CDNs, with updated SRI hashes). The Leaflet and proj4 imports now live in `mapLibs.ftl`, shared by `featureCollection.ftl` and `feature.ftl`; a custom template directory that overrides these two templates keeps its own versions (#199).
 - New config key `api.collections.links.*` adds links to the top-level `links` array of the `/collections` response, in both JSON and HTML. Parallel to the existing `api.links.*` (landing page) and `default.collections.links.*` / `collections.<id>.links.*` (per-collection entries).
+- New [configuration reference](docs/overview/configuration.md): every configuration key of the core modules and the reference webapp, with its default, on one page. Pull requests that change a key are expected to update it.
+- `servers` is now trimmed like the other list keys: `servers=dev, prod` works instead of failing startup with a `NullPointerException`.
+- PostGIS source: the keys `collections.<id>.id.alias`, `geometry.alias` and `properties.<p>.alias` are removed. They were a not-working and unfinished idea (`properties.<p>.alias` made startup fail with a `NullPointerException`); they are now ignored.
 
 ## 2.0.0
 

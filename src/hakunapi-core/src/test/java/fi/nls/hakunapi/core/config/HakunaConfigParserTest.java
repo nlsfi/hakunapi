@@ -23,6 +23,20 @@ public class HakunaConfigParserTest {
     }
 
     @Test
+    public void testServersAreTrimmed() {
+        Properties cfg = new Properties();
+        cfg.setProperty("servers", "dev, prod");
+        cfg.setProperty("servers.dev.url", "https://dev.example.org/");
+        cfg.setProperty("servers.prod.url", "https://example.org");
+
+        List<io.swagger.v3.oas.models.servers.Server> servers = new HakunaConfigParser(cfg).readServers();
+
+        assertEquals(2, servers.size());
+        assertEquals("https://dev.example.org", servers.get(0).getUrl());
+        assertEquals("https://example.org", servers.get(1).getUrl());
+    }
+
+    @Test
     public void testExternalizedProperties() {
         String property = "hakunapi.test";
         String initialTestValue = System.getProperty(property);
