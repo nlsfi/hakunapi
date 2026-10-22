@@ -18,7 +18,7 @@
       </ol>
       <ul class="nav">
 <#if availableLanguages?size gt 1>
-        <li class="nav-item d-flex align-items-center me-3">
+        <li class="nav-item align-self-start me-3">
           <label class="visually-hidden" for="lang-select">Language</label>
           <select class="form-select form-select-sm" id="lang-select" aria-label="Language">
             <#list availableLanguages as available>
