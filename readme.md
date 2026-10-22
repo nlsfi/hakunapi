@@ -3,54 +3,51 @@
 # Hakunapi OGC API Features Server
 
 A server implementation of OGC API Features
+(follow development @ https://ogcapi.ogc.org/features/)
 
 * OGC API - Features - Part 1: Core
 * OGC API - Features - Part 2: Coordinate Reference Systems by Reference
 * OGC API - Features - Part 3: Filtering and Common Query Language (CQL2)
 
-A server implementation of OGC API Features
-(follow development @ https://ogcapi.ogc.org/features/)
+Output formats: GeoJSON, JSON-FG, HTML, CSV and GeoPackage. OGC API - Tiles is provided by community modules.
 
 Focus on:
 
-* Simple features backed by a PostGIS database
+* Simple features backed by open data stores such as PostGIS and GeoPackage
 * High performance (achieved with streaming and by reducing the amount of garbage created)
 
-hakunapi-simple-servlet module builds into a "off-the-shelf" OGC API Features server that you drop into your servlet
-container and configure with an outside configuration file.
+The reference webapp, the `hakunapi-simple-webapp-jakarta` module, builds into a `features.war` that you drop into a
+Jakarta servlet container (for example Tomcat 10) and configure with an outside configuration file.
 
 hakunapi can also be used as a "framework" for building your own customized implementation (for example if you want to
 support Complex Features). The framework is modular and the modules should fit together well, you are free to
 mix-and-match.
 
-## Community modules
+Core modules live under [src/](src) and are maintained and supported by the National Land Survey of Finland.
+Community modules live under [src-community/](src-community): they are built and tested together with the core, but
+are not actively developed, are not bundled in the reference webapp, and are maintained by their submitters.
 
-Core modules live under [src/](src) and are maintained and supported by the National Land Survey of
-Finland. Community modules live under [src-community/](src-community): they are built and tested
-together with the core, but are not actively developed, are not bundled in the reference webapp, and
-are maintained by their submitters.
+## Documentation
 
-| Module | Description |
-| --- | --- |
-| [hakunapi-esbulk](src-community/hakunapi-esbulk) | ElasticSearch Bulk API output format (NDJSON, `application/x-ndjson`) |
-| [hakunapi-gml](src-community/hakunapi-gml) | Narrow GML 3.1.1 / WFS 1.1.0 output format, serving one specific use case rather than general GML support. **Legacy, no active submitters**, and currently not SPI-registered so it cannot be enabled as-is |
-| [hakunapi-proj-jhe](src-community/hakunapi-proj-jhe) | Dependency-free coordinate transformations for EUREF-FIN based systems |
-| [hakunapi-smile](src-community/hakunapi-smile) | Jackson Smile (GeoJSON) binary output format (`application/x-jackson-smile`) |
+* [Modules](docs/overview/modules.md): what each module does and how they depend on each other
+* [Configuration reference](docs/overview/configuration.md): all configuration keys and their defaults
+* [CONTRIBUTING.md](CONTRIBUTING.md): how to contribute, including community modules
+* [Changelog](CHANGELOG.md)
 
-To use one, add it as an explicit dependency of your own webapp. See
-[CONTRIBUTING.md](CONTRIBUTING.md#community-modules) for how to contribute a community module.
+## Building
 
-## Contributing
+Requires Java 21 and Maven (some community modules need Java 22+ and are built only on such a JDK).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+```shell
+mvn clean install
+```
 
-## Configuration
+The reference webapp is built to `webapp-jakarta/hakunapi-simple-webapp-jakarta/target/features.war`.
 
-All configuration keys and their defaults: [docs/overview/configuration.md](docs/overview/configuration.md)
+## Examples
 
-## Example
-
-Check out [Finnish addresses](examples/finnish_addresses)
+* [Finnish addresses](examples/finnish_addresses)
+* [Finnish administrative units](examples/finnish_admin_units)
 
 ## Quick Start
 
@@ -69,7 +66,7 @@ This is a postgis database (as of now using postgres 18) with example data and t
 
 #### Hakunapi server (hakunapi)
 
-This is the hakunapi server running in a tomcat container (tomcat 10).
+This is the hakunapi server running in a tomcat container (the `tomcat:jdk21-openjdk` image, not pinned to a Tomcat version).
 
 - URL: http://localhost:8080/features
 
@@ -103,7 +100,7 @@ You can also modify the docker compose to mount the features.war from your local
 
 ### Docker - Hotreload development
 
-There is another docker compose file that will set up the image for hot reaload using [hotswap agent](https://hotswapagent.org/index.html).
+There is another docker compose file that will set up the image for hot reload using [hotswap agent](https://hotswapagent.org/index.html).
 
 #### Dockerfile-hotreload
 
@@ -111,8 +108,8 @@ A multi-stage Dockerfile is provided to build hakunapi and run it on Tomcat.
 
 Because of this some potential oddities
 
-- This is pulling a new jdk and not using the provided 21 image.
-    - This is because the default jdk does not support dvcem needed for hot reload of classes.
+- This installs the JetBrains Runtime (JBR 21) instead of the JDK of the `tomcat` image.
+    - This is because the default JDK does not support DCEVM, which is needed for hot reload of classes.
 - It is downloading hotswap agent from github releases.
     - This will allow hot reload of classes when debugging remotely. (along with the updated JDK)
 
