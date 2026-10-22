@@ -61,6 +61,25 @@
     <p><a href="${model.storageCrs}" target="_blank">${model.storageCrs}</a></p>
     </#if>
     
+    <#if model.extent??>
+    <#if model.extent.spatialExtent??>
+    <h3>Spatial extent</h3>
+    <ul>
+      <#list model.extent.spatialExtent.bbox as bbox>
+      <li><#list bbox as v>${v?c}<#sep>, </#list> (${model.extent.spatialExtent.crs!""})</li>
+      </#list>
+    </ul>
+    </#if>
+    <#if model.extent.temporalExtent??>
+    <h3>Temporal extent</h3>
+    <ul>
+      <#list model.extent.temporalExtent.interval as interval>
+      <li>${(interval[0])!"..."} / ${(interval[1])!"..."}</li>
+      </#list>
+    </ul>
+    </#if>
+    </#if>
+
     <h3>Queryable properties</h3>
     <p><a href="collections/${model.id}/queryables${langQuery}">Find out properties usable in filters</a></p>
 
