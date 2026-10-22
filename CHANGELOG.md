@@ -77,6 +77,7 @@
 - `collectionInfo.ftl` shows the collection id alongside its title and
   description, and links to the collection's schema. `collections.ftl` lists
   entries as `collection_id (Title)`.
+- The HTML collection page links to the collection schema and shows the spatial and temporal extent when available (#185).
 
 
 ## 2.0.0
