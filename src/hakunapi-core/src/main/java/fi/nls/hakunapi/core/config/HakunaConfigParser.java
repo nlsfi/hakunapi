@@ -137,7 +137,7 @@ public class HakunaConfigParser {
         String[] serverNames = serverList.split(",");
         List<Server> servers = new ArrayList<>();
         for (String serverName : serverNames) {
-            String prefix = "servers." + serverName;
+            String prefix = "servers." + serverName.trim();
             String url = cfg.getProperty(prefix + ".url");
             while (url.endsWith("/")) {
                 url = url.substring(0, url.length() - 1);

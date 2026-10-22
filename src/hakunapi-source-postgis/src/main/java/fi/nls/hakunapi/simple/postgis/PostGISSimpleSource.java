@@ -198,30 +198,27 @@ public class PostGISSimpleSource implements SimpleSource {
         ft.setDbSchema(dbSchema);
         ft.setJoins(joins);
 
-        Map<String, Set<ColumnAlias>> columnsByTable = new HashMap<>();
+        Map<String, Set<String>> columnsByTable = new HashMap<>();
         String[] idTables = cfg.getMultiple(p + "id.table");
         String[] idMappings = cfg.getMultiple(p + "id.mapping");
-        String[] idAliases = cfg.getMultiple(p + "id.alias");
         if (idMappings.length == 0) {
             throw new IllegalArgumentException("Missing required property " + (p + "id.mapping"));
         }
         for (int i = 0; i < idMappings.length; i++) {
             String table = idTables.length > i ? idTables[i] : primaryTable;
             String mapping = idMappings[i];
-            String alias = idAliases.length > i ? idAliases[i] : null;
             if (!HakunaConfigParser.isStaticMapping(mapping)) {
-                columnsByTable.computeIfAbsent(table, __ -> new HashSet<>()).add(new ColumnAlias(mapping, alias));
+                columnsByTable.computeIfAbsent(table, __ -> new HashSet<>()).add(mapping);
             }
         }
 
         String geometryTable = cfg.get(p + "geometry.table", primaryTable);
         String geometryMapping = cfg.get(p + "geometry.mapping");
-        String geometryAlias = cfg.get(p + "geometry.alias");
         if (geometryMapping != null) {
             geometryMapping = geometryMapping.replace("\"", "");    
         }
         if (geometryMapping != null) {
-            columnsByTable.computeIfAbsent(geometryTable, __ -> new HashSet<>()).add(new ColumnAlias(geometryMapping, geometryAlias));
+            columnsByTable.computeIfAbsent(geometryTable, __ -> new HashSet<>()).add(geometryMapping);
         }
 
         String[] properties = cfg.getMultiple(p + "properties");
@@ -244,19 +241,17 @@ public class PostGISSimpleSource implements SimpleSource {
         for (String property : properties) {
             String table = cfg.get(p + "properties." + property + ".table", primaryTable);
             String mapping = cfg.get(p + "properties." + property + ".mapping", property);
-            String alias = cfg.get(p + "properties." + property + ".alias", null);
             mapping = mapping.replace("\"", "");
-            ColumnAlias ca = new ColumnAlias(mapping, alias);
             if (!HakunaConfigParser.isStaticMapping(mapping)) {
-                columnsByTable.computeIfAbsent(table, __ -> new HashSet<>()).add(ca);
+                columnsByTable.computeIfAbsent(table, __ -> new HashSet<>()).add(mapping);
             }
         }
 
         Map<String, Map<String, List<HakunaPropertyType>>> propertyTypes = new HashMap<>();
         Map<String, Map<String, Boolean>> propertyNullability = new HashMap<>();
-        for (Map.Entry<String, Set<ColumnAlias>> entry : columnsByTable.entrySet()) {
+        for (Map.Entry<String, Set<String>> entry : columnsByTable.entrySet()) {
             String table = entry.getKey();
-            Set<ColumnAlias> columns = entry.getValue();
+            Set<String> columns = entry.getValue();
             String select = getSelectSchema(dbSchema, table, columns);
             Map<String, List<HakunaPropertyType>> tablePropertyTypes = getPropertyTypes(ds, select);
             propertyTypes.put(table, tablePropertyTypes);
@@ -269,9 +264,8 @@ public class PostGISSimpleSource implements SimpleSource {
             // Simple
             String table = idTables.length > 0 ? idTables[0] : primaryTable;
             String mapping = idMappings[0];
-            String alias = idAliases.length > 0 ? idAliases[0] : mapping;
-            HakunaPropertyType idColumnType = propertyTypes.get(table).get(alias).get(0);
-            boolean nullable = propertyNullability.get(table).get(alias);
+            HakunaPropertyType idColumnType = propertyTypes.get(table).get(mapping).get(0);
+            boolean nullable = propertyNullability.get(table).get(mapping);
             HakunaPropertyWriter propWriter = HakunaPropertyWriters.getIdPropertyWriter(ft, ft.getName(), "id", idColumnType);
             switch (idColumnType) {
             case INT:
@@ -295,12 +289,11 @@ public class PostGISSimpleSource implements SimpleSource {
             for (int i = 0; i < idMappings.length; i++) {
                 String table = idTables.length > i ? idTables[i] : primaryTable;
                 String mapping = idMappings[i];
-                String alias = idAliases.length > 0 ? idAliases[0] : mapping;
-                boolean nullable = propertyNullability.get(table).get(alias);
+                boolean nullable = propertyNullability.get(table).get(mapping);
                 if (HakunaConfigParser.isStaticMapping(mapping)) {
                     parts.add(HakunaPropertyStatic.create("id", "table", mapping.substring(1, mapping.length() - 1)));
                 } else {
-                    List<HakunaPropertyType> typeChain = propertyTypes.get(table).get(alias);
+                    List<HakunaPropertyType> typeChain = propertyTypes.get(table).get(mapping);
                     boolean unique = false;
                     boolean hidden = true;
                     parts.add(getDynamicProperty(cfg, HakunaConfigParser.REF_ID_PROP, table, mapping, typeChain, nullable, unique, hidden));
@@ -335,7 +328,6 @@ public class PostGISSimpleSource implements SimpleSource {
             boolean unique = Boolean.parseBoolean(cfg.get(propertyPrefix + "unique", "false"));
             boolean hidden = Boolean.parseBoolean(cfg.get(propertyPrefix + "hidden", "false"));
             String table = cfg.get(p + "properties." + property + ".table", primaryTable);
-            String alias = cfg.get(p + "properties." + property + ".alias", mapping);
 
             if (HakunaConfigParser.isStaticMapping(mapping)) {
                 String value = mapping.substring(1, mapping.length() - 1);
@@ -344,7 +336,7 @@ public class PostGISSimpleSource implements SimpleSource {
             }
 
             Map<String, List<HakunaPropertyType>> tableTypes = propertyTypes.get(table);
-            List<HakunaPropertyType> type = tableTypes.get(alias);
+            List<HakunaPropertyType> type = tableTypes.get(mapping);
             if (type == null) {
                 throw new IllegalArgumentException(
                         "Property " + property + " with mapping " + mapping + " can't find type from table " + table);
@@ -637,59 +629,6 @@ public class PostGISSimpleSource implements SimpleSource {
         return cfg.getDynamicProperty(name, table, column, typeChain, nullable, unique, hidden);
     }
 
-
-    private final class ColumnAlias {
-
-        private final String column;
-        private final String alias;
-        private final boolean escape;
-
-        public ColumnAlias(String column, String alias) {
-            this(column, alias, true);
-        }
-
-        public ColumnAlias(String column, String alias, boolean escape) {
-            this.column = column;
-            this.alias = alias;
-            this.escape = escape;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-            result = prime * result + ((column == null) ? 0 : column.hashCode());
-            result = prime * result + (escape ? 1231 : 1237);
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            ColumnAlias other = (ColumnAlias) obj;
-            if (alias == null) {
-                if (other.alias != null)
-                    return false;
-            } else if (!alias.equals(other.alias))
-                return false;
-            if (column == null) {
-                if (other.column != null)
-                    return false;
-            } else if (!column.equals(other.column))
-                return false;
-            if (escape != other.escape)
-                return false;
-            return true;
-        }
-
-    }
-
     private Join parseJoin(HakunaConfigParser cfg, String join) {
         String propertyPrefix = "joins." + join + ".";
         String type = cfg.get(propertyPrefix + "type");
@@ -715,20 +654,11 @@ public class PostGISSimpleSource implements SimpleSource {
         }
     }
 
-    private String getSelectSchema(String schema, String table, Set<ColumnAlias> columns) {
+    private String getSelectSchema(String schema, String table, Set<String> columns) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ");
-        for (ColumnAlias col : columns) {
-            if (col.escape) {
-                sb.append('"').append(col.column).append('"');
-            } else {
-                sb.append(col.column);
-            }
-            if (col.alias != null) {
-                sb.append(" AS ");
-                sb.append('"').append(col.alias).append('"');
-            }
-            sb.append(',');
+        for (String column : columns) {
+            sb.append('"').append(column).append('"').append(',');
         }
         sb.setLength(sb.length() - 1);
         sb.append(" FROM ");

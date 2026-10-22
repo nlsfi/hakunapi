@@ -73,6 +73,11 @@ ask you to make changes before merging it.
 of the content, that you have the necessary rights to the content and that the
 content you contribute may be provided under the project license.
 
+> ### Configuration reference
+> A Pull Request that adds, renames or removes a configuration key, or changes its
+default, is expected to update [docs/overview/configuration.md](docs/overview/configuration.md)
+in the same Pull Request.
+
 ## Community Modules
 
 Hakunapi has a second tier of modules for contributions that are useful but not part of

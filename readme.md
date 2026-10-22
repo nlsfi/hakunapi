@@ -44,6 +44,10 @@ To use one, add it as an explicit dependency of your own webapp. See
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
+## Configuration
+
+All configuration keys and their defaults: [docs/overview/configuration.md](docs/overview/configuration.md)
+
 ## Example
 
 Check out [Finnish addresses](examples/finnish_addresses)
