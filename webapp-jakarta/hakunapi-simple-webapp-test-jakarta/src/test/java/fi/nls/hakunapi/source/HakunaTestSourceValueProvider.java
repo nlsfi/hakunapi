@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import fi.nls.hakunapi.core.ValueProvider;
 import fi.nls.hakunapi.core.geom.HakunaGeometry;
+import fi.nls.hakunapi.core.geom.HakunaGeometryJTS;
 
 public class HakunaTestSourceValueProvider implements ValueProvider {
 
@@ -87,6 +88,10 @@ public class HakunaTestSourceValueProvider implements ValueProvider {
 	@Override
 	public HakunaGeometry getHakunaGeometry(int i) {
 		HakunaGeometry g = (HakunaGeometry) _getObject(i);
+		// Sources must hand out a fresh copy: reprojection mutates the geometry in place.
+		if (g instanceof HakunaGeometryJTS) {
+			return new HakunaGeometryJTS(((HakunaGeometryJTS) g).toJTSGeometry().copy());
+		}
 		return g;
 	}
 

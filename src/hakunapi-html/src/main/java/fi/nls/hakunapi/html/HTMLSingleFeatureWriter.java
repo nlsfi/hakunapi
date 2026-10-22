@@ -59,7 +59,9 @@ public class HTMLSingleFeatureWriter extends HTMLFeatureWriterBase implements Si
     public void startFeature(FeatureType ft, String layername, String fid) throws Exception {
         this.feature = new HTMLFeature();
         this.feature.setId(fid);
-        this.feature.setFeatureType(ft);
+        this.feature.setFeatureType(forDisplay(ft));
+        this.feature.setLang(lang);
+        this.feature.setAvailableLanguages(availableLanguages);
         this.feature.setSrid(srid);
         this.feature.setSridCode(sridCode);
         OutputFormatHTMLSettings sridSpecific = sridSettings.getOrDefault(srid, settings);
