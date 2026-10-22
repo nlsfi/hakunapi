@@ -78,6 +78,7 @@
   description, and links to the collection's schema. `collections.ftl` lists
   entries as `collection_id (Title)`.
 - The HTML collection page links to the collection schema and shows the spatial and temporal extent when available (#185).
+- HTML templates: Bootstrap 5.0.0-beta3 -> 5.3.8, Leaflet 1.7.1 -> 1.9.4, proj4 2.7.5 -> 2.22.0 and swagger-ui 3.45.1 -> 5.29.1 (still loaded from CDNs, with updated SRI hashes). The Leaflet and proj4 imports now live in `mapLibs.ftl`, shared by `featureCollection.ftl` and `feature.ftl`; a custom template directory that overrides these two templates keeps its own versions (#199).
 
 
 ## 2.0.0

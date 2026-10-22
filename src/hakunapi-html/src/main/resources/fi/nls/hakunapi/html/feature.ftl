@@ -7,13 +7,8 @@
 <#list links as link>
   <link rel="${link.rel}" type="${link.type}" title="${link.title}" href="${link.href}"/>
 </#list>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-  <#if bgProj4?has_content>
-  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4.js" integrity="sha512-MMmVaQGDVI3Wouc5zT5G7k/snN9gPqquIhZsHgIIHVDlRgYTYGxrwu6w482iIhAq8n5R6+pcBgpGgxFFBz7rZA==" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.js" integrity="sha512-NA+0vegFw6AiYXT23H+hk43LxqwpJkkviK/vHTESeu+jUpvWssfQRWWqSR07aUhGSKtfpkdlE8YFrVaHsnb3jw==" crossorigin=""></script>
-  </#if>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <#include "mapLibs.ftl">
   <title>${featureType.name} - ${id}</title>
   <style>
   </style>
@@ -42,7 +37,7 @@
         </li>
 </#if>
         <li class="nav-item">
-          <a class="navbar-brand" id="json-link" target="_blank">JSON</a>
+          <a class="text-decoration-none fs-5 py-1 me-3" id="json-link" target="_blank">JSON</a>
         </li>
         <li class="nav-item">
           <a href="https://github.com/nlsfi/hakunapi" target="_blank">
@@ -110,7 +105,7 @@ if (langSelect) {
   });
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 <script>
 <#if bgProj4?has_content>
 var crsConfig = {
