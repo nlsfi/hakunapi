@@ -1,3 +1,4 @@
+<#include "backgroundMap.ftl">
 <!doctype html>
 <html lang="${lang!'en'}">
 <head>
@@ -9,7 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-  <#if sridCode?? && sridCode.proj4??>
+  <#if bgProj4?has_content>
   <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.5/dist/proj4.js" integrity="sha512-MMmVaQGDVI3Wouc5zT5G7k/snN9gPqquIhZsHgIIHVDlRgYTYGxrwu6w482iIhAq8n5R6+pcBgpGgxFFBz7rZA==" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.js" integrity="sha512-NA+0vegFw6AiYXT23H+hk43LxqwpJkkviK/vHTESeu+jUpvWssfQRWWqSR07aUhGSKtfpkdlE8YFrVaHsnb3jw==" crossorigin=""></script>
   </#if>
@@ -18,6 +19,7 @@
   </style>
 </head>
 <body>
+<#assign crsUri = (srid == 84)?then("http://www.opengis.net/def/crs/OGC/1.3/CRS84", "http://www.opengis.net/def/crs/EPSG/0/" + srid?c)>
 <main>
   <div class="container py-4">
     <nav class="nav justify-content-between" aria-label="breadcrumb">
@@ -25,7 +27,7 @@
         <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="../../../${langQuery}">Home</a></li>
         <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="../../../collections${langQuery}">Collections</a></li>
         <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="../../../collections/${featureType.name}${langQuery}">${featureType.name}</a></li>
-        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="../../../collections/${featureType.name}/items${langQuery}">Items</a></li>
+        <li class="breadcrumb-item"><a class="d-flex align-items-center text-dark text-decoration-none" href="../../../collections/${featureType.name}/items${langQuery}${langQuery?has_content?then('&', '?')}crs=${crsUri}">Items</a></li>
         <li class="breadcrumb-item active" aria-current="page">${id}</li>
       </ol>
       <ul class="nav">
@@ -54,6 +56,13 @@
       <h1 class="mb-0">${featureType.title!featureType.name} / ${id}</h1>
       <small class="text-secondary">${featureType.name}</small>
       <#if featureType.description??><p class="mt-2">${featureType.description}</p></#if>
+      <label for="crs">Switch CRS:</label>
+      <select name="crs" id="crs" onchange="var p = new URLSearchParams(window.location.search); p.set('crs', this.options[this.selectedIndex].value); window.location.search = p.toString()">
+        <#list featureType.geom.srid as availableSRID>
+        <#assign optionUri = (availableSRID == 84)?then("http://www.opengis.net/def/crs/OGC/1.3/CRS84", "http://www.opengis.net/def/crs/EPSG/0/" + availableSRID?c)>
+        <option value="${optionUri}"<#if availableSRID == srid> selected</#if>><#if availableSRID == 84>CRS84<#else>EPSG:${availableSRID?c}</#if></option>
+        </#list>
+      </select>
     </header>
     
     <div id="map" class="border pb-3 mb-3" style="height: 360px;"></div>
@@ -103,7 +112,7 @@ if (langSelect) {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 <script>
-<#if sridCode?? && sridCode.proj4??>
+<#if bgProj4?has_content>
 var crsConfig = {
   resolutions: [
     8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5, 0.25
@@ -113,15 +122,21 @@ var crsConfig = {
 crsConfig.origin = [${settings.tileOriginX}, ${settings.tileOriginY}];
 </#if>
 var crs = new L.Proj.CRS("EPSG:${srid?c}",
-  "${sridCode.proj4}",
+  "${bgProj4}",
   crsConfig)
-var map = L.map('map', { crs: crs });
-<#else>
-var map = L.map('map');
+<#elseif bgWebMercator>
+var crs = L.CRS.EPSG3857;
 </#if>
-L.tileLayer('${settings.tileUrl}', {
-    <#if sridCode?? && sridCode.proj4??>minZoom: 0, maxZoom: 15, </#if><#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
+// Without a tile layer Leaflet has no max zoom, which breaks fitBounds for a single point
+var map = L.map('map', { <#if bgProjected>crs: crs, </#if><#if !bgTileUrl?has_content>maxZoom: <#if bgProj4?has_content>15<#else>18</#if></#if> });
+<#if bgTileUrl?has_content>
+L.tileLayer('${bgTileUrl}', {
+    <#if bgProj4?has_content>minZoom: 0, maxZoom: 15, </#if><#if settings.tileAttribution??>attribution: '${settings.tileAttribution}'</#if>
 }).addTo(map);
+<#else>
+document.getElementById('map').style.background = '#fff';
+map.attributionControl.addAttribution('No background map for this coordinate system');
+</#if>
 
 <#if geometry??>
 var data = {
@@ -130,7 +145,7 @@ var data = {
   "geometry": ${geometry}
 };
 var layer = L.geoJSON(data, {
-  <#if sridCode?? && sridCode.proj4??>
+  <#if bgProjected>
   coordsToLatLng: function(coords) {
     var point = L.point(coords[0], coords[1]);
     return crs.projection.unproject(point);

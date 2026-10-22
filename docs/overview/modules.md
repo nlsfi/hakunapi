@@ -319,6 +319,8 @@ This support is implemented by the `hakunapi-html` module and it can be enabled 
 
 The HTML content produced includes an interactive Leaflet map by default, with features visualized on a configurable tile layer and displayed in a data table. Maps work with any coordinate system configured via proj4 definitions and per-SRID tile settings, handling both geographic and projected CRS transparently. The HTML templates are customizable and can be extended or replaced for application-specific needs. 
 
+The map on the items and item pages is a demo feature. A background tile layer is shown only when an open tile service fits the CRS of the page: OpenStreetMap by default for geographic CRSs and EPSG:3857, or the service configured for the CRS with `formats.html.<srid>.tileUrl` (also `tileAttribution`, `tileOriginX`, `tileOriginY`; `formats.html.tileUrl` applies to all CRSs). For any other CRS, such as EPSG:3067 or ETRS-GKnn without configuration, only the feature geometries are drawn. For example, the National Land Survey of Finland services are configured per CRS: WGS84_Pseudo-Mercator tiles for geographic CRSs and EPSG:3857, ETRS-TM35FIN tiles (with the tile origin) for EPSG:3067, 3903 and 10774, see `docker/cfg/addresses.properties`. The NLS services require an API key.
+
 ### GeoPackage
 
 The [GeoPackage (GPKG)](https://www.geopackage.org/) output format (the media type `application/geopackage+vnd.sqlite3`) is supported by the `hakunapi-gpgk` module. When needed it must be enabled using a configuration like `formats=geojson,gpgk`. The implementation supports outputting same feature, feature collection, property and geometry objects (Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon and GeometryCollection) as GeoJSON writer too. 

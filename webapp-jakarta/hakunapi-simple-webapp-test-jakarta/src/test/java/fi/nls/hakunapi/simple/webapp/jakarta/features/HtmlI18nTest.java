@@ -146,7 +146,7 @@ public class HtmlI18nTest extends JerseyTest {
 
         String feature = html("/collections/fence/items/1", "fi");
         assertTrue(feature, feature.contains("?lang=fi\">Home</a>"));
-        assertTrue(feature, feature.contains("/items?lang=fi\">Items</a>"));
+        assertTrue(feature, feature.contains("/items?lang=fi&crs=http://www.opengis.net/def/crs/OGC/1.3/CRS84\">Items</a>"));
     }
 
     /* Localized content */

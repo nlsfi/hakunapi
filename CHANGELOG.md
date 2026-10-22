@@ -73,6 +73,7 @@
 - New community module `hakunapi-tiles-source-gpkg`: a `MapTileSource` and a `VectorTileSource` serving the tiles stored in a GeoPackage tile pyramid, read through `sqlite-jdbc`. Not part of the reference webapp.
 - New community module `hakunapi-tiles-source-pmtiles`: a `MapTileSource` and a `VectorTileSource` serving the tiles of a PMTiles v3 archive, read in place from a local file or over HTTP range requests. Not part of the reference webapp.
 - New community module `hakunapi-tiles-generator`: the seed tool `TilesGenerator` writes a vector tile pyramid into a GeoPackage (`hakunapi-tiles-source-gpkg` can serve it), and `PMTilesConvert` converts such a pyramid into a PMTiles v3 archive. Not part of the reference webapp.
+- HTML items and item pages: the Leaflet map shows a background tile layer only for CRSs an open tile service fits. The default OpenStreetMap layer is used for geographic CRSs and EPSG:3857 (which is now plotted correctly); for other CRSs, such as EPSG:3067 or ETRS-GKnn, only the feature geometries are drawn unless `formats.html.<srid>.tileUrl` is configured.
 - `collectionInfo.ftl` shows the collection id alongside its title and
   description, and links to the collection's schema. `collections.ftl` lists
   entries as `collection_id (Title)`.
