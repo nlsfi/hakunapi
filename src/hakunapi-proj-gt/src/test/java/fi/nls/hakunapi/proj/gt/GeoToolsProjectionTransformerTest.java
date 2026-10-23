@@ -24,9 +24,18 @@ public class GeoToolsProjectionTransformerTest {
     @Test
     public void testWKT3067() throws Exception {
         ProjectionTransformerFactory fact = new GeoToolsProjectionTransformerFactory();
-        String wkt = fact.getWKT(3067);
+        String wkt = fact.getWKT(3067, true);
         assertTrue(wkt, wkt.startsWith("PROJCS[\"EUREF-FIN / TM35FIN(E,N)\""));
         assertTrue(wkt, wkt.endsWith("AUTHORITY[\"EPSG\",\"3067\"]]"));
+    }
+
+    @Test
+    public void testWKTAxisOrder4258() throws Exception {
+        ProjectionTransformerFactory fact = new GeoToolsProjectionTransformerFactory();
+        String xy = fact.getWKT(4258, true);
+        String authority = fact.getWKT(4258, false);
+        assertTrue(xy, xy.indexOf("EAST]") < xy.indexOf("NORTH]"));
+        assertTrue(authority, authority.indexOf("NORTH]") < authority.indexOf("EAST]"));
     }
 
     @Test
