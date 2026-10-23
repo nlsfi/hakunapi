@@ -88,6 +88,10 @@
 - `servers` is now trimmed like the other list keys: `servers=dev, prod` works instead of failing startup with a `NullPointerException`.
 - PostGIS source: the keys `collections.<id>.id.alias`, `geometry.alias` and `properties.<p>.alias` are removed. They were a not-working and unfinished idea (`properties.<p>.alias` made startup fail with a `NullPointerException`); they are now ignored.
 
+### Library updates
+
+- `hakunapi-proj-gt` excludes `gt-epsg-hsql`'s transitive `net.opengis.ows`, `org.w3.xlink`, the three `org.eclipse.emf` jars, `imagen-core` and `commons-lang3` (~4 MB). GeoTools references them only from ISO citation metadata, raster parameters and URN/PROJ formatting, none of which hakunapi uses; transformations and WKT are unchanged.
+
 ## 2.0.0
 
 For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
