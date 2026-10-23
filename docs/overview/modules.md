@@ -65,7 +65,7 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 | Jakarta EE APIs | servlet 6.0.0, ws.rs 3.1.0, validation 3.0.2 | Servlet API, JAX-RS API | **To consider:** Currently too much logic is implemented against JAX-RS APIs. Additional layer would allow for migration to another Web API layer ("Control" and "Service" layers are now somewhat intermingled) |
 | Jersey | 3.1.11 | JAX-RS implementation: servlet container integration + HK2 dependency injection | |
 | Jackson | 3.1.6 (annotations 2.21) | JSON streaming, object mapping and JAX-RS integration for Jersey. Jackson 3.1.x reuses the 2.21 annotation artifact. | |
-| Swagger Core | 2.2.42 | OpenAPI 3 model classes and serialization for API description generation | |
+| Swagger Core | 2.2.42 | OpenAPI 3 model classes (`swagger-models`, core) and the Jackson mixins that serialize them (`swagger-core`, servlet) | `swagger-core` is declared with all transitive dependencies excluded: only its mixins are used, and they need nothing beyond `jackson-annotations` and `swagger-models`. This keeps Jackson 2 out of the WAR. |
 
 #### Spatial geometry and CRS
 

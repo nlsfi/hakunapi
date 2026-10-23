@@ -1,0 +1,49 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "$id" : "https://localhost/hakuna/collections/building_part_area/schema",
+  "title" : "Building part (area)",
+  "description" : "Building parts represented as areas",
+  "type" : "object",
+  "properties" : {
+    "type" : {
+      "enum" : [ "Feature" ],
+      "type" : "string"
+    },
+    "id" : {
+      "type" : "string"
+    },
+    "geometry" : {
+      "properties" : {
+        "type" : {
+          "enum" : [ "Point" ],
+          "type" : "string"
+        },
+        "coordinates" : {
+          "items" : {
+            "type" : "number"
+          },
+          "minItems" : 2,
+          "type" : "array"
+        }
+      },
+      "required" : [ "type", "coordinates" ],
+      "type" : "object"
+    },
+    "properties" : {
+      "properties" : {
+        "name" : {
+          "description" : "Name of the building part",
+          "title" : "Name",
+          "type" : "string"
+        },
+        "building_function_id" : {
+          "enum" : [ 1, 2, 3, 4 ],
+          "title" : "Function",
+          "type" : "integer",
+          "x-codelist-uri" : "https://uri.suomi.fi/codelist/maastotest/building_function_v1"
+        }
+      },
+      "type" : "object"
+    }
+  }
+}
