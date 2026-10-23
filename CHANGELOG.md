@@ -84,6 +84,10 @@
 - `servers` is now trimmed like the other list keys: `servers=dev, prod` works instead of failing startup with a `NullPointerException`.
 - PostGIS source: the keys `collections.<id>.id.alias`, `geometry.alias` and `properties.<p>.alias` are removed. They were a not-working and unfinished idea (`properties.<p>.alias` made startup fail with a `NullPointerException`); they are now ignored.
 
+### Library updates
+
+- `hakunapi-simple-webapp-jakarta`: `org.apache.logging.log4j:log4j-1.2-api` is replaced by `org.slf4j:log4j-over-slf4j`, so FreeMarker 2.3's Log4j 1 API calls go through SLF4J like the rest of hakunapi instead of straight to Log4j 2 (351 kB → 26 kB).
+
 ## 2.0.0
 
 For a full list of changes see: https://github.com/nlsfi/hakunapi/milestone/17
