@@ -75,7 +75,7 @@ public class BboxAntimeridianTest {
             }
 
             @Override
-            public String getWKT(int srid) {
+            public String getWKT(int srid, boolean longitudeFirst) {
                 throw new UnsupportedOperationException();
             }
         });

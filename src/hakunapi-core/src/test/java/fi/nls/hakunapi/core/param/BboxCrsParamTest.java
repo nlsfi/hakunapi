@@ -62,7 +62,7 @@ public class BboxCrsParamTest {
             }
 
             @Override
-            public String getWKT(int srid) {
+            public String getWKT(int srid, boolean longitudeFirst) {
                 throw new UnsupportedOperationException();
             }
         });

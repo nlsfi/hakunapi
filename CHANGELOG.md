@@ -4,7 +4,7 @@
 
 ### Breaking changes (migration guide)
 
-- `ProjectionTransformerFactory` has a new required method `String getWKT(int srid)`, the WKT 1 definition of a CRS the factory supports. Custom implementations must add it. `hakunapi-gpkg` uses it for `gpkg_spatial_ref_sys` and no longer depends on GeoTools (`gt-epsg-hsql`) itself; the GeoPackage output now needs a projection factory that provides WKT, as `hakunapi-proj-gt` does. `JHeProjectionTransformerFactory` (community) throws `UnsupportedOperationException` for now.
+- `ProjectionTransformerFactory` has a new required method `String getWKT(int srid, boolean longitudeFirst)`, the WKT 1 definition of a CRS the factory supports, optionally with x/y axis order forced. Custom implementations must add it. `hakunapi-gpkg` uses it for `gpkg_spatial_ref_sys` and no longer depends on GeoTools (`gt-epsg-hsql`) itself; the GeoPackage output now needs a projection factory that provides WKT, as `hakunapi-proj-gt` does. `JHeProjectionTransformerFactory` (community) throws `UnsupportedOperationException` for now.
 
 ### Internationalization / Localization
 
