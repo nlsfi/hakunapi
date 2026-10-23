@@ -31,6 +31,7 @@ import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
 import fi.nls.hakunapi.gpkg.GPKG;
 import fi.nls.hakunapi.gpkg.GPKGSpatialRefSystems;
+import fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory;
 import fi.nls.hakunapi.tiles.TileBody;
 import fi.nls.hakunapi.tiles.TileMatrix;
 import fi.nls.hakunapi.tiles.TileMatrixSet;
@@ -93,7 +94,7 @@ public class PyramidGeneratorTest {
         try (Connection c = open(out)) {
             GPKG.init(c);
             GPKG.initTiles(c);
-            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID));
+            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID, new GeoToolsProjectionTransformerFactory()));
             PyramidTables.createTables(c, tables, tms, minZoom, maxZoom);
 
             PyramidGenerator pyramid = new PyramidGenerator(control, sources, tms, generator,
@@ -222,7 +223,7 @@ public class PyramidGeneratorTest {
         try (Connection c = open(out)) {
             GPKG.init(c);
             GPKG.initTiles(c);
-            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID));
+            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID, new GeoToolsProjectionTransformerFactory()));
             PyramidTables.createTables(c, tables, tms, 0, 3);
             PyramidGenerator pyramid = new PyramidGenerator(control, sources, tms, failing,
                     VectorTileGeneratorSource.DEFAULT_MEDIA_TYPE,
@@ -245,7 +246,7 @@ public class PyramidGeneratorTest {
             GPKG.init(c);
             GPKG.initTiles(c);
             GPKG.initTiles(c);
-            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID));
+            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(SRID, new GeoToolsProjectionTransformerFactory()));
             PyramidTables.createTables(c, List.of("tieviiva"), scheme(), 1, 2);
             assertTrue(PyramidTables.existingTables(c, List.of("tieviiva", "x")).equals(List.of("tieviiva")));
             try (Statement st = c.createStatement()) {

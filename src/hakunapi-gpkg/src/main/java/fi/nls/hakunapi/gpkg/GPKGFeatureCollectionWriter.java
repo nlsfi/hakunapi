@@ -111,7 +111,7 @@ public class GPKGFeatureCollectionWriter extends GPKGFeatureWriter implements Fe
         }
         insert.close();
         GPKGGeometryColumn geometryColumn = createGeometryColumn();
-        GPKGSpatialRefSys srs = GPKGSpatialRefSystems.get(srid.getSrid());
+        GPKGSpatialRefSys srs = GPKGSpatialRefSystems.get(srid.getSrid(), ft.getProjectionTransformerFactory());
         GPKG.insertSpatialRefSys(c, srs);
         GPKGFeaturesTable tableEntry = new GPKGFeaturesTable(tableName, ft.getTitle(), ft.getDescription(), envelope, srs.getSrsId());
         GPKG.insertFeaturesTableEntry(c, tableEntry);

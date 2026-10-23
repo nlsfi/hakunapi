@@ -207,7 +207,8 @@ the table, converted to WGS84 with the pyramid's own SRID; the centre is the
 middle of that extent. Nothing is assumed about where the data is. Converting
 a CRS other than EPSG:4326 needs a projection factory on the classpath
 (`-Dhakunapi.proj=<class>`, default `fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory`,
-as for a service configuration); without one, pass `--bbox`.
+as for a service configuration); without one, pass `--bbox`. `hakunapi-proj-gt`
+is bundled.
 
 The archive keeps the pyramid's own tile addressing. Every zoom must be a
 `2^z` by `2^z` matrix, because a PMTiles tile id is a Hilbert index over a

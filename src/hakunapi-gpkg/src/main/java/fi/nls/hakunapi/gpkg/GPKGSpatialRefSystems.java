@@ -1,11 +1,9 @@
 package fi.nls.hakunapi.gpkg;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.referencing.CRS;
-
+import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.core.schemas.Crs;
 
 public class GPKGSpatialRefSystems {
@@ -16,7 +14,7 @@ public class GPKGSpatialRefSystems {
     public static final GPKGSpatialRefSys UNDEFINED_CARTESIAN = new GPKGSpatialRefSys("Undefined Cartesian", -1, "NONE", -1, "undefined", "undefined");
     public static final GPKGSpatialRefSys UNDEFINED_GEOGRAPHIC = new GPKGSpatialRefSys("Undefined Geographic", 0, "NONE", 0, "undefined", "undefined");
 
-    private static final Map<Integer, GPKGSpatialRefSys> BY_SRID = new HashMap<>();
+    private static final Map<Integer, GPKGSpatialRefSys> BY_SRID = new ConcurrentHashMap<>();
     static {
         register(WGS84);
         register(UNDEFINED_CARTESIAN);
@@ -27,21 +25,20 @@ public class GPKGSpatialRefSystems {
         BY_SRID.put(sys.getSrsId(), sys);
     }
 
-    public static GPKGSpatialRefSys get(int srid) {
+    public static GPKGSpatialRefSys get(int srid, ProjectionTransformerFactory proj) {
         if (srid == Crs.CRS84_SRID) {
             return WGS84;
         }
-        return BY_SRID.computeIfAbsent(srid, GPKGSpatialRefSystems::epsg);
+        return BY_SRID.computeIfAbsent(srid, __ -> epsg(srid, proj));
     }
 
-    private static GPKGSpatialRefSys epsg(int srid) {
+    private static GPKGSpatialRefSys epsg(int srid, ProjectionTransformerFactory proj) {
         try {
             String srsName = "EPSG:" + srid;
-            CoordinateReferenceSystem crs = CRS.decode(srsName, true);
-            String definition = crs.toWKT();
+            String definition = proj.getWKT(srid);
             return new GPKGSpatialRefSys(srsName, srid, "EPSG", srid, definition, srsName);
         } catch (Exception e) {
-            throw new RuntimeException("Could not decode CRS for srid: " + srid);
+            throw new RuntimeException("Could not decode CRS for srid: " + srid, e);
         }
     }
 
