@@ -17,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 
 import fi.nls.hakunapi.gpkg.GPKG;
 import fi.nls.hakunapi.gpkg.GPKGSpatialRefSystems;
+import fi.nls.hakunapi.proj.gt.GeoToolsProjectionTransformerFactory;
 import fi.nls.hakunapi.tiles.TileMatrix;
 import fi.nls.hakunapi.tiles.TileMatrixSet;
 
@@ -35,7 +36,7 @@ public class PyramidBoundsTest {
         Connection c = DriverManager.getConnection("jdbc:sqlite:" + path);
         GPKG.init(c);
         GPKG.initTiles(c);
-        GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(srid));
+        GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(srid, new GeoToolsProjectionTransformerFactory()));
         PyramidTables.createTables(c, List.of("t"), new TileMatrixSet("T", "T", "urn:x", srid, matrices), 0, 2);
         try (Statement st = c.createStatement()) {
             for (String tile : tiles) {

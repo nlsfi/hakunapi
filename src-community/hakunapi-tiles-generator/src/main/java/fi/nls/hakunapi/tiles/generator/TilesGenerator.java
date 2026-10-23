@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import fi.nls.hakunapi.core.FeatureType;
 import fi.nls.hakunapi.core.FilterParser;
 import fi.nls.hakunapi.core.config.HakunaConfigParser;
+import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
 import fi.nls.hakunapi.cql2.text.CQL2Text;
 import fi.nls.hakunapi.gpkg.GPKG;
 import fi.nls.hakunapi.gpkg.GPKGSpatialRefSystems;
@@ -94,7 +95,7 @@ public class TilesGenerator {
                 GPKG.init(c);
             }
             GPKG.initTiles(c);
-            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(tms.getSrid()));
+            GPKG.insertSpatialRefSys(c, GPKGSpatialRefSystems.get(tms.getSrid(), projectionFactory(collections)));
 
             List<String> existing = PyramidTables.existingTables(c, tables);
             if (!existing.isEmpty()) {
@@ -131,6 +132,11 @@ public class TilesGenerator {
             throw new IllegalArgumentException("Unknown vector tile generator type '" + wanted + "'");
         }
         return generator;
+    }
+
+    // The CRS definition comes from the same factory the collections are transformed with
+    private static ProjectionTransformerFactory projectionFactory(Map<String, List<FeatureType>> collections) {
+        return collections.values().iterator().next().get(0).getProjectionTransformerFactory();
     }
 
     private static void validateZooms(GeneratorControl control, TileMatrixSet tms, int minZoom, int maxZoom) {

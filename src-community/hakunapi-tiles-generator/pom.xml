@@ -23,6 +23,12 @@
       <groupId>fi.nls.hakunapi</groupId>
       <artifactId>hakunapi-gpkg</artifactId>
     </dependency>
+    <!-- Default projection factory, loaded by class name and not imported -->
+    <dependency>
+      <groupId>fi.nls.hakunapi</groupId>
+      <artifactId>hakunapi-proj-gt</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <!-- PMTilesWriter, used by PMTilesConvert -->
     <dependency>
       <groupId>fi.nls.hakunapi</groupId>

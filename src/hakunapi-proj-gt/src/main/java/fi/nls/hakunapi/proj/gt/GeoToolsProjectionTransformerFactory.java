@@ -73,6 +73,11 @@ public class GeoToolsProjectionTransformerFactory implements ProjectionTransform
         return getProjectionTransformer(Crs.CRS84_SRID, CRS84, sridTo, getHorizontalCRS(sridTo));
     }
 
+    @Override
+    public String getWKT(int srid, boolean longitudeFirst) throws Exception {
+        return CRS.decode("EPSG:" + srid, longitudeFirst).toWKT();
+    }
+
     private static CoordinateReferenceSystem getHorizontalCRS(int srid) throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:" + srid, true);
         if (crs instanceof CompoundCRS) {
