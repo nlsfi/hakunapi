@@ -31,6 +31,11 @@ public class JHeProjectionTransformerFactory implements ProjectionTransformerFac
         return getTransformer(4258, sridTo);
     }
 
+    @Override
+    public String getWKT(int srid) throws Exception {
+        throw new UnsupportedOperationException("WKT definitions are not supported by JHe");
+    }
+
     private String getCacheKey(int sridFrom, int sridTo) {
         return sridFrom + "_" + sridTo;
     }

@@ -60,6 +60,11 @@ public class BboxCrsParamTest {
             public ProjectionTransformer fromCRS84(int toSRID) {
                 return NOPProjectionTransformer.INSTANCE;
             }
+
+            @Override
+            public String getWKT(int srid) {
+                throw new UnsupportedOperationException();
+            }
         });
 
         service = new FeatureServiceConfig() {

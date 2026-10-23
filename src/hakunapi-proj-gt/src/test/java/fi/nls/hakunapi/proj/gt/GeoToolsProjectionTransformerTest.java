@@ -1,6 +1,7 @@
 package fi.nls.hakunapi.proj.gt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,6 +19,14 @@ public class GeoToolsProjectionTransformerTest {
         t.transformInPlace(coords, 0, 1);
         assertEquals(500000, coords[0], 1e-8);
         assertEquals(6651411.193370228, coords[1], 1e-8);
+    }
+
+    @Test
+    public void testWKT3067() throws Exception {
+        ProjectionTransformerFactory fact = new GeoToolsProjectionTransformerFactory();
+        String wkt = fact.getWKT(3067);
+        assertTrue(wkt, wkt.startsWith("PROJCS[\"EUREF-FIN / TM35FIN(E,N)\""));
+        assertTrue(wkt, wkt.endsWith("AUTHORITY[\"EPSG\",\"3067\"]]"));
     }
 
     @Test
