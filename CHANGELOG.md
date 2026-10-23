@@ -91,6 +91,7 @@
 ### Library updates
 
 - `swagger-core` is kept only for its Jackson mixins; all of its transitive dependencies are excluded in `hakunapi-simple-servlet-jakarta`. Jackson 2 (`jackson-databind`, `jackson-core`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`), `snakeyaml`, `swagger-annotations`, `jakarta.xml.bind-api` 2.x and `jakarta.activation-api` 1.x are no longer in the reference webapp WAR (8 jars, ~3 MB). Applications that relied on Jackson 2 arriving transitively must declare it themselves.
+- `hakunapi-proj-gt` excludes `gt-epsg-hsql`'s transitive `net.opengis.ows`, `org.w3.xlink`, the three `org.eclipse.emf` jars, `imagen-core` and `commons-lang3` (~4 MB). GeoTools references them only from ISO citation metadata, raster parameters and URN/PROJ formatting, none of which hakunapi uses; transformations and WKT are unchanged.
 
 ## 2.0.0
 
