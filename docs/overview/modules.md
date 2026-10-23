@@ -86,7 +86,7 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
-| FreeMarker | 2.3.34 | HTML template engine for HTML outputs | Pulls `log4j-1.2-api` into the reference webapp; see the Log4j 2 row |
+| FreeMarker | 2.3.34 | HTML template engine for HTML outputs | Logs through the Log4j 1 API, which `log4j-over-slf4j` forwards to SLF4J in the reference webapp; see the SLF4J row |
 | Caffeine | 3.2.4 | In-memory caching | |
 | ANTLR 4 runtime | 4.13.2 | Runtime for the ANTLR-generated CQL2 parser | |
 
@@ -94,8 +94,8 @@ The table below lists all direct third-party dependencies declared in the Hakuna
 
 | Library | Version | Purpose | Notes |
 | --- | --- | --- | --- |
-| SLF4J | 2.0.18 | Logging facade | |
-| Log4j 2 | 2.26.1 | Logging implementation: API, core, SLF4J 2 bridge (`log4j-slf4j2-impl`), and Jakarta servlet lifecycle integration | `log4j-1.2-api` is also declared in `hakunapi-simple-webapp-jakarta`, added alongside the FreeMarker 2.3.34 upgrade |
+| SLF4J | 2.0.18 | Logging facade | `log4j-over-slf4j` is declared in `hakunapi-simple-webapp-jakarta` for FreeMarker 2.3, which auto-detects the Log4j 1 API but not SLF4J |
+| Log4j 2 | 2.26.1 | Logging implementation: API, core, SLF4J 2 bridge (`log4j-slf4j2-impl`), and Jakarta servlet lifecycle integration | |
 
 #### Testing
 
