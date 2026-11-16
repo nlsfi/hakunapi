@@ -18,7 +18,7 @@ public class NOPProjectionTransformerFactory implements ProjectionTransformerFac
     }
 
     @Override
-    public String getWKT(int srid, boolean longitudeFirst) {
+    public String getWKT(int srid) {
         throw new UnsupportedOperationException();
     }
 

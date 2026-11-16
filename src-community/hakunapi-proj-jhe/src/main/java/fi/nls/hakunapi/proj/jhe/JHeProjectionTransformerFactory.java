@@ -32,8 +32,8 @@ public class JHeProjectionTransformerFactory implements ProjectionTransformerFac
     }
 
     @Override
-    public String getWKT(int srid, boolean longitudeFirst) throws Exception {
-        String wkt = JHeWKT.get(srid, longitudeFirst);
+    public String getWKT(int srid) throws Exception {
+        String wkt = JHeWKT.get(srid);
         if (wkt == null) {
             throw new IllegalArgumentException("Unsupported srid: " + srid);
         }

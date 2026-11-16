@@ -35,8 +35,7 @@ public class GPKGSpatialRefSystems {
     private static GPKGSpatialRefSys epsg(int srid, ProjectionTransformerFactory proj) {
         try {
             String srsName = "EPSG:" + srid;
-            // Geometries are always x/y in a GeoPackage, keep the definition consistent with them
-            String definition = proj.getWKT(srid, true);
+            String definition = proj.getWKT(srid);
             return new GPKGSpatialRefSys(srsName, srid, "EPSG", srid, definition, srsName);
         } catch (Exception e) {
             throw new RuntimeException("Could not decode CRS for srid: " + srid, e);

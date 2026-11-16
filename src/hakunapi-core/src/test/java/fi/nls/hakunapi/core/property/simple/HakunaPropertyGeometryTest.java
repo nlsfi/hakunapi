@@ -116,7 +116,7 @@ public class HakunaPropertyGeometryTest {
             }
 
             @Override
-            public String getWKT(int srid, boolean longitudeFirst) {
+            public String getWKT(int srid) {
                 throw new UnsupportedOperationException();
             }
         });
