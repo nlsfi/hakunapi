@@ -114,6 +114,11 @@ public class HakunaPropertyGeometryTest {
             public ProjectionTransformer fromCRS84(int toSRID) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public String getWKT(int srid) {
+                throw new UnsupportedOperationException();
+            }
         });
         HakunaPropertyGeometry prop = new HakunaPropertyGeometry("geometry", "table", "geom", false, null,
                 new int[0], 3067, 2, HakunaPropertyWriters.HIDDEN);
