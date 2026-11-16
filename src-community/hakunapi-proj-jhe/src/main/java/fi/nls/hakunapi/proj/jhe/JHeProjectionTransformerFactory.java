@@ -33,7 +33,11 @@ public class JHeProjectionTransformerFactory implements ProjectionTransformerFac
 
     @Override
     public String getWKT(int srid, boolean longitudeFirst) throws Exception {
-        throw new UnsupportedOperationException("WKT definitions are not supported by JHe");
+        String wkt = JHeWKT.get(srid, longitudeFirst);
+        if (wkt == null) {
+            throw new IllegalArgumentException("Unsupported srid: " + srid);
+        }
+        return wkt;
     }
 
     private String getCacheKey(int sridFrom, int sridTo) {
