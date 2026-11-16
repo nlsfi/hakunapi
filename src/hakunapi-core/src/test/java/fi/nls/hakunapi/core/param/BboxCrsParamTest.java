@@ -20,9 +20,7 @@ import fi.nls.hakunapi.core.PaginationStrategyOffset;
 import fi.nls.hakunapi.core.SRIDCode;
 import fi.nls.hakunapi.core.SimpleFeatureType;
 import fi.nls.hakunapi.core.filter.Filter;
-import fi.nls.hakunapi.core.projection.NOPProjectionTransformer;
-import fi.nls.hakunapi.core.projection.ProjectionTransformer;
-import fi.nls.hakunapi.core.projection.ProjectionTransformerFactory;
+import fi.nls.hakunapi.core.projection.NOPProjectionTransformerFactory;
 import fi.nls.hakunapi.core.property.simple.HakunaPropertyGeometry;
 import fi.nls.hakunapi.core.request.GetFeatureCollection;
 import fi.nls.hakunapi.core.request.GetFeatureRequest;
@@ -47,25 +45,7 @@ public class BboxCrsParamTest {
         myCollection.setStaticFilters(Collections.emptyList());
         myCollection.setGeom(new HakunaPropertyGeometry("geometry", "table", null, false, null, new int[0], 84, 2, (__, ___, ____) -> {}));
         myCollection.setPaginationStrategy(PaginationStrategyOffset.INSTANCE);
-        myCollection.setProjectionTransformerFactory(new ProjectionTransformerFactory() {
-            @Override
-            public ProjectionTransformer getTransformer(int fromSRID, int toSRID) {
-                return NOPProjectionTransformer.INSTANCE;
-            }
-            @Override
-            public ProjectionTransformer toCRS84(int fromSRID) {
-                return NOPProjectionTransformer.INSTANCE;
-            }
-            @Override
-            public ProjectionTransformer fromCRS84(int toSRID) {
-                return NOPProjectionTransformer.INSTANCE;
-            }
-
-            @Override
-            public String getWKT(int srid, boolean longitudeFirst) {
-                throw new UnsupportedOperationException();
-            }
-        });
+        myCollection.setProjectionTransformerFactory(new NOPProjectionTransformerFactory());
 
         service = new FeatureServiceConfig() {
 
