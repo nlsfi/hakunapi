@@ -752,18 +752,13 @@ public class HakunaConfigParser {
         for (String name : schemaNames) {
             String filePath = get("schema." + name + ".path");
             if (filePath == null || filePath.isEmpty()) {
-                LOG.warn("Schema '{}' has no file path configured (schema.{}.path=...)", name, name);
-                continue;
+                throw new IllegalArgumentException(String.format(
+                        "Schema '%s' has no file path configured (schema.%s.path=...)", name, name));
             }
             String lang = get("schema." + name + ".lang", name).toLowerCase(Locale.ROOT);
             File schemaFile = new File(filePath);
             Path schemaPath = schemaFile.isAbsolute() ? schemaFile.toPath() : configPath.getParent().resolve(filePath);
-            @SuppressWarnings("rawtypes")
-            Schema rootSchema = JsonSchemaUtil.loadFromFile(schemaPath).orElse(null);
-            if (rootSchema == null) {
-                continue;
-            }
-            result.put(lang, rootSchema);
+            result.put(lang, JsonSchemaUtil.loadFromFile(schemaPath));
         }
         return result;
     }
