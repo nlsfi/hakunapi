@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -56,25 +56,29 @@ public class JsonSchemaUtil {
     private JsonSchemaUtil() {
     }
 
+    /**
+     * A configured schema that cannot be used fails startup, naming the file.
+     */
     @SuppressWarnings("rawtypes")
-    public static Optional<Schema> loadFromFile(Path schemaPath) {
-        if (schemaPath == null) {
-            return Optional.empty();
-        }
+    public static Schema loadFromFile(Path schemaPath) throws IllegalArgumentException {
+        String json;
         try {
-            if (!Files.exists(schemaPath)) {
-                LOG.debug("No schema file found at {}", schemaPath);
-                return Optional.empty();
-            }
-            String json = Files.readString(schemaPath);
-            JsonNode root = MAPPER.readTree(json);
-            Schema schema = nodeToSchema(root);
-            LOG.info("Loaded JSON Schema from {}", schemaPath);
-            return Optional.of(schema);
+            json = Files.readString(schemaPath);
         } catch (IOException e) {
-            LOG.warn("Failed to load schema from {}: {}", schemaPath, e.getMessage());
-            return Optional.empty();
+            throw new IllegalArgumentException("Could not read JSON Schema " + schemaPath, e);
         }
+        Schema schema;
+        try {
+            schema = nodeToSchema(MAPPER.readTree(json));
+        } catch (JacksonException e) {
+            // Jackson 3 exceptions are unchecked
+            throw new IllegalArgumentException("Invalid JSON Schema " + schemaPath + ": " + e.getOriginalMessage(), e);
+        }
+        if (schema == null) {
+            throw new IllegalArgumentException("Invalid JSON Schema " + schemaPath + ": root is not an object");
+        }
+        LOG.info("Loaded JSON Schema from {}", schemaPath);
+        return schema;
     }
 
     @SuppressWarnings("rawtypes")
