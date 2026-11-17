@@ -92,6 +92,7 @@
 
 - `swagger-core` is kept only for its Jackson mixins; all of its transitive dependencies are excluded in `hakunapi-simple-servlet-jakarta`. Jackson 2 (`jackson-databind`, `jackson-core`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`), `snakeyaml`, `swagger-annotations`, `jakarta.xml.bind-api` 2.x and `jakarta.activation-api` 1.x are no longer in the reference webapp WAR (8 jars, ~3 MB). Applications that relied on Jackson 2 arriving transitively must declare it themselves.
 - `hakunapi-proj-gt` excludes `gt-epsg-hsql`'s transitive `net.opengis.ows`, `org.w3.xlink`, the three `org.eclipse.emf` jars, `imagen-core` and `commons-lang3` (~4 MB). GeoTools references them only from ISO citation metadata, raster parameters and URN/PROJ formatting, none of which hakunapi uses; transformations and WKT are unchanged.
+- `hakunapi-simple-webapp-jakarta`: `org.apache.logging.log4j:log4j-1.2-api` is replaced by `org.slf4j:log4j-over-slf4j`, so FreeMarker 2.3's Log4j 1 API calls go through SLF4J like the rest of hakunapi instead of straight to Log4j 2 (351 kB → 26 kB).
 
 ## 2.0.0
 
