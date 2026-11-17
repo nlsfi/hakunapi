@@ -41,7 +41,7 @@
                 "locator_designator_addressNumber": {
                     "title": "Address Number",
                     "description": "House or building number",
-                    "type": "string"
+                    "type": ["string", "null"]
                 },
                 "locator_level": {
                     "title": "Locator Level",
@@ -89,7 +89,7 @@
                 "parcel": {
                     "title": "Parcel ID",
                     "description": "Property identifier of the parcel",
-                    "type": "string"
+                    "type": ["string", "null"]
                 },
                 "geometry": {
                     "title": "Position",
