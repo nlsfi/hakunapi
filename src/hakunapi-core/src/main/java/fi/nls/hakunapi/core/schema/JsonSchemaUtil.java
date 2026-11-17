@@ -105,7 +105,7 @@ public class JsonSchemaUtil {
             return null;
         }
 
-        String type = node.has("type") ? node.get("type").asString() : "object";
+        String type = getType(node.get("type"));
         Schema schema;
         switch (type) {
             case "string":
@@ -171,6 +171,26 @@ public class JsonSchemaUtil {
         }
 
         return schema;
+    }
+
+    /**
+     * "type" is either a string or, for nullable properties in 2020-12 style,
+     * an array such as ["string", "null"]. Nullability is not used downstream,
+     * so the first non-null type decides.
+     */
+    private static String getType(JsonNode typeNode) {
+        if (typeNode == null) {
+            return "object";
+        }
+        if (typeNode.isArray()) {
+            for (JsonNode t : typeNode) {
+                if (t.isString() && !"null".equals(t.stringValue())) {
+                    return t.stringValue();
+                }
+            }
+            return "object";
+        }
+        return typeNode.isString() ? typeNode.stringValue() : "object";
     }
 
 }
