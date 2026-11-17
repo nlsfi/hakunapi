@@ -33,7 +33,7 @@
             "properties": {
                 "name": {
                     "title": "Name",
-                    "type": "string"
+                    "type": ["string", "null"]
                 },
                 "geometry": {
                     "title": "Geom",
