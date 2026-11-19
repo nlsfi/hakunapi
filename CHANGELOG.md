@@ -56,6 +56,12 @@
 
   Services with no `locale=` are unaffected.
 
+- A `schema=` entry that cannot be used now fails startup naming the file: a
+  missing `schema.<name>.path`, a file that does not exist or cannot be read,
+  and a file that is not valid JSON or whose root is not an object. Previously
+  the first three were skipped with a warning (a missing file only at debug
+  level), so the service started without the schema's titles.
+
 ### Functional changes
 
 - An unknown `crs`, `bbox-crs` or `filter-crs` SRID returns 400 instead of 500, and a collection `srid` missing from the global `srid` fails startup with a message naming both.
@@ -85,6 +91,7 @@
 - HTML templates: Bootstrap 5.0.0-beta3 -> 5.3.8, Leaflet 1.7.1 -> 1.9.4, proj4 2.7.5 -> 2.22.0 and swagger-ui 3.45.1 -> 5.29.1 (still loaded from CDNs, with updated SRI hashes). The Leaflet and proj4 imports now live in `mapLibs.ftl`, shared by `featureCollection.ftl` and `feature.ftl`; a custom template directory that overrides these two templates keeps its own versions (#199).
 - New config key `api.collections.links.*` adds links to the top-level `links` array of the `/collections` response, in both JSON and HTML. Parallel to the existing `api.links.*` (landing page) and `default.collections.links.*` / `collections.<id>.links.*` (per-collection entries).
 - New [configuration reference](docs/overview/configuration.md): every configuration key of the core modules and the reference webapp, with its default, on one page. Pull requests that change a key are expected to update it.
+- Fixed startup failing with a `JsonNodeException` on a `schema=` file that declares a property's `type` as an array, the JSON Schema way of marking it nullable (`"type": ["string", "null"]`). The first non-null type is used. Broken since 2.0.0 (Jackson 3).
 - `servers` is now trimmed like the other list keys: `servers=dev, prod` works instead of failing startup with a `NullPointerException`.
 - PostGIS source: the keys `collections.<id>.id.alias`, `geometry.alias` and `properties.<p>.alias` are removed. They were a not-working and unfinished idea (`properties.<p>.alias` made startup fail with a `NullPointerException`); they are now ignored.
 

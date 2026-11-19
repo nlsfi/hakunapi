@@ -173,7 +173,7 @@ formats.json.formatter.degrees=0,5,0,8,0,7
 | Key | Default | Description |
 | --- | --- | --- |
 | `schema` | - | Names of schema files; typically the language |
-| `schema.<n>.path` | required | Path, relative to the config file (an entry without one is skipped with a warning) |
+| `schema.<n>.path` | required | Path, relative to the config file (startup fails if it is missing or the file cannot be read or parsed) |
 | `schema.<n>.lang` | `<n>` | Language tag, lowercased |
 
 ```properties

@@ -41,7 +41,7 @@
                 "locator_designator_addressNumber": {
                     "title": "Osoitenumero",
                     "description": "Talon tai rakennuksen numero",
-                    "type": "string"
+                    "type": ["string", "null"]
                 },
                 "locator_level": {
                     "title": "Paikantajataso",
@@ -89,7 +89,7 @@
                 "parcel": {
                     "title": "Kiinteistötunnus",
                     "description": "Kiinteistön kiinteistötunnus",
-                    "type": "string"
+                    "type": ["string", "null"]
                 },
                 "geometry": {
                     "title": "Sijainti",
